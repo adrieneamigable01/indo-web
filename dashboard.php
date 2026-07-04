@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Lending Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+
+<style>
+
+:root{
+    --primary:#2563eb;
+    --sidebar:#ffffff;
+    --body:#f8fafc;
+}
+
+body{
+    background:var(--body);
+    font-family:'Segoe UI',sans-serif;
+}
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:280px;
+    height:100vh;
+    background:#fff;
+    border-right:1px solid #e5e7eb;
+    padding:20px;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:700;
+    color:var(--primary);
+}
+
+.menu-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 15px;
+    border-radius:12px;
+    text-decoration:none;
+    color:#334155;
+    margin-bottom:8px;
+}
+
+.menu-item:hover,
+.menu-item.active{
+    background:var(--primary);
+    color:white;
+}
+
+.content{
+    margin-left:280px;
+    padding:25px;
+}
+
+.topbar{
+    background:white;
+    padding:15px 20px;
+    border-radius:20px;
+    box-shadow:0 2px 15px rgba(0,0,0,.05);
+}
+
+.kpi-card{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 4px 20px rgba(0,0,0,.05);
+    height:100%;
+}
+
+.icon-box{
+    width:55px;
+    height:55px;
+    border-radius:15px;
+    background:#dbeafe;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--primary);
+    font-size:24px;
+}
+
+.chart-card,
+.table-card{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 4px 20px rgba(0,0,0,.05);
+}
+
+.table{
+    margin-bottom:0;
+}
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<?php include_once('common/sidenav.php') ?>
+
+<!-- CONTENT -->
+
+<div class="content">
+
+    <div class="topbar d-flex justify-content-between">
+
+        <div>
+            <h4 class="mb-0">
+                Dashboard Overview
+            </h4>
+        </div>
+
+        <div>
+            <button class="btn btn-light">
+                <i class="bi bi-bell"></i>
+            </button>
+
+            <button class="btn btn-primary">
+                Administrator
+            </button>
+        </div>
+
+    </div>
+
+    <!-- KPI -->
+
+    <div class="row mt-4 g-4">
+
+        <div class="col-md-3">
+
+            <div class="kpi-card">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+                        <small>Borrowers</small>
+                        <h2>1,245</h2>
+                        <small class="text-success">
+                            +12%
+                        </small>
+                    </div>
+
+                    <div class="icon-box">
+                        <i class="bi bi-people"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="kpi-card">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+                        <small>Active Loans</small>
+                        <h2>865</h2>
+                        <small class="text-success">
+                            +8%
+                        </small>
+                    </div>
+
+                    <div class="icon-box">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="kpi-card">
+
+                <div>
+                    <small>Portfolio</small>
+                    <h2>₱25.4M</h2>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="kpi-card">
+
+                <div>
+                    <small>Today's Collection</small>
+                    <h2>₱425K</h2>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- OPERATIONS DASHBOARD -->
+
+<div class="row mt-4 g-4">
+
+    <!-- EXPIRED ATM -->
+
+    <div class="col-lg-6">
+
+        <div class="table-card">
+
+            <div class="d-flex justify-content-between mb-3">
+
+                <h5>
+                    Expired ATM Cards
+                </h5>
+
+                <span class="badge bg-danger">
+                    15 Expired
+                </span>
+
+            </div>
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Borrower</th>
+                        <th>ATM No.</th>
+                        <th>Expiry Date</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>Juan Dela Cruz</td>
+                        <td>****1234</td>
+                        <td class="text-danger">
+                            Jun 01, 2026
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Maria Santos</td>
+                        <td>****5678</td>
+                        <td class="text-danger">
+                            May 20, 2026
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- UPCOMING TEACHER BONUSES -->
+
+    <div class="col-lg-6">
+
+        <div class="table-card">
+
+            <div class="d-flex justify-content-between mb-3">
+
+                <h5>
+                    Upcoming Teacher Bonuses
+                </h5>
+
+                <span class="badge bg-success">
+                    Upcoming
+                </span>
+
+            </div>
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Bonus</th>
+                        <th>Date</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>Mid-Year Bonus</td>
+
+                        <td>
+                            May 15
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-primary">
+                                Upcoming
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Year-End Bonus</td>
+
+                        <td>
+                            Nov 15
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-warning">
+                                Scheduled
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="row mt-4 g-4">
+
+    <!-- RECENT LOAN RELEASES -->
+
+    <div class="col-lg-6">
+
+        <div class="table-card">
+
+            <div class="d-flex justify-content-between mb-3">
+
+                <h5>
+                    Recent Loan Releases
+                </h5>
+
+                <a href="#"
+                   class="btn btn-sm btn-primary">
+
+                    View All
+
+                </a>
+
+            </div>
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Ref No</th>
+                        <th>Borrower</th>
+                        <th>Amount</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>LN-001</td>
+                        <td>Juan Dela Cruz</td>
+                        <td>₱50,000</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>LN-002</td>
+                        <td>Maria Santos</td>
+                        <td>₱80,000</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- PENDING RELEASES -->
+
+    <div class="col-lg-6">
+
+        <div class="table-card">
+
+            <h5 class="mb-3">
+
+                Pending Loan Releases
+
+            </h5>
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Borrower</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>Pedro Reyes</td>
+
+                        <td>
+                            ₱120,000
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-warning">
+                                For Release
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="row mt-4 g-4">
+
+    <!-- TODAY SCHEDULE -->
+
+    <div class="col-lg-6">
+
+        <div class="table-card">
+
+            <h5>
+
+                Today's Schedule
+
+            </h5>
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Borrower</th>
+                        <th>Activity</th>
+                        <th>Time</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>Maria Santos</td>
+
+                        <td>
+                            Loan Signing
+                        </td>
+
+                        <td>
+                            10:00 AM
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Jose Cruz</td>
+
+                        <td>
+                            ATM Submission
+                        </td>
+
+                        <td>
+                            2:00 PM
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- NEW BORROWERS -->
+
+    <div class="col-lg-6">
+
+        <div class="table-card">
+
+            <h5>
+
+                Newly Added Borrowers
+
+            </h5>
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+                        <th>Date Added</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>Ana Lim</td>
+
+                        <td>
+                            Today
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Carlos Reyes</td>
+
+                        <td>
+                            Today
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="row mt-4">
+
+    <div class="col-12">
+
+        <div class="table-card">
+
+            <div class="d-flex justify-content-between mb-3">
+
+                <h5>
+                    Collections Due Today
+                </h5>
+
+                <span class="badge bg-danger">
+                    ₱125,000 Due
+                </span>
+
+            </div>
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Borrower</th>
+                        <th>Due Date</th>
+                        <th>Amount</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>Juan Dela Cruz</td>
+
+                        <td>
+                            Today
+                        </td>
+
+                        <td>
+                            ₱1,250
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Maria Santos</td>
+
+                        <td>
+                            Today
+                        </td>
+
+                        <td>
+                            ₱950
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+    
+    <!-- TABLES -->
+
+    <div class="row mt-4">
+
+        <div class="col-lg-8">
+
+            <div class="table-card">
+
+                <h5>Recent Loan Releases</h5>
+
+                <table class="table">
+
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Borrower</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>LN-001</td>
+                            <td>Juan Dela Cruz</td>
+                            <td>₱50,000</td>
+                            <td>
+                                <span class="badge bg-success">
+                                    Released
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>LN-002</td>
+                            <td>Maria Santos</td>
+                            <td>₱80,000</td>
+                            <td>
+                                <span class="badge bg-warning">
+                                    Processing
+                                </span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="table-card">
+
+                <h5>Due Today</h5>
+
+                <div class="list-group">
+
+                    <div class="list-group-item">
+                        Juan Dela Cruz
+                        <span class="float-end">
+                            ₱1,250
+                        </span>
+                    </div>
+
+                    <div class="list-group-item">
+                        Maria Santos
+                        <span class="float-end">
+                            ₱950
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+</script>
+
+</body>
+</html>
