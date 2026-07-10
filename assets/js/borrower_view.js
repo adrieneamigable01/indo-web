@@ -4570,7 +4570,6 @@ $(document).ready(function(){
     });
 
     $("#addCoMaker").on("click", function () {
-
         let html = `
         <div class="co-maker-item border rounded p-3 mt-2 bg-light">
 

@@ -1641,9 +1641,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>    
 <!-- BORROWER VIEW JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="assets/js/common.js"></script>
-<script src="assets/js/config.js"></script>
-<script src="assets/js/borrower_view.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/borrower_view.js"></script>
 
 </body>
 

@@ -5,34 +5,29 @@
         🏦 LendingPro
     </div>
 
-    <a href="dashboard.php" class="menu-item active">
+    <a href="<?= url('dashboard') ?>" class="menu-item <?= isActive('dashboard') ? 'active' : '' ?>">
         <i class="bi bi-grid"></i>
         Dashboard
     </a>
 
-    <a href="borrowers.php" class="menu-item">
+    <a href="<?= url('borrowers') ?>" class="menu-item <?= isActive('borrowers') ? 'active' : '' ?>">
         <i class="bi bi-people"></i>
         Borrowers
     </a>
 
-    <a href="loan.php" class="menu-item">
+    <a href="<?= url('loan') ?>" class="menu-item <?= isActive('loan') ? 'active' : '' ?>">
         <i class="bi bi-cash-stack"></i>
         Loans
     </a>
 
-    <a href="#" class="menu-item">
+    <a href="<?= url('vault/managers') ?>" class="menu-item <?= isActive('vault/managers') ? 'active' : '' ?>">
         <i class="bi bi-wallet2"></i>
-        Collections
+        Managers Vault
     </a>
 
-    <a href="#" class="menu-item">
+    <a href="<?= url('vault/cashier') ?>" class="menu-item <?= isActive('vault/cashier') ? 'active' : '' ?>">
         <i class="bi bi-file-earmark-bar-graph"></i>
-        Reports
-    </a>
-
-    <a href="#" class="menu-item">
-        <i class="bi bi-gear"></i>
-        Settings
+        Cashier
     </a>
 
 </div>

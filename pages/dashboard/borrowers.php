@@ -25,151 +25,63 @@ href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
 
 <link rel="stylesheet"
 href="https://cdn.datatables.net/buttons/3.2.3/css/buttons.bootstrap5.min.css">
-
+<link rel="stylesheet"
+href="assets/css/loan.css">
 <style>
+    #tblCashierVault{
 
-:root{
-    --primary:#2563eb;
-    --body:#f8fafc;
-}
+        font-size:.92rem;
 
-body{
-    background:var(--body);
-    font-family:'Segoe UI',sans-serif;
-}
-
-/* SIDEBAR */
-
-.sidebar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:270px;
-    height:100vh;
-    background:#fff;
-    border-right:1px solid #e5e7eb;
-    padding:20px;
-    overflow-y:auto;
-}
-
-.logo{
-    font-size:24px;
-    font-weight:700;
-    color:var(--primary);
-}
-
-.menu-item{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:12px 15px;
-    border-radius:12px;
-    text-decoration:none;
-    color:#334155;
-    margin-bottom:8px;
-    transition:.3s;
-}
-
-.menu-item:hover,
-.menu-item.active{
-    background:var(--primary);
-    color:white;
-}
-
-/* CONTENT */
-
-.content{
-    margin-left:270px;
-    padding:25px;
-}
-
-.topbar{
-    background:white;
-    border-radius:20px;
-    padding:15px 20px;
-    box-shadow:0 4px 20px rgba(0,0,0,.05);
-}
-
-/* CARDS */
-
-.stat-card,
-.page-card{
-    background:white;
-    border:none;
-    border-radius:20px;
-    box-shadow:0 4px 20px rgba(0,0,0,.05);
-}
-
-.icon-box{
-    width:55px;
-    height:55px;
-    border-radius:15px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:24px;
-}
-
-.icon-primary{
-    background:#dbeafe;
-    color:#2563eb;
-}
-
-.icon-success{
-    background:#dcfce7;
-    color:#16a34a;
-}
-
-.icon-danger{
-    background:#fee2e2;
-    color:#dc2626;
-}
-
-/* DATATABLE */
-
-.dataTables_wrapper .dataTables_filter input{
-    border-radius:12px;
-    border:1px solid #dee2e6;
-    padding:8px 12px;
-}
-
-.dataTables_wrapper .dataTables_length select{
-    border-radius:12px;
-}
-
-.dt-buttons .btn{
-    border-radius:10px;
-}
-
-.table > :not(caption) > * > *{
-    padding:15px;
-    vertical-align:middle;
-}
-
-.page-link{
-    border-radius:10px !important;
-}
-
-.badge{
-    padding:8px 12px;
-}
-
-/* MOBILE */
-
-@media(max-width:991px){
-
-    .sidebar{
-        position:relative;
-        width:100%;
-        height:auto;
     }
 
-    .content{
-        margin-left:0;
+    #tblCashierVault thead th{
+
+        vertical-align:middle;
+
+        white-space:nowrap;
+
     }
 
-}
+    #tblCashierVault tbody td{
 
+        vertical-align:middle;
+
+    }
+
+    #tblCashierVault tbody tr:hover{
+
+        background:#f8fbff;
+
+    }
+
+    #tblCashierVault .badge{
+
+        font-size:.8rem;
+
+    }
+
+    #tblCashierVault .btn{
+
+        min-width:34px;
+
+    }
+    #tblCashierVault{
+        width:auto !important;
+    }
+
+    #tblCashierVault thead th{
+        white-space:nowrap;
+    }
+
+    #tblCashierVault tbody td{
+        white-space:nowrap;
+        vertical-align:middle;
+    }
+
+    #tblCashierVault tbody td:nth-child(5){
+        white-space:normal;
+        min-width:250px;
+    }
 </style>
 
 </head>
@@ -208,7 +120,7 @@ body{
 
             </button>
 
-            <a href="borrower_form.php" class="btn btn-primary">
+            <a href="add/borrower" class="btn btn-primary">
 
                 <i class="bi bi-person-plus"></i>
                 Add Borrower
@@ -316,7 +228,7 @@ body{
         <table id="borrowerTable"
                class="table table-hover align-middle">
 
-             <thead class="table-light">
+             <thead class="table-dark">
 
             <tr>
                 <th>ID</th>

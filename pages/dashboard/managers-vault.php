@@ -29,7 +29,7 @@ href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
 href="https://cdn.datatables.net/buttons/3.2.3/css/buttons.bootstrap5.min.css">
 
 <link rel="stylesheet"
-href="assets/css/loan.css">
+href="../assets/css/loan.css">
 
 </head>
 
@@ -94,22 +94,22 @@ href="assets/css/loan.css">
             </button>
 
             <button
-                class="btn btn-warning text-dark"
-                id="btnTransfer">
-
-                <i class="bi bi-arrow-left-right"></i>
-
-                Transfer
-
-            </button>
-
-            <button
                 class="btn btn-danger"
                 id="btnCashOut">
 
                 <i class="bi bi-dash-circle"></i>
 
                 Cash Out
+
+            </button>
+
+            <button
+                class="btn btn-warning text-dark"
+                id="btnTransfer">
+
+                <i class="bi bi-arrow-left-right"></i>
+
+                Transfer
 
             </button>
 
@@ -273,7 +273,8 @@ href="assets/css/loan.css">
                         <input
                             type="date"
                             id="filterBusinessDate"
-                            class="form-control">
+                            class="form-control"
+                            value="<?php echo date("Y-m-d")?>">
 
                     </div>
 
@@ -1075,9 +1076,9 @@ href="assets/css/loan.css">
 <!-- SWEETALERT -->
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="assets/js/config.js"></script>
+<script src="../assets/js/config.js"></script>
 
-<script src="assets/js/common.js"></script>
+<script src="../assets/js/common.js"></script>
 
-<script src="assets/js/managers-vault.js"></script>
-</html?
+<script src="../assets/js/managers-vault.js"></script>
+</html>

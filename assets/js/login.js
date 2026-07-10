@@ -28,7 +28,7 @@ login = {
                     if(!response.isError){
                         if( response.message.includes("OTP Send to your") ){
                             localStorage.setItem('userdata',JSON.stringify(response.data))
-                            window.location = "otp_page.php";
+                            window.location = "otp";
                         }
                     }else{
 

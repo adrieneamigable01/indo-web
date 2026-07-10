@@ -33,7 +33,7 @@ otpFunction = {
                     if(!response.isError){
                         localStorage.setItem('userdata',JSON.stringify(response.data))
                         localStorage.setItem('token',btoa(response.data.access_token))
-                        window.location = "dashboard.php";
+                        window.location = "dashboard";
                     }else{
 
                         Swal.fire({

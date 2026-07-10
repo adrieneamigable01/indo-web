@@ -29,8 +29,63 @@ href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
 href="https://cdn.datatables.net/buttons/3.2.3/css/buttons.bootstrap5.min.css">
 
 <link rel="stylesheet"
-href="assets/css/loan.css">
+href="../assets/css/loan.css">
+<style>
+    #tblCashierVault{
 
+        font-size:.92rem;
+
+    }
+
+    #tblCashierVault thead th{
+
+        vertical-align:middle;
+
+        white-space:nowrap;
+
+    }
+
+    #tblCashierVault tbody td{
+
+        vertical-align:middle;
+
+    }
+
+    #tblCashierVault tbody tr:hover{
+
+        background:#f8fbff;
+
+    }
+
+    #tblCashierVault .badge{
+
+        font-size:.8rem;
+
+    }
+
+    #tblCashierVault .btn{
+
+        min-width:34px;
+
+    }
+    #tblCashierVault{
+        width:auto !important;
+    }
+
+    #tblCashierVault thead th{
+        white-space:nowrap;
+    }
+
+    #tblCashierVault tbody td{
+        white-space:nowrap;
+        vertical-align:middle;
+    }
+
+    #tblCashierVault tbody td:nth-child(5){
+        white-space:normal;
+        min-width:250px;
+    }
+</style>
 </head>
 
 <body>
@@ -75,12 +130,20 @@ href="assets/css/loan.css">
             </small>
 
         </div>
-
+        
         <div
             class="d-flex gap-2">
-
             <button
                 class="btn btn-success"
+                id="btnTransaction">
+
+                <i class="bi bi-plus-circle"></i>
+
+                Transaction
+
+            </button>
+            <button
+                class="btn btn-warning"
                 id="btnDailyClose">
 
                 <i class="bi bi-cash-stack"></i>
@@ -233,8 +296,36 @@ href="assets/css/loan.css">
         <div class="card shadow-sm border-0 mb-4">
 
             <div class="card-body">
+                <div
+                    id="businessDateStatus"
+                    class="alert alert-danger d-none mb-3">
 
+                    <i class="bi bi-lock-fill me-2"></i>
+
+                    This business date has already been closed. Transactions are no longer allowed.
+
+                </div>
                 <div class="row g-3">
+                    <div
+                    class="col-lg-3"
+                    id="divCashierFilter"
+                    style="display:none;">
+
+                    <label>
+                        Cashier
+                    </label>
+
+                    <select
+                        id="filterCashier"
+                        class="form-select">
+
+                        <option value="">
+                            -- Select Cashier --
+                        </option>
+
+                    </select>
+
+                </div>
 
                     <div class="col-lg-4">
 
@@ -247,7 +338,8 @@ href="assets/css/loan.css">
                         <input
                             type="date"
                             id="filterBusinessDate"
-                            class="form-control">
+                            class="form-control"
+                            value="<?php echo date("Y-m-d")?>">
 
                     </div>
 
@@ -269,33 +361,20 @@ href="assets/css/loan.css">
 
                             </option>
 
-                            <option value="RECEIVED_FROM_MANAGER">
+                            <option value="CASH IN">
 
-                                Received From Manager
-
-                            </option>
-
-                            <option value="LOAN_RELEASE">
-
-                                Loan Release
+                                CASH IN
 
                             </option>
 
-                            <option value="PAYMENT_COLLECTION">
+                            <option value="CASH OUT">
 
-                                Payment Collection
-
-                            </option>
-
-                            <option value="RETURN TO VAULT">
-
-                                Return To Manager
+                                CASH OUT
 
                             </option>
+                            <option value="TRANSFER_IN">
 
-                            <option value="ADJUSTMENT">
-
-                                Adjustment
+                                FROM MANAGER
 
                             </option>
 
@@ -350,45 +429,28 @@ href="assets/css/loan.css">
 
                             <tr>
 
-                                <th width="70">
+                                <!-- <th width="70">
 
                                     #
 
-                                </th>
+                                </th> -->
 
                                 <th>
 
                                     Business Date
 
                                 </th>
-
-                                <th>
-
-                                    Reference #
-
-                                </th>
-
+                                
                                 <th>
 
                                     Transaction
 
                                 </th>
 
-                                <th class="text-end">
+                                
+                                <th>
 
                                     Amount
-
-                                </th>
-
-                                <th class="text-end">
-
-                                    Balance Before
-
-                                </th>
-
-                                <th class="text-end">
-
-                                    Balance After
 
                                 </th>
 
@@ -397,6 +459,14 @@ href="assets/css/loan.css">
                                     Created By
 
                                 </th>
+
+
+                                 <th>
+
+                                    Remarks
+
+                                </th>
+                               
 
                                 <th width="180">
 
@@ -456,410 +526,467 @@ href="assets/css/loan.css">
 
             </div>
 
-            <div
-                class="modal-body">
+             <div class="modal-body">
 
-                <!-- ======================================== -->
-                <!-- SUMMARY -->
-                <!-- ======================================== -->
+                <div class="container-fluid">
 
-                <div class="row">
+                    <div class="row">
 
-                    <div class="col-md-3">
+                        <!-- ====================================================== -->
+                        <!-- LEFT PANEL -->
+                        <!-- ====================================================== -->
 
-                        <label>
+                        <div class="col-lg-4">
 
-                            Business Date
+                            <div class="card shadow-sm border-0 h-100">
 
-                        </label>
+                                <div class="card-header bg-success text-white">
 
-                        <input
-                            type="date"
-                            id="businessDate"
-                            class="form-control">
+                                    <h5 class="mb-0">
 
-                    </div>
+                                        <i class="bi bi-info-circle me-2"></i>
 
-                    <div class="col-md-3">
+                                        Closing Information
 
-                        <label>
+                                    </h5>
 
-                            Expected Cash
+                                </div>
 
-                        </label>
+                                <div class="card-body">
 
-                        <input
-                            id="expectedCash"
-                            class="form-control text-end"
-                            readonly>
+                            <div class="mb-3">
 
-                    </div>
+                                <label class="form-label fw-bold text-start d-block">
 
-                    <div class="col-md-3">
+                                    <i class="bi bi-wallet2 me-1"></i>
 
-                        <label>
+                                    Expected Cash
 
-                            Actual Cash
+                                </label>
 
-                        </label>
+                                <input
+                                    id="expectedCash"
+                                    class="form-control text-end fw-bold bg-light"
+                                    readonly>
 
-                        <input
-                            id="actualCash"
-                            class="form-control text-end"
-                            readonly>
+                            </div>
 
-                    </div>
+                            <div class="mb-3">
 
-                    <div class="col-md-3">
+                                <label class="form-label fw-bold text-start d-block">
 
-                        <label>
+                                    <i class="bi bi-cash-stack me-1"></i>
 
-                            Variance
+                                    Actual Cash
 
-                        </label>
+                                </label>
 
-                        <input
-                            id="variance"
-                            class="form-control text-end fw-bold"
-                            readonly>
+                                <input
+                                    id="actualCash"
+                                    class="form-control text-end fw-bold bg-light"
+                                    readonly>
+
+                            </div>
+
+                            <div class="mb-4">
+
+                                <label class="form-label fw-bold text-start d-block">
+
+                                    <i class="bi bi-calculator me-1"></i>
+
+                                    Variance
+
+                                </label>
+
+                                <input
+                                    id="variance"
+                                    class="form-control text-end fw-bold fs-5"
+                                    readonly>
+
+                            </div>
+
+                            <hr>
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-bold text-start d-block">
+
+                                    <i class="bi bi-chat-left-text me-1"></i>
+
+                                    Remarks
+
+                                </label>
+
+                                <textarea
+                                    id="dailyCloseRemarks"
+                                    class="form-control"
+                                    rows="8"
+                                    placeholder="Enter remarks...">Daily Cash Closing</textarea>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-                <hr>
+                <!-- ====================================================== -->
+                <!-- RIGHT PANEL -->
+                <!-- ====================================================== -->
 
-                <!-- ======================================== -->
-                <!-- DENOMINATIONS -->
-                <!-- ======================================== -->
+                <div class="col-lg-8">
 
-                <h5>
+                    <div class="card shadow-sm border-0 h-100">
 
-                    Cash Count
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 
-                </h5>
+                            <div>
 
-                <small class="text-muted">
+                                <h5 class="mb-0">
 
-                    Enter the quantity for each denomination.
+                                    <i class="bi bi-cash-coin me-2"></i>
 
-                </small>
+                                    Cash Count
 
-                <div class="table-responsive mt-3">
+                                </h5>
 
-                    <table
-                        class="table table-bordered table-striped">
+                                <small>
 
-                        <thead class="table-dark">
+                                    Enter the quantity for each denomination.
 
-                            <tr>
+                                </small>
 
-                                <th width="200">
+                            </div>
 
-                                    Denomination
 
-                                </th>
+                        </div>
 
-                                <th width="180">
+                        <div
+                            class="card-body p-0"
+                            style="max-height:620px; overflow-y:auto;">
 
-                                    Quantity
+                            <table
+                                class="table table-bordered table-hover align-middle mb-0">
 
-                                </th>
+                                <thead class="table-dark sticky-top">
 
-                                <th>
+                                    <tr>
 
-                                    Amount
+                                        <th width="180">
 
-                                </th>
+                                            Denomination
 
-                            </tr>
+                                        </th>
 
-                        </thead>
+                                        <th width="180">
 
-                        <tbody>
+                                            Quantity
 
-                            <tr>
+                                        </th>
 
-                                <td>
+                                        <th class="text-end">
 
-                                    ₱1,000
+                                            Amount
 
-                                </td>
+                                        </th>
 
-                                <td>
+                                    </tr>
 
-                                    <input
-                                        type="number"
-                                        class="form-control denominationQty"
-                                        data-value="1000"
-                                        id="qty1000"
-                                        min="0"
-                                        value="0">
+                                </thead>
 
-                                </td>
+                                <tbody>
+                                    <tr>
 
-                                <td
-                                    id="total1000"
-                                    class="text-end">
+                                        <td class="fw-bold">
 
-                                    ₱0.00
+                                            ₱1,000
 
-                                </td>
+                                        </td>
 
-                            </tr>
+                                        <td>
 
-                            <tr>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value="0"
+                                                id="qty1000"
+                                                data-value="1000"
+                                                class="form-control form-control-lg text-end denominationQty">
 
-                                <td>
+                                        </td>
 
-                                    ₱500
+                                        <td
+                                            id="total1000"
+                                            class="text-end fw-bold fs-6">
 
-                                </td>
+                                            ₱0.00
 
-                                <td>
+                                        </td>
 
-                                    <input
-                                        type="number"
-                                        class="form-control denominationQty"
-                                        data-value="500"
-                                        id="qty500"
-                                        min="0"
-                                        value="0">
+                                    </tr>
 
-                                </td>
+                                    <tr>
 
-                                <td
-                                    id="total500"
-                                    class="text-end">
+                                        <td class="fw-bold">
 
-                                    ₱0.00
+                                            ₱500
 
-                                </td>
+                                        </td>
 
-                            </tr>
+                                        <td>
 
-                            <tr>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value="0"
+                                                id="qty500"
+                                                data-value="500"
+                                                class="form-control form-control-lg text-end denominationQty">
 
-                                <td>
+                                        </td>
 
-                                    ₱200
+                                        <td
+                                            id="total500"
+                                            class="text-end fw-bold">
 
-                                </td>
+                                            ₱0.00
 
-                                <td>
+                                        </td>
 
-                                    <input
-                                        type="number"
-                                        class="form-control denominationQty"
-                                        data-value="200"
-                                        id="qty200"
-                                        min="0"
-                                        value="0">
+                                    </tr>
 
-                                </td>
+                                    <tr>
 
-                                <td
-                                    id="total200"
-                                    class="text-end">
+                                        <td class="fw-bold">
 
-                                    ₱0.00
+                                            ₱200
 
-                                </td>
+                                        </td>
 
-                            </tr>
+                                        <td>
 
-                            <tr>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value="0"
+                                                id="qty200"
+                                                data-value="200"
+                                                class="form-control form-control-lg text-end denominationQty">
 
-                                <td>
+                                        </td>
 
-                                    ₱100
+                                        <td
+                                            id="total200"
+                                            class="text-end fw-bold">
 
-                                </td>
+                                            ₱0.00
 
-                                <td>
+                                        </td>
 
-                                    <input
-                                        type="number"
-                                        class="form-control denominationQty"
-                                        data-value="100"
-                                        id="qty100"
-                                        min="0"
-                                        value="0">
+                                    </tr>
 
-                                </td>
+                                    <tr>
 
-                                <td
-                                    id="total100"
-                                    class="text-end">
+                                        <td class="fw-bold">
 
-                                    ₱0.00
+                                            ₱100
 
-                                </td>
+                                        </td>
 
-                            </tr>
+                                        <td>
 
-                            <tr>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value="0"
+                                                id="qty100"
+                                                data-value="100"
+                                                class="form-control form-control-lg text-end denominationQty">
 
-                                <td>
+                                        </td>
 
-                                    ₱50
+                                        <td
+                                            id="total100"
+                                            class="text-end fw-bold">
 
-                                </td>
+                                            ₱0.00
 
-                                <td>
+                                        </td>
 
-                                    <input
-                                        type="number"
-                                        class="form-control denominationQty"
-                                        data-value="50"
-                                        id="qty50"
-                                        min="0"
-                                        value="0">
+                                    </tr>
 
-                                </td>
+                                    <tr>
 
-                                <td
-                                    id="total50"
-                                    class="text-end">
+                                        <td class="fw-bold">
 
-                                    ₱0.00
+                                            ₱50
 
-                                </td>
+                                        </td>
 
-                            </tr>
+                                        <td>
 
-                            <tr>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value="0"
+                                                id="qty50"
+                                                data-value="50"
+                                                class="form-control form-control-lg text-end denominationQty">
 
-                                <td>
+                                        </td>
 
-                                    ₱20
+                                        <td
+                                            id="total50"
+                                            class="text-end fw-bold">
 
-                                </td>
+                                            ₱0.00
 
-                                <td>
+                                        </td>
 
-                                    <input
-                                        type="number"
-                                        class="form-control denominationQty"
-                                        data-value="20"
-                                        id="qty20"
-                                        min="0"
-                                        value="0">
+                                    </tr>
 
-                                </td>
+                                    <tr>
 
-                                <td
-                                    id="total20"
-                                    class="text-end">
+                                        <td class="fw-bold">
 
-                                    ₱0.00
+                                            ₱20
 
-                                </td>
+                                        </td>
 
-                            </tr>
+                                        <td>
 
-                            <tr>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value="0"
+                                                id="qty20"
+                                                data-value="20"
+                                                class="form-control form-control-lg text-end denominationQty">
 
-                                <td>
+                                        </td>
 
-                                    Coins
+                                        <td
+                                            id="total20"
+                                            class="text-end fw-bold">
 
-                                </td>
+                                            ₱0.00
 
-                                <td>
+                                        </td>
 
-                                    <button
-                                        class="btn btn-outline-primary btn-sm"
-                                        id="btnCoins">
+                                    </tr>
 
-                                        Count Coins
+                                    <tr class="table-warning">
 
-                                    </button>
+                                        <td class="fw-bold">
 
-                                </td>
+                                            Coins
 
-                                <td
-                                    id="coinsTotal"
-                                    class="text-end">
+                                        </td>
 
-                                    ₱0.00
+                                        <td class="text-center">
 
-                                </td>
+                                            <button
+                                                class="btn btn-outline-primary w-100"
+                                                id="btnCoins">
 
-                            </tr>
+                                                <i class="bi bi-coin"></i>
 
-                        </tbody>
+                                                Count Coins
 
-                        <tfoot class="table-success">
+                                            </button>
 
-                            <tr>
+                                        </td>
 
-                                <th colspan="2">
+                                        <td
+                                            id="coinsTotal"
+                                            class="text-end fw-bold fs-5">
 
-                                    TOTAL CASH
+                                            ₱0.00
 
-                                </th>
+                                        </td>
 
-                                <th
-                                    class="text-end"
-                                    id="grandTotal">
+                                    </tr>
 
-                                    ₱0.00
+                                </tbody>
 
-                                </th>
+                                <tfoot class="table-success">
 
-                            </tr>
+                                    <tr>
 
-                        </tfoot>
+                                        <th
+                                            colspan="2"
+                                            class="fs-5">
 
-                    </table>
+                                            <i class="bi bi-calculator me-2"></i>
 
-                </div>
+                                            TOTAL CASH
 
-                <hr>
+                                        </th>
 
-                <div class="mb-3">
+                                        <th
+                                            id="grandTotal"
+                                            class="text-end fs-4">
 
-                    <label>
+                                            ₱0.00
 
-                        Remarks
+                                        </th>
 
-                    </label>
+                                    </tr>
 
-                    <textarea
-                        id="dailyCloseRemarks"
-                        class="form-control"
-                        rows="3"
-                        placeholder="Remarks">
+                                    </tfoot>
 
-                    </textarea>
+                            </table>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
             </div>
 
-            <div
-                class="modal-footer">
+        </div>
 
-                <button
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
+    </div>
+    <div class="modal-footer bg-light">
 
-                    Cancel
+        <div class="me-auto">
 
-                </button>
+            <small class="text-muted">
 
-                <button
-                    class="btn btn-success"
-                    id="btnSubmitDailyClose">
+                <i class="bi bi-info-circle"></i>
 
-                    <i class="bi bi-check-circle"></i>
+                Verify the cash count before submitting the daily close.
 
-                    Submit Daily Close
+            </small>
 
-                </button>
+        </div>
 
-            </div>
+        <button
+            type="button"
+            class="btn btn-outline-secondary px-4"
+            data-bs-dismiss="modal">
+
+            <i class="bi bi-x-circle me-1"></i>
+
+            Cancel
+
+        </button>
+
+        <button
+            type="button"
+            class="btn btn-success px-4"
+            id="btnSubmitDailyClose">
+
+            <i class="bi bi-check-circle me-1"></i>
+
+            Submit Daily Close
+
+        </button>
+
+    </div>
+
 
         </div>
 
@@ -1257,11 +1384,17 @@ href="assets/css/loan.css">
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script src="assets/js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/min/moment.min.js"></script>
 
-<script src="assets/js/common.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
-<script src="assets/js/cashier-vault.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script src="../assets/js/config.js"></script>
+
+<script src="../assets/js/common.js"></script>
+
+<script src="../assets/js/cashier-vault.js"></script>
 
 </body>
 

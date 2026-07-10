@@ -320,7 +320,7 @@ href="assets/css/loan.css">
             id="loanTable"
             class="table table-hover align-middle">
 
-            <thead class="table-light">
+            <thead class="table-dark">
 
             <tr>
 

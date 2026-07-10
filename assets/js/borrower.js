@@ -288,14 +288,14 @@ borrower = {
         view:(id)=>{
 
             window.location =
-                "borrower_view.php?id=" + id;
+                "view/borrower?id=" + id;
 
         },
 
         edit:(id)=>{
 
             window.location =
-                "borrower_form.php?id=" + id;
+                "add/borrower?id=" + id;
 
         },
 

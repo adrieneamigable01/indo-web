@@ -43,4 +43,12 @@ const managerVaultCashInApi = `${url}managervault`;;
 const managerVaultSummaryApi     = `${url}managervault/summary`;
 const managerVaultTransactionDetailsApi     = `${url}managervault/transaction/details`;
 
-const cashierVaultApi     = `${url}cashierVault`;
+const cashierVaultApi     = `${url}cashiervault`;
+const cashierVaultTransactionApi     = `${url}cashiervault/transaction-details`;
+const cashierVaultSummaryApi     = `${url}cashiervault/transaction-summary`;
+const cashierVaultReturnApi     = `${url}cashiervault/return-vault`;
+
+const dailyCloseApi     = `${url}cashierdailyclose`;
+const dailyCloseSummaryApi     = `${url}cashierdailyclose/summary`;
+const dailyCloseApproveApi     = `${url}cashiervault/approve-return-vault`;
+const dailyClosRejectApi     = `${url}cashiervault/reject-return-vault`;

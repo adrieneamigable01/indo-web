@@ -776,19 +776,52 @@ let managerVaultPage = {
         */
 
         actionButtons:function(row){
+            
+            let userdata = JSON.parse(
 
-            return `
+                localStorage.getItem("userdata") || "{}"
+
+            );
+
+            let html = `
 
                 <button
                     type="button"
-                    class="btn btn-sm btn-primary btnView"
-                    data-id="${row.manager_transaction_id}">
-                    
+                    class="btn btn-primary btnView"
+                    data-id="${row.manager_transaction_id}"
+                    title="View">
+
                     <i class="bi bi-eye"></i>
 
                 </button>
 
             `;
+
+            if(
+
+                Number(userdata.userid) ===
+
+                Number(row.created_by)
+
+            ){
+
+                html += `
+
+                    <button
+                        type="button"
+                        class="btn btn-danger btnDelete"
+                        data-id="${row.manager_transaction_id}"
+                        title="Delete">
+
+                        <i class="bi bi-trash"></i>
+
+                    </button>
+
+                `;
+
+            }
+
+            return html;
 
         },
 
@@ -3227,5 +3260,105 @@ $(function(){
         }
 
     );
+
+    $(document)
+
+        .off("click",".btnDelete")
+
+        .on("click",".btnDelete",function(){
+
+            let transactionId =
+
+                $(this).data("id");
+
+            Swal.fire({
+
+                icon:"warning",
+
+                title:"Delete Transaction?",
+
+                html:`
+
+                    This transaction will be marked as
+
+                    <b>VOID</b>.
+
+                    <br><br>
+
+                    Continue?
+
+                `,
+
+                showCancelButton:true,
+
+                confirmButtonText:"Delete",
+
+                confirmButtonColor:"#dc3545",
+
+                cancelButtonText:"Cancel"
+
+            }).then(function(result){
+
+                if(!result.isConfirmed){
+
+                    return;
+
+                }
+
+                jsAddon.display.ajaxRequest({
+
+                    url:managerVaultCashInApi,
+
+                    type:"DELETE",
+
+                    payload:JSON.stringify({
+
+                        manager_transaction_id:transactionId
+                    }),
+
+                    dataType:"json"
+
+                })
+
+                .then(function(response){
+
+                    if(response.isError){
+
+                        Swal.fire(
+
+                            "Error",
+
+                            response.message,
+
+                            "error"
+
+                        );
+
+                        return;
+
+                    }
+
+                    Swal.fire({
+
+                        icon:"success",
+
+                        title:"Deleted",
+
+                        text:response.message,
+
+                        timer:1500,
+
+                        showConfirmButton:false
+
+                    });
+
+                    managerVaultPage.funx.reloadTable();
+                    managerVaultPage.funx.loadSummary();
+
+                });
+
+            });
+
+        });
 
 });
