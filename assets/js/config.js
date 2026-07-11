@@ -10,6 +10,7 @@ var loginApi        = `${url}login`;
 var validateOTPApi  = `${url}validateOTP`;
 // Borrowrs
 var borrowerApi  = `${url}borrower`;
+var borrowerSummaryApi  = `${url}borrower/summary`;
 var borrowerLoanContractApi  = `${url}loan/contract`;
 // Loan
 var loanApi  = `${url}loan`;

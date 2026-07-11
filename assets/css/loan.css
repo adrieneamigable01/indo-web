@@ -448,3 +448,18 @@ body{
     }
 
 }
+.sidebar .collapse .menu-item{
+
+    margin-left:10px;
+
+    font-size:14px;
+
+    padding:10px 15px;
+
+}
+
+.sidebar .collapse .menu-item i{
+
+    width:18px;
+
+}

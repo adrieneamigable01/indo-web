@@ -135,7 +135,7 @@ href="assets/css/loan.css">
 
     <div class="row g-4 mt-1">
 
-        <div class="col-md-4">
+        <div class="col-md-3">
 
             <div class="stat-card p-4">
 
@@ -145,8 +145,10 @@ href="assets/css/loan.css">
 
                         <small>Total Borrowers</small>
 
-                        <h2 class="mt-2">
-                            1,245
+                        <h2 class="mt-2" id="totalBorrowers">
+
+                            0
+
                         </h2>
 
                     </div>
@@ -163,7 +165,7 @@ href="assets/css/loan.css">
 
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
 
             <div class="stat-card p-4">
 
@@ -173,8 +175,10 @@ href="assets/css/loan.css">
 
                         <small>Active Borrowers</small>
 
-                        <h2 class="mt-2">
-                            1,180
+                        <h2 class="mt-2" id="activeBorrowers">
+
+                            0
+
                         </h2>
 
                     </div>
@@ -191,7 +195,37 @@ href="assets/css/loan.css">
 
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
+
+            <div class="stat-card p-4">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small>Delinquent</small>
+
+                        <h2 class="mt-2" id="delinquentBorrowers">
+
+                            0
+
+                        </h2>
+
+                    </div>
+
+                    <div class="icon-box icon-danger">
+
+                        <i class="bi bi-exclamation-circle"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
 
             <div class="stat-card p-4">
 
@@ -201,8 +235,10 @@ href="assets/css/loan.css">
 
                         <small>Blacklisted</small>
 
-                        <h2 class="mt-2">
-                            65
+                        <h2 class="mt-2" id="blacklistedBorrowers">
+
+                            0
+
                         </h2>
 
                     </div>

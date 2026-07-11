@@ -4,6 +4,7 @@ borrower = {
     init:()=>{
 
         borrower.funx.get();
+        borrower.funx.loadSummary();
 
     },
 
@@ -99,6 +100,63 @@ borrower = {
             });
 
         },
+        loadSummary:function(){
+
+            jsAddon.display.ajaxRequest({
+
+                url: borrowerSummaryApi,
+
+                type: "GET",
+
+                dataType: "json"
+
+            }).then(function(response){
+
+                if(response.isError){
+
+                    Swal.fire(
+
+                        "Error",
+
+                        response.message,
+
+                        "error"
+
+                    );
+
+                    return;
+
+                }
+
+                let data = response.data;
+
+                $("#totalBorrowers").html(
+
+                    data.total_borrowers || 0
+
+                );
+
+                $("#activeBorrowers").html(
+
+                    data.active_borrowers || 0
+
+                );
+
+                $("#delinquentBorrowers").html(
+
+                    data.delinquent || 0
+
+                );
+
+                $("#blacklistedBorrowers").html(
+
+                    data.blacklisted || 0
+
+                );
+
+            });
+
+        },
         edit:(id)=>{
 
             window.location =
@@ -131,7 +189,7 @@ borrower = {
                     <tr>
 
                         <td>
-                            BR-${row.borrower_id}
+                            ${row.borrower_id}
                         </td>
 
                         <td>
@@ -267,18 +325,18 @@ borrower = {
                 ],
 
                 layout:{
-                    topStart:{
-                        buttons:[
-                            {
-                                extend:'excel',
-                                className:'btn btn-success'
-                            },
-                            {
-                                extend:'print',
-                                className:'btn btn-dark'
-                            }
-                        ]
-                    }
+                    // topStart:{
+                    //     buttons:[
+                    //         {
+                    //             extend:'excel',
+                    //             className:'btn btn-success'
+                    //         },
+                    //         {
+                    //             extend:'print',
+                    //             className:'btn btn-dark'
+                    //         }
+                    //     ]
+                    // }
                 }
 
             });
