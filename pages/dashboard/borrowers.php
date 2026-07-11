@@ -89,7 +89,8 @@ href="assets/css/loan.css">
 <body>
 
 <!-- SIDEBAR -->
-<?php include_once('common/sidenav.php') ?>
+<?php include_once('/common/sidenav.php') ?>
+
 
 <!-- CONTENT -->
 
