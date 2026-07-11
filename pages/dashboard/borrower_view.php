@@ -23,8 +23,104 @@
 
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
           rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/loan.css">
+
     <style>
+
+        body{
+            background:#f8fafc;
+            font-family:'Segoe UI',sans-serif;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar{
+
+            position:fixed;
+            left:0;
+            top:0;
+
+            width:270px;
+            height:100vh;
+
+            background:white;
+
+            border-right:1px solid #e5e7eb;
+
+            padding:20px;
+
+            overflow-y:auto;
+
+            z-index:1000;
+
+        }
+
+        .logo{
+
+            font-size:24px;
+
+            font-weight:700;
+
+            color:#2563eb;
+
+            margin-bottom:30px;
+
+        }
+
+        .menu-item{
+
+            display:flex;
+
+            align-items:center;
+
+            gap:12px;
+
+            padding:12px 15px;
+
+            border-radius:12px;
+
+            text-decoration:none;
+
+            color:#334155;
+
+            margin-bottom:8px;
+
+            transition:.3s;
+
+        }
+
+        .menu-item:hover,
+        .menu-item.active{
+
+            background:#2563eb;
+
+            color:white;
+
+        }
+
+        /* CONTENT */
+
+        .main-content{
+
+            margin-left:270px;
+
+            padding:25px;
+
+        }
+
+        .topbar{
+
+            background:white;
+
+            border-radius:20px;
+
+            padding:20px;
+
+            margin-bottom:20px;
+
+            box-shadow:0 4px 20px rgba(0,0,0,.05);
+
+        }
+
         .profile-card{
 
             background:white;
