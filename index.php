@@ -2,7 +2,7 @@
 
 
 require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/common/function.php';
+require_once __DIR__ . 'common/function.php';
 $route = trim($_GET['route'] ?? '', '/');
 
 $routes = require 'routes.php';
