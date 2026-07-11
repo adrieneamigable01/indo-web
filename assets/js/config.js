@@ -1,9 +1,9 @@
 var isLocal = false;
-var url = 'http://localhost/indo-api/public/'
+var url = 'https://indo-pacific-api.doitcebutech.com/public/'
 
 
 if(!isLocal){
-
+    
 }
 
 var loginApi        = `${url}login`;
