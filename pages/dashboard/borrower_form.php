@@ -186,7 +186,7 @@ label{
 </head>
 
 <body>
-<?php include_once('/common/sidenav.php') ?>
+<?php include_once('common/sidenav.php') ?>
 
 <div class="content">
 
