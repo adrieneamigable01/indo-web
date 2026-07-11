@@ -25,9 +25,6 @@
           rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/loan.css">
     <style>
-
-        
-
         .profile-card{
 
             background:white;
