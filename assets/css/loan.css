@@ -12,6 +12,7 @@ body{
 
     background:var(--body);
     font-family:'Segoe UI',sans-serif;
+    margin:0;
 
 }
 
@@ -24,20 +25,40 @@ body{
     position:fixed;
     top:0;
     left:0;
-    width:200px;
+    width:170px;
     height:100vh;
     background:#fff;
     border-right:1px solid #e5e7eb;
-    padding:20px;
+    padding:15px;
     overflow-y:auto;
+    z-index:1000;
 
 }
 
 .logo{
 
-    font-size:24px;
+    font-size:20px;
     font-weight:700;
     color:var(--primary);
+
+}
+
+.sidebar h5{
+
+    font-size:16px;
+    margin-top:10px !important;
+
+}
+
+.sidebar .fw-semibold{
+
+    font-size:13px;
+
+}
+
+.sidebar small{
+
+    font-size:11px;
 
 }
 
@@ -45,13 +66,23 @@ body{
 
     display:flex;
     align-items:center;
-    gap:10px;
-    padding:12px 15px;
-    border-radius:12px;
+    gap:8px;
+    padding:10px 12px;
+    border-radius:10px;
     text-decoration:none;
     color:#334155;
-    margin-bottom:8px;
+    margin-bottom:6px;
     transition:.25s;
+    font-size:14px;
+    font-weight:500;
+
+}
+
+.menu-item i{
+
+    width:18px;
+    font-size:16px;
+    text-align:center;
 
 }
 
@@ -63,13 +94,28 @@ body{
 
 }
 
+.sidebar .collapse .menu-item{
+
+    margin-left:8px;
+    font-size:13px;
+    padding:8px 10px;
+
+}
+
+.sidebar .collapse .menu-item i{
+
+    width:16px;
+    font-size:14px;
+
+}
+
 /* =====================================================
    CONTENT
 ===================================================== */
 
 .content{
 
-    margin-left:270px;
+    margin-left:190px;
     padding:25px;
 
 }
@@ -190,8 +236,7 @@ body{
    DATATABLE
 ===================================================== */
 
-.dataTables_wrapper
-.dataTables_filter input{
+.dataTables_wrapper .dataTables_filter input{
 
     border-radius:10px;
     border:1px solid #d1d5db;
@@ -199,8 +244,7 @@ body{
 
 }
 
-.dataTables_wrapper
-.dataTables_length select{
+.dataTables_wrapper .dataTables_length select{
 
     border-radius:10px;
 
@@ -419,6 +463,7 @@ body{
         position:relative;
         width:100%;
         height:auto;
+        padding:15px;
 
     }
 
@@ -434,6 +479,7 @@ body{
 
     .topbar{
 
+        display:flex;
         flex-direction:column;
         align-items:flex-start !important;
         gap:15px;
@@ -446,20 +492,5 @@ body{
         margin-top:5px;
 
     }
-
-}
-.sidebar .collapse .menu-item{
-
-    margin-left:10px;
-
-    font-size:14px;
-
-    padding:10px 15px;
-
-}
-
-.sidebar .collapse .menu-item i{
-
-    width:18px;
 
 }
