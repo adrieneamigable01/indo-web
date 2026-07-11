@@ -23,8 +23,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
           rel="stylesheet">
-    <link rel="stylesheet"
-href="assets/css/loan.css">
+    <link rel="stylesheet" href="/assets/css/loan.css">
     <style>
 
         
