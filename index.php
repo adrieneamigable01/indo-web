@@ -27,7 +27,8 @@ function isActive($route)
     global $currentRoute;
 
     return $currentRoute === $route ||
-           str_starts_with($currentRoute, $route . '/');
+        strpos($currentRoute, $route . '/') === 0;
+
 }
 
 
