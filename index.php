@@ -1,5 +1,5 @@
 <?php
-
+print_r(__DIR__);exit;
 
 require_once __DIR__ . 'config.php';
 require_once __DIR__ . 'common/function.php';
