@@ -23,36 +23,10 @@
 
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
           rel="stylesheet">
-
+    <link rel="stylesheet" href="../assets/css/loan.css">
     <style>
 
-        body{
-            background:#f8fafc;
-            font-family:'Segoe UI',sans-serif;
-        }
-
-        /* SIDEBAR */
-
-        .sidebar{
-
-            position:fixed;
-            left:0;
-            top:0;
-
-            width:270px;
-            height:100vh;
-
-            background:white;
-
-            border-right:1px solid #e5e7eb;
-
-            padding:20px;
-
-            overflow-y:auto;
-
-            z-index:1000;
-
-        }
+        
 
         .logo{
 
