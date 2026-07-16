@@ -5778,7 +5778,7 @@ let cashierVaultPage = {
 
                 );
 
-            if(netAmount <= 0){
+            if(netAmount < 0){
 
                 Swal.fire(
 
