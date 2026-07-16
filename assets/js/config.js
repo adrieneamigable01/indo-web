@@ -2,8 +2,8 @@ var isLocal = false;
 var url = 'https://indo-pacific-api.doitcebutech.com/public/'
 
 
-if(!isLocal){
-    
+if(isLocal){
+    var url = 'http://localhost/indo-api/public/'
 }
 
 var loginApi        = `${url}login`;
@@ -26,6 +26,7 @@ var getSettlementDetailsApi  = `${url}loan/get-bonus-settlement`;
 var releaseLoanApi   = `${url}loan/release`;
 var approveLoanApi   = `${url}loan/approve`;
 var rejectLoanApi   = `${url}loan/reject`;
+var updateScheduleApi   = `${url}loan/update-schedule`;
 
 
 var managerVaultTransactionsApi     = `${url}loan/reject`;

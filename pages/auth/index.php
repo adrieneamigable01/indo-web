@@ -204,7 +204,32 @@ body{
 .is-valid{
     border-color:#198754 !important;
 }
+.company-header {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the whole header */
+    gap: 15px;
+    margin-bottom: 20px;
+}
 
+.logo-box {
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
+}
+
+.company-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.company-title h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ffffff !important;
+}
 </style>
 
 </head>
@@ -220,14 +245,19 @@ body{
 
         <div class="system-info">
 
-            <div class="logo-box">
-                <i class="bi bi-bank2"></i>
-            </div>
+            <div class="company-header">
+                <div class="logo-box">
+                    <img
+                        src="assets/img/logo.png"
+                        alt="Indo-Pacific Lending Corporation Logo"
+                        class="company-logo"
+                    >
+                </div>
 
-            <h1>
-                Loan Management
-                Information System
-            </h1>
+                <div class="company-title">
+                    <h1>INDO - PACIFIC LENDING CORPORATION</h1>
+                </div>
+            </div>
 
             <h5>
                 Internal Back Office Portal

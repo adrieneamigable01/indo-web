@@ -133,6 +133,35 @@ $('.otp').on('keydown', function(e){
 
 });
 
+// Allow pasting the entire OTP
+$('.otp').on('paste', function (e) {
+
+    e.preventDefault();
+
+    let pastedData = (e.originalEvent || e).clipboardData.getData('text');
+
+    // Keep only numbers
+    pastedData = pastedData.replace(/\D/g, '').substring(0, 6);
+
+    if (!pastedData.length) {
+        return;
+    }
+
+    $('.otp').val('');
+
+    pastedData.split('').forEach(function (digit, index) {
+        $('.otp').eq(index).val(digit);
+    });
+
+    // Focus the next empty box or the last box
+    if (pastedData.length < 6) {
+        $('.otp').eq(pastedData.length).focus();
+    } else {
+        $('.otp').last().focus();
+    }
+
+});
+
 // Submit
 
 $('#otp-form').submit(function(e){

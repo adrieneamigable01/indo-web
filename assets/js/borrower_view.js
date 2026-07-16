@@ -15,6 +15,7 @@ borrowerView = {
     payments :[],
     allPayments :[],
     bonusCollections :[],
+    settlemenDetailsData :[],
 
     init:()=>{
 
@@ -262,47 +263,50 @@ borrowerView = {
         },
         getLoans:()=>{
 
-            jsAddon.display.ajaxRequest({
+            return new Promise((resolve,reject)=>{
+                jsAddon.display.ajaxRequest({
 
-                type:'GET',
-                url: `${loanApi}?borrower_id=${borrowerId}&status=released`,
-                dataType:'json'
+                        type:'GET',
+                        url: `${loanApi}?borrower_id=${borrowerId}&status=released`,
+                        dataType:'json'
 
-            })
-            .then((response)=>{
+                    })
+                    .then((response)=>{
 
-                if(response.isError){
+                        if(response.isError){
 
-                    Swal.fire({
+                            Swal.fire({
 
-                        icon:'error',
+                                icon:'error',
 
-                        title:'Error',
+                                title:'Error',
 
-                        text:response.message
+                                text:response.message
+
+                            });
+
+                            return;
+
+                        }
+
+                        borrowerView.loans =
+                            response.data;
+                        borrowerView.salary =
+                            response.salary;
+                        borrowerView.allPayments =
+                            response.payments;
+
+                        borrowerView.funx.renderLoans(
+                            response.data
+                        );
+
+                        borrowerView.funx.summary(
+                            response.data,response
+                        );
+                        resolve(true);
 
                     });
-
-                    return;
-
-                }
-
-                borrowerView.loans =
-                    response.data;
-                borrowerView.salary =
-                    response.salary;
-                borrowerView.allPayments =
-                    response.payments;
-
-                borrowerView.funx.renderLoans(
-                    response.data
-                );
-
-                borrowerView.funx.summary(
-                    response.data
-                );
-
-            });
+            })
 
         },
         
@@ -398,57 +402,434 @@ borrowerView = {
 
         },
 
-        summary:(data)=>{
+        summary:(data,response)=>{
 
-            if(data.length == 0)
+            if(data.length === 0){
                 return;
+            }
 
-            let loan =
-                data[0];
+            let totalLoanAmount = 0;
+            let totalBalance = 0;
+            let totalInterestBalance = 0;
+            let totalNextDueAmount = 0;
+
+            let earliestDueDate = null;
+
+            $.each(
+                data,
+                function(_,loan){
+
+                    totalLoanAmount +=
+                        parseFloat(
+                            loan.loan_amount || 0
+                        );
+
+                    totalBalance +=
+                        parseFloat(
+                            loan.total_balance || 0
+                        );
+
+                    totalInterestBalance +=
+                        parseFloat(
+                            loan.interest_balance || 0
+                        );
+
+                    totalNextDueAmount +=
+                        parseFloat(
+                            loan.next_due_amount || 0
+                        );
+
+                    if(
+                        loan.next_due_date
+                    ){
+
+                        let dueDate =
+                            new Date(
+                                loan.next_due_date
+                            );
+
+                        if(
+                            earliestDueDate === null ||
+                            dueDate < earliestDueDate
+                        ){
+                            earliestDueDate = dueDate;
+                        }
+
+                    }
+
+                }
+            );
+
+            let paymentPercentage = 0;
+
+            if(
+                totalLoanAmount > 0
+            ){
+
+                paymentPercentage =
+
+                    (
+                        (
+                            totalLoanAmount -
+                            totalBalance
+                        )
+
+                        /
+
+                        totalLoanAmount
+
+                    ) * 100;
+
+            }
 
             $("#loanAmount").text(
                 "₱" +
-                parseFloat(
-                    loan.loan_amount
-                ).toLocaleString()
+                totalLoanAmount.toLocaleString(
+                    undefined,
+                    {
+                        minimumFractionDigits:2,
+                        maximumFractionDigits:2
+                    }
+                )
             );
 
             $("#totalBalance").text(
                 "₱" +
-                parseFloat(
-                    loan.total_balance
-                ).toLocaleString()
+                totalBalance.toLocaleString(
+                    undefined,
+                    {
+                        minimumFractionDigits:2,
+                        maximumFractionDigits:2
+                    }
+                )
             );
 
             $("#interestBalance").text(
                 "₱" +
-                parseFloat(
-                    loan.interest_balance
-                ).toLocaleString()
+                totalInterestBalance.toLocaleString(
+                    undefined,
+                    {
+                        minimumFractionDigits:2,
+                        maximumFractionDigits:2
+                    }
+                )
             );
 
             $("#paymentPercentage").text(
-                loan.payment_percentage +
+                paymentPercentage.toFixed(2) +
                 "%"
             );
 
             $("#nextDueDate").text(
-                loan.next_due_date
+                earliestDueDate
+                    ? earliestDueDate.toLocaleDateString()
+                    : "-"
             );
 
             $("#nextDueAmount").text(
                 "₱" +
-                parseFloat(
-                    loan.next_due_amount
-                ).toLocaleString()
+                totalNextDueAmount.toLocaleString(
+                    undefined,
+                    {
+                        minimumFractionDigits:2,
+                        maximumFractionDigits:2
+                    }
+                )
             );
 
+            let pendingLoans = data.filter(function(loan){
+
+                return String(
+                    loan.status
+                ).toUpperCase() === 'PENDING';
+
+            });
+
+  
+            let activeLoan = data.filter(function(loan){
+
+                return String(
+                    loan.status
+                ).toUpperCase() === 'RELEASED';
+
+            });
+
+        
+
+            $("#pendingLoans").text(
+                response.pendingLoanCount
+            );
             $("#activeLoans").text(
-                data.length
+                response.activeLoanCount
             );
 
         },
+        viewLoan: function (loan) {
 
+            // --------------------------
+            // Bonus Deduction Table
+            // --------------------------
+            let bonusHtml = '';
+
+            if (loan.bonus_deductions && loan.bonus_deductions.length > 0) {
+
+                let totalBonus = 0;
+
+                bonusHtml = `
+                    <hr>
+
+                    <h5 class="text-primary mb-3">
+                        Bonus Deductions
+                    </h5>
+
+                    <table class="table table-bordered table-hover table-sm">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th width="40">#</th>
+                                <th>Deduction Type</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+                `;
+
+                loan.bonus_deductions.forEach(function(item, index){
+
+                    let amount = parseFloat(item.amount || 0);
+
+                    totalBonus += amount;
+
+                    bonusHtml += `
+                        <tr>
+
+                            <td>${index + 1}</td>
+
+                            <td>
+                                ${item.deduction_type}
+                            </td>
+
+                            <td class="text-end">
+                                ₱${amount.toLocaleString(undefined,{
+                                    minimumFractionDigits:2,
+                                    maximumFractionDigits:2
+                                })}
+                            </td>
+
+
+                        </tr>
+                    `;
+
+                });
+
+                bonusHtml += `
+                        </tbody>
+
+                        <tfoot>
+
+                            <tr class="table-warning fw-bold">
+
+                                <td colspan="2" class="text-end">
+                                    Total Bonus Deduction
+                                </td>
+
+                                <td class="text-end">
+                                    ₱${totalBonus.toLocaleString(undefined,{
+                                        minimumFractionDigits:2,
+                                        maximumFractionDigits:2
+                                    })}
+                                </td>
+
+                                <td></td>
+
+                            </tr>
+
+                        </tfoot>
+
+                    </table>
+                `;
+
+            } else {
+
+                bonusHtml = `
+                    <hr>
+
+                    <h5 class="text-primary mb-3">
+                        Bonus Deductions
+                    </h5>
+
+                    <div class="alert alert-light border mb-0">
+                        No bonus deductions found.
+                    </div>
+                `;
+            }
+
+            // --------------------------
+            // SweetAlert
+            // --------------------------
+
+            Swal.fire({
+
+                title: '<h4>Loan Information</h4>',
+
+                width: '950px',
+
+                confirmButtonText: 'Close',
+
+                html: `
+
+                <div class="container-fluid text-start">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Borrower</strong><br>
+                            ${loan.borrower_name}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Status</strong><br>
+
+                            <span class="badge bg-success">
+                                ${loan.status}
+                            </span>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Loan ID</strong><br>
+                            ${loan.loan_id}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Loan Product</strong><br>
+                            ${loan.product_name}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Loan Amount</strong><br>
+                            ₱${parseFloat(loan.loan_amount || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Net Proceeds</strong><br>
+                            ₱${parseFloat(loan.net_proceeds || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Interest Rate</strong><br>
+                            ${loan.approved_interest_rate}%
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Interest Amount</strong><br>
+                            ₱${parseFloat(loan.interest_amount || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Processing Fee</strong><br>
+                            ₱${parseFloat(loan.processingfee_amount || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Loan Term</strong><br>
+                            ${loan.loan_terms} Month(s)
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Release Date</strong><br>
+                            ${loan.release_date ?? '-'}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Next Due Date</strong><br>
+                            ${loan.next_due_date ?? '-'}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Next Due Amount</strong><br>
+                            ₱${parseFloat(loan.next_due_amount || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Monthly Interest Deduction</strong><br>
+                            ₱${parseFloat(loan.monthly_interest_deduction || 0).toLocaleString()}
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <h5 class="text-primary mb-3">
+                        Loan Balances
+                    </h5>
+
+                    <div class="row">
+
+                        <div class="col-md-4 mb-3">
+                            <strong>Principal Balance</strong><br>
+                            ₱${parseFloat(loan.principal_balance || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <strong>Interest Balance</strong><br>
+                            ₱${parseFloat(loan.interest_balance || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <strong>Penalty Balance</strong><br>
+                            ₱${parseFloat(loan.penalty_balance || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <strong>Total Principal Paid</strong><br>
+                            ₱${parseFloat(loan.total_principal_paid || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <strong>Total Interest Paid</strong><br>
+                            ₱${parseFloat(loan.total_interest_paid || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <strong>Total Penalty Paid</strong><br>
+                            ₱${parseFloat(loan.total_penalty_paid || 0).toLocaleString()}
+                        </div>
+
+                    </div>
+
+                    <div class="alert alert-danger">
+
+                        <strong>Total Outstanding Balance :</strong>
+
+                        ₱${parseFloat(loan.total_balance || 0).toLocaleString()}
+
+                    </div>
+
+                    <hr>
+
+                    <h5 class="text-primary">
+                        Loan Purpose
+                    </h5>
+
+                    <div class="border rounded p-3 bg-light mb-3">
+
+                        ${loan.loan_purpose ?? ''}
+
+                    </div>
+
+                    ${bonusHtml}
+
+                </div>
+
+                `
+
+            });
+
+        },
         renderLoans:(data)=>{
 
             let html = '';
@@ -518,33 +899,68 @@ borrowerView = {
 
                     <td>
 
-                        <div class="btn-group">
+                        <div class="dropdown">
 
                             <button
-                                class="btn btn-primary btn-sm"
+                                class="btn btn-primary btn-sm dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
 
-                                onclick="borrowerView.funx.loadSchedules(${row.loan_id})">
-
-                                Schedules
+                                Actions
 
                             </button>
 
-                            <button
-                                class="btn btn-success btn-sm"
+                            <ul class="dropdown-menu">
 
-                                onclick="borrowerView.funx.loadPayments(${row.loan_id})">
+                                <li>
+                                    <a class="dropdown-item"
+                                    href="#"
+                                    onclick='borrowerView.funx.viewLoan(${JSON.stringify(row)})'>
+                                        <i class="bi bi-eye me-2"></i>
+                                        View Loan
+                                    </a>
+                                </li>
 
-                                Payments
+                                <li>
+                                    <a class="dropdown-item"
+                                    href="#"
+                                    onclick="borrowerView.funx.loadSchedules(${row.loan_id})">
+                                        <i class="bi bi-calendar3 me-2"></i>
+                                        View Schedules
+                                    </a>
+                                </li>
 
-                            </button>
-                            <button
-                                class="btn btn-info btn-sm"
+                                <li>
+                                    <a class="dropdown-item"
+                                    href="#"
+                                    onclick="borrowerView.funx.loadPayments(${row.loan_id})">
+                                        <i class="bi bi-cash-stack me-2"></i>
+                                        View Payments
+                                    </a>
+                                </li>
 
-                                onclick="borrowerView.funx.contract(${row.loan_id})">
+                                <li>
+                                    <a class="dropdown-item"
+                                    href="#"
+                                    onclick="borrowerView.funx.contract(${row.loan_id})">
+                                        <i class="bi bi-file-earmark-text me-2"></i>
+                                        Loan Contract
+                                    </a>
+                                </li>
 
-                                Contract
+                                <li><hr class="dropdown-divider"></li>
 
-                            </button>
+                                <li>
+                                    <a class="dropdown-item text-warning"
+                                    href="#"
+                                    onclick='borrowerView.funx.openUpdateSchedule(${JSON.stringify(row)})'>
+                                        <i class="bi bi-pencil-square me-2"></i>
+                                        Update Schedule
+                                    </a>
+                                </li>
+
+                            </ul>
 
                         </div>
 
@@ -556,11 +972,373 @@ borrowerView = {
 
             });
 
+            if ($.fn.DataTable.isDataTable("#loanTable")) {
+                $("#loanTable").DataTable().destroy();
+            }
+
             $("#loanBody").html(html);
 
             borrowerView.funx.datatable();
 
         },
+
+        openUpdateSchedule:function(loan){
+            let userdata = JSON.parse(
+
+                localStorage.getItem("userdata") || "{}"
+
+            );
+            Swal.fire({
+
+                title: "Update Loan Schedule",
+
+                width: 700,
+
+                html: `
+
+                    <div class="row g-3 text-start">
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Loan Amount
+                            </label>
+
+                            <input
+                                id="swalLoanAmount"
+                                class="form-control"
+                                type="number"
+                                value="${loan.loan_amount}">
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Loan Terms
+                            </label>
+
+                            <input
+                                id="swalLoanTerms"
+                                class="form-control"
+                                type="number"
+                                value="${loan.loan_terms}">
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Interest Rate
+                            </label>
+
+                            <input
+                                id="swalInterest"
+                                class="form-control"
+                                type="number"
+                                step="0.01"
+                                value="${loan.approved_interest_rate}">
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Processing Fee
+                            </label>
+
+                            <input
+                                id="swalProcessingFee"
+                                class="form-control"
+                                type="number"
+                                step="0.01"
+                                value="${loan.approved_processing_fee}">
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Release Date
+                            </label>
+
+                            <input
+                                id="swalReleaseDate"
+                                class="form-control"
+                                type="date"
+                                value="${loan.release_date}">
+
+                        </div>
+
+                        <div class="col-md-12">
+
+                            <label class="form-label">
+                                Reason
+                            </label>
+
+                            <textarea
+                                id="swalVoidReason"
+                                class="form-control"></textarea>
+
+                        </div>
+
+                    </div>
+
+                `,
+
+                showCancelButton:true,
+
+                confirmButtonText:"Update",
+
+                confirmButtonColor:"#0d6efd",
+
+                preConfirm: function(){
+
+                    return {
+
+                        loan_id:
+
+                            loan.loan_id,
+
+                        loan_product_id:
+
+                            loan.loan_product_id,
+
+                        loan_amount:
+
+                            $("#swalLoanAmount").val(),
+
+                        loan_terms:
+
+                            $("#swalLoanTerms").val(),
+
+                        approved_interest_rate:
+
+                            $("#swalInterest").val(),
+
+                        approved_processing_fee:
+
+                            $("#swalProcessingFee").val(),
+
+                        release_date:
+
+                            $("#swalReleaseDate").val(),
+                        delete_by :userdata.userid,
+                        void_reason:$("#swalVoidReason").val()
+
+                    };
+
+                }
+
+            }).then(function(result){
+
+                if(!result.isConfirmed)
+                    return;
+
+                jsAddon.display.ajaxRequest({
+
+                    url:
+
+                        updateScheduleApi,
+
+                    type:
+
+                        "POST",
+
+                    payload:
+
+                        result.value,
+
+                    dataType:
+
+                        "json"
+
+                }).then(function(response){
+
+                    if(response.isError){
+
+                        Swal.fire(
+                            "Error",
+                            response.message,
+                            "error"
+                        );
+
+                        return;
+                    }
+
+                    Swal.fire({
+
+                        icon:"success",
+
+                        title:"Success",
+
+                        text:response.message,
+
+                        timer:1500,
+
+                        showConfirmButton:false
+
+                    });
+
+                    borrowerView.funx.loadSchedules(
+                        loan.loan_id
+                    );
+
+                    loanPage.funx.loadLoans();
+
+                });
+
+            });
+
+        },
+
+        // updateSchedule:function(){
+
+        //     let payload = {
+
+        //         loan_id:
+
+        //             $("#loanId")
+        //             .val(),
+
+        //         loan_product_id:
+
+        //             $("#loanProduct")
+        //             .val(),
+
+        //         loan_amount:
+
+        //             $("#loanAmount")
+        //             .val(),
+
+        //         loan_terms:
+
+        //             $("#loanTerms")
+        //             .val(),
+
+        //         approved_interest_rate:
+
+        //             $("#approvedInterest")
+        //             .val(),
+
+        //         approved_processing_fee:
+
+        //             $("#approvedProcessingFee")
+        //             .val(),
+
+        //         release_date:
+
+        //             $("#releaseDate")
+        //             .val()
+
+        //     };
+
+        //     Swal.fire({
+
+        //         title:
+
+        //             "Update Loan Schedule?",
+
+        //         text:
+
+        //             "The current schedule will be voided and a new schedule will be generated.",
+
+        //         icon:
+
+        //             "warning",
+
+        //         showCancelButton:true,
+
+        //         confirmButtonText:
+
+        //             "Update",
+
+        //         confirmButtonColor:
+
+        //             "#0d6efd"
+
+        //     }).then(
+
+        //         function(result){
+
+        //             if(!result.isConfirmed)
+        //                 return;
+
+        //             jsAddon.display.ajaxRequest({
+
+        //                 url:
+
+        //                     updateScheduleApi,
+
+        //                 type:
+
+        //                     "POST",
+
+        //                 payload:
+
+        //                     payload,
+
+        //                 dataType:
+
+        //                     "json"
+
+        //             }).then(
+
+        //                 function(response){
+
+        //                     if(response.isError){
+
+        //                         Swal.fire(
+
+        //                             "Error",
+
+        //                             response.message,
+
+        //                             "error"
+
+        //                         );
+
+        //                         return;
+
+        //                     }
+
+        //                     Swal.fire({
+
+        //                         icon:
+
+        //                             "success",
+
+        //                         title:
+
+        //                             "Schedule Updated",
+
+        //                         text:
+
+        //                             response.message,
+
+        //                         timer:1500,
+
+        //                         showConfirmButton:false
+
+        //                     });
+
+        //                     borrowerView.funx
+        //                         .loadSchedules(
+        //                             payload.loan_id
+        //                         );
+
+        //                     loanPage.funx
+        //                         .loadLoans();
+
+        //                 }
+
+        //             );
+
+        //         }
+
+        //     );
+
+        // },
 
         datatable:()=>{
 
@@ -1059,13 +1837,14 @@ borrowerView = {
 
         savePayment:(payload)=>{
 
+
             jsAddon.display.ajaxRequest({
                 type:'POST',
                 url: paymentApi,
                 dataType:'json',
                 payload: payload
             })
-            .then((response)=>{
+            .then( async (response)=>{
 
                 if(response.isError){
 
@@ -1093,7 +1872,10 @@ borrowerView = {
 
                 });
 
-                borrowerView.funx.getLoans();
+                borrowerView.funx.getLoans().then(()=>{
+                    borrowerView.funx.loadSchedules(payload.loan_id)
+                })
+                
 
             })
             .catch((xhr)=>{
@@ -1162,8 +1944,13 @@ borrowerView = {
                     text:response.message
 
                 });
+                $("#loanModal")
+                .modal('hide');
+                borrowerView.funx.getLoans()
+                .then(() => {
+                    borrowerView.funx.getPaymentReport();
 
-                borrowerView.funx.getLoans();
+                });
 
             })
             .catch((xhr)=>{
@@ -1327,7 +2114,462 @@ borrowerView = {
 
             $("#schedule_year").html(html);
         },
+        calculateLoanSettlements: function (
+            selectedYear,
+            calendarStart,
+            calendarEnd
+        ){
 
+            let settlements = [];
+
+            $.each(
+                borrowerView.loans,
+                function(_, loan){
+
+                    if(
+                        Number(
+                            loan.is_salary_deducted
+                        ) !== 1
+                    ){
+                        return;
+                    }
+
+                    let totalDeficit = 0;
+
+                    let cycleDue = 0;
+
+                    let cyclePaid = 0;
+
+                    let cycleUnpaid = 0;
+
+                    let cycleSettled = 0;
+
+                    let details = [];
+
+                    $.each(
+                        loan.schedules,
+                        function(_, schedule){
+
+                            let dueDate =
+                                new Date(
+                                    schedule.due_date
+                                );
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | PRODUCT 1
+                            |--------------------------------------------------------------------------
+                            */
+
+                            if(
+                                parseInt(
+                                    loan.loan_product_id
+                                ) === 1
+                            ){
+
+                                /*
+                                |--------------------------------------------------------------------------
+                                | ONLY INCLUDE SCHEDULES OF THE SELECTED YEAR
+                                |--------------------------------------------------------------------------
+                                */
+
+                                let dueYear = dueDate.getFullYear();
+
+                                if (dueYear !== selectedYear) {
+                                    return;
+                                }
+
+                            }
+                            else{
+
+                                if(
+                                    dueDate > calendarEnd
+                                ){
+                                    return;
+                                }
+
+
+                            }
+
+                            let monthKey =
+
+                                dueDate.getFullYear()
+
+                                +
+
+                                "-"
+
+                                +
+
+                                String(
+                                    dueDate.getMonth()+1
+                                ).padStart(2,"0");
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Salary
+                            |--------------------------------------------------------------------------
+                            */
+
+                            let salary = 0;
+
+                            let salaryRecord =
+                                borrowerView.salary.find(
+                                    function(s){
+
+                                        let d =
+                                            new Date(
+                                                s.salary_month
+                                            );
+
+                                        return (
+
+                                            d.getFullYear()
+
+                                            +
+
+                                            "-"
+
+                                            +
+
+                                            String(
+                                                d.getMonth()+1
+                                            ).padStart(2,"0")
+
+                                        ) === monthKey;
+
+                                    }
+                                );
+
+                            if(
+                                salaryRecord
+                            ){
+
+                                salary =
+                                    parseFloat(
+                                        salaryRecord.gross_salary
+                                    ) || 0;
+
+                            }
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Due Amount
+                            |--------------------------------------------------------------------------
+                            */
+
+                            let dueAmount = 0;
+
+                            if(
+                                parseInt(
+                                    loan.loan_product_id
+                                ) === 1
+                            ){
+
+                                dueAmount =
+                                    parseFloat(
+                                        loan.monthly_interest_deduction || 0
+                                    );
+
+                            }
+                            else{
+
+                                dueAmount =
+
+                                    parseFloat(
+                                        schedule.interest_due || 0
+                                    )
+
+                                    +
+
+                                    parseFloat(
+                                        schedule.penalty_due || 0
+                                    );
+
+                            }
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Payments
+                            |--------------------------------------------------------------------------
+                            */
+
+                            let paid = 0;
+
+                            $.each(
+                                borrowerView.payments,
+                                function(_, payment){
+
+                                    if(
+
+                                        parseInt(
+                                            payment.loan_id
+                                        ) ===
+
+                                        parseInt(
+                                            loan.loan_id
+                                        )
+
+                                        &&
+
+                                        payment.payment_month ===
+                                        monthKey
+
+                                    ){
+
+                                        paid +=
+                                            parseFloat(
+                                                payment.total_amount || 0
+                                            );
+
+                                    }
+
+                                }
+                            );
+
+                            let unpaid =
+                                Math.max(
+                                    dueAmount - paid,
+                                    0
+                                );
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | WHOLE CYCLE TOTALS
+                            |--------------------------------------------------------------------------
+                            */
+
+                            cycleDue += dueAmount;
+
+                            cyclePaid += paid;
+
+                            cycleUnpaid += unpaid;
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | No Salary
+                            |--------------------------------------------------------------------------
+                            */
+
+                            if(
+                                salary <= 0
+                            ){
+
+                                totalDeficit += unpaid;
+
+                            }
+                            else{
+
+                                let remaining =
+                                    Math.max(
+                                        unpaid - salary,
+                                        0
+                                    );
+
+                                totalDeficit +=
+                                    remaining;
+
+                                unpaid = remaining;
+
+                            }
+
+                            if(
+                                unpaid > 0
+                            ){
+
+                                details.push({
+
+                                    month:
+                                        monthKey,
+
+                                    due:
+                                        dueAmount,
+
+                                    paid:
+                                        paid,
+
+                                    unpaid:
+                                        unpaid
+
+                                });
+
+                            }
+
+                        }
+                    );
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | SHOW SETTLEMENT ONLY AFTER THE LOAN CYCLE HAS ENDED
+                    |--------------------------------------------------------------------------
+                    */
+
+                    let canShowSettlement = true;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | PRODUCT 1 = YEARLY CYCLE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        parseInt(loan.loan_product_id) === 1
+                    ) {
+
+                        let firstSchedule =
+                            new Date(
+                                loan.schedules[0].due_date
+                            );
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Find the cycle end based on selected year
+                        |
+                        | Example:
+                        | Start June 2025
+                        |
+                        | Cycle:
+                        | June 2025 - May 2026
+                        |--------------------------------------------------------------------------
+                        */
+
+                        let cycleEnd = new Date(
+                            selectedYear + 1,
+                            firstSchedule.getMonth() - 1,
+                            1
+                        );
+
+
+                        canShowSettlement =
+                            calendarEnd >= cycleEnd;
+
+
+                    }
+                    else {
+
+                        let lastSchedule =
+                            loan.schedules[
+                                loan.schedules.length - 1
+                            ];
+
+                        let maturityDate =
+                            new Date(
+                                lastSchedule.due_date
+                            );
+
+
+                        let cycleEnd = new Date(
+                            calendarEnd.getFullYear(),
+                            calendarEnd.getMonth(),
+                            1
+                        );
+
+                        let loanEnd = new Date(
+                            maturityDate.getFullYear(),
+                            maturityDate.getMonth(),
+                            1
+                        );
+
+
+                        canShowSettlement =
+                            cycleEnd >= loanEnd;
+
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Add Settlement
+                    |--------------------------------------------------------------------------
+                    */
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CHECK EXISTING SETTLEMENTS
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $.each(
+                        borrowerView.settlements,
+                        function(_, settlement){
+
+                            if(!settlement.details){
+                                return;
+                            }
+
+                            $.each(
+                                settlement.details,
+                                function(_, detail){
+
+                                    if(
+                                        parseInt(detail.loan_id) ===
+                                        parseInt(loan.loan_id)
+                                    ){
+
+                                        cycleSettled +=
+                                            parseFloat(
+                                                detail.paid_amount || 0
+                                            );
+
+                                    }
+
+                                }
+                            );
+
+                        }
+                    );
+
+                    let remainingDeficit =
+                        Math.max(
+                            cycleUnpaid - cycleSettled,
+                            0
+                        );
+
+                    if (
+                        remainingDeficit > 0 &&
+                        canShowSettlement
+                    ) {
+
+                        settlements.push({
+
+                            loan_id:
+                                loan.loan_id,
+
+                            loan_product_id:
+                                loan.loan_product_id,
+
+                            product_name:
+                                loan.product_name,
+
+                            total_due:
+                                cycleDue,
+
+                            total_paid:
+                                cyclePaid,
+
+                            total_unpaid:
+                                cycleUnpaid,
+
+                            total_settled:
+                                cycleSettled,
+
+                            remaining_deficit:
+                                remainingDeficit,
+
+                            details:
+                                details
+
+                        });
+
+                    }
+
+                }
+            );
+
+            return settlements;
+
+        },
         generateSchedule:()=> {
 
             let selectedYear =
@@ -1335,25 +2577,148 @@ borrowerView = {
 
             let months = {};
 
-            // Build all 12 months
+            /*
+            |--------------------------------------------------------------------------
+            | Determine Calendar Start Month
+            |--------------------------------------------------------------------------
+            |
+            | We use the earliest non-product-1 loan.
+            | If none exists, use Product 1.
+            |
+            */
 
-            for (let m = 1; m <= 12; m++) {
+            let startMonth = 1;
 
-                let date = new Date(
-                    selectedYear,
-                    m - 1,
+            let earliestLoan = null;
+
+            $.each(
+                borrowerView.loans,
+                function(_, loan){
+
+                    if (
+                        parseInt(loan.loan_product_id) !== 1 &&
+                        parseInt(loan.loan_product_id) !== 3
+                    ) {
+                        return;
+                    }
+
+                    if(
+                        !loan.schedules ||
+                        !loan.schedules.length
+                    ){
+                        return;
+                    }
+
+                    let firstDate =
+                        new Date(
+                            loan.schedules[0].due_date
+                        );
+
+                    if(
+                        earliestLoan === null ||
+                        firstDate < earliestLoan
+                    ){
+                        earliestLoan = firstDate;
+                    }
+
+                }
+            );
+
+            if(
+                earliestLoan
+            ){
+                startMonth =
+                    earliestLoan.getMonth() + 1;
+            }
+            else{
+
+                let product1 =
+                    borrowerView.loans.find(
+                        x =>
+                            parseInt(
+                                x.loan_product_id
+                            ) === 1
+                    );
+
+                if(
+                    product1 &&
+                    product1.schedules.length
+                ){
+
+                    startMonth =
+                        new Date(
+                            product1.schedules[0].due_date
+                        ).getMonth() + 1;
+
+                }
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Build 12-month cycle
+            |--------------------------------------------------------------------------
+            */
+
+            /*
+            |--------------------------------------------------------------------------
+            | Build Calendar
+            |--------------------------------------------------------------------------
+            */
+
+            let product1 = borrowerView.loans.find(
+                x => parseInt(x.loan_product_id) === 1
+            );
+
+            let calendarStart = new Date(
+                selectedYear,
+                startMonth - 1,
+                1
+            );
+
+            let calendarEnd = new Date(calendarStart);
+
+            if (
+                product1 &&
+                product1.schedules.length
+            ) {
+
+                let firstSchedule = new Date(
+                    product1.schedules[0].due_date
+                );
+
+                // End is first schedule + 1 year - 1 month
+                calendarEnd = new Date(
+                    selectedYear + 1,
+                    firstSchedule.getMonth() - 1,
                     1
                 );
 
+            } else {
+
+                calendarEnd = new Date(
+                    selectedYear,
+                    startMonth + 11,
+                    1
+                );
+
+            }
+
+            let current = new Date(calendarStart);
+
+            while (current <= calendarEnd) {
+
                 let monthKey =
-                    selectedYear +
+                    current.getFullYear() +
                     "-" +
-                    String(m).padStart(2, "0");
+                    String(
+                        current.getMonth() + 1
+                    ).padStart(2, "0");
 
                 months[monthKey] = {
 
                     month:
-                        date.toLocaleDateString(
+                        current.toLocaleDateString(
                             "en-US",
                             {
                                 month: "long",
@@ -1367,7 +2732,13 @@ borrowerView = {
 
                 };
 
+                current.setMonth(
+                    current.getMonth() + 1
+                );
+
             }
+
+            
               
             // Populate schedules
 
@@ -1417,13 +2788,23 @@ borrowerView = {
                                         schedule.due_date
                                     );
 
-                                let targetYear =
-                                    dueDate.getFullYear();
+                                let monthKey =
 
-                                if (
-                                    targetYear !==
-                                    selectedYear
-                                ) {
+                                    dueDate.getFullYear()
+
+                                    +
+
+                                    "-"
+
+                                    +
+
+                                    String(
+                                        dueDate.getMonth()+1
+                                    ).padStart(2,"0");
+
+                                if(
+                                    !months[monthKey]
+                                ){
                                     return;
                                 }
 
@@ -1451,79 +2832,66 @@ borrowerView = {
                                         lastSchedule.due_date
                                     );
 
-                                let startMonth =
-                                    startDate.getMonth() + 1;
+                                let current =
+                                    new Date(startDate);
 
-                                let endMonth =
-                                    endDate.getMonth() + 1;
-
-                                let monthStart = 1;
-                                let monthEnd = 12;
-
-                                if(
-                                    startDate.getFullYear() ===
-                                    targetYear
+                                while(
+                                    current <= endDate
                                 ){
-                                    monthStart =
-                                        startMonth;
-                                }
-
-                                if(
-                                    endDate.getFullYear() ===
-                                    targetYear
-                                ){
-                                    monthEnd =
-                                        endMonth;
-                                }
-
-                                for (
-                                    let month = monthStart;
-                                    month <= monthEnd;
-                                    month++
-                                ) {
 
                                     let monthKey =
 
-                                        targetYear +
+                                        current.getFullYear()
 
-                                        "-" +
+                                        +
 
-                                        String(month)
-                                        .padStart(2, "0");
+                                        "-"
 
-                                    if (
-                                        !months[monthKey]
-                                    ) {
-                                        continue;
+                                        +
+
+                                        String(
+                                            current.getMonth()+1
+                                        ).padStart(2,"0");
+
+                                    if(
+                                        months[monthKey]
+                                    ){
+
+                                        months[monthKey]
+                                        .loans
+                                        .push({
+
+                                            loan_id:
+                                                loan.loan_id,
+
+                                            loan_product_id:
+                                                loan.loan_product_id,
+
+                                            product_name:
+                                                loan.product_name ||
+                                                "Loan",
+
+                                            amount:
+                                                monthlyDeduction,
+
+                                            status:
+                                                schedule.status
+
+                                        });
+
+                                        months[monthKey]
+                                        .total +=
+                                            monthlyDeduction;
+
                                     }
 
-                                    months[monthKey]
-                                    .loans
-                                    .push({
-
-                                        loan_id:
-                                            loan.loan_id,
-
-                                        loan_product_id:
-                                            loan.loan_product_id,
-
-                                        product_name:
-                                            loan.product_name ||
-                                            "Loan",
-
-                                        amount:
-                                            monthlyDeduction,
-
-                                        status:
-                                            schedule.status
-
-                                    });
-
-                                    months[monthKey]
-                                    .total +=
-                                        monthlyDeduction;
+                                    current.setMonth(
+                                        current.getMonth()+1
+                                    );
 
                                 }
+
+                                return;
 
                                 return;
                             }
@@ -1533,40 +2901,31 @@ borrowerView = {
                             | ALL OTHER PRODUCTS
                             |--------------------------------------------------------------------------
                             */
+                            let dueDate = new Date(
+                                schedule.due_date
+                            );
+                           let monthKey =
 
-                            let dueDate =
-                                new Date(
-                                    schedule.due_date
-                                );
-
-                            let dueYear =
-                                dueDate.getFullYear();
-
-                            if (
-                                dueYear !==
-                                selectedYear
-                            ) {
-                                return;
-                            }
-
-                            let monthKey =
-
-                                dueYear +
-
-                                "-" +
-
-                                String(
-                                    dueDate.getMonth() + 1
-                                ).padStart(2, "0");
-
-                            let amount =
-
-                                parseFloat(
-                                    schedule.principal_due || 0
-                                )
+                                dueDate.getFullYear()
 
                                 +
 
+                                "-"
+
+                                +
+
+                                String(
+                                    dueDate.getMonth()+1
+                                ).padStart(2,"0");
+
+                            if(
+                                !months[monthKey]
+                            ){
+                                return;
+                            }
+                            let amount =
+
+                       
                                 parseFloat(
                                     schedule.interest_due || 0
                                 )
@@ -1683,14 +3042,217 @@ borrowerView = {
                     let statusHtml = '';
                     let actionHtml = '';
                     let settlementDetails = [];
-
+                    let settlement =
+                    borrowerView.settlements.find(
+                        x =>
+                            x.settlement_month === monthKey
+                    );
                     if (salary <= 0) {
-
+                        
                         statusHtml = `
                             <span class="badge bg-secondary">
                                 NO SALARY
                             </span>
                         `;
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | SHOW SETTLEMENT ONLY IF CURRENT MONTH IS DUE OR OVERDUE
+                        |--------------------------------------------------------------------------
+                        */
+                        if(settlement){
+
+                            let badgeClass = 'bg-warning';
+
+                            if(
+                                settlement.status === 'SETTLED'
+                            ){
+                                badgeClass = 'bg-success';
+                            }
+
+                            if(
+                                settlement.status === 'WAIVED'
+                            ){
+                                badgeClass = 'bg-secondary';
+                            }
+
+                            statusHtml = `
+                                <span class="badge ${badgeClass}">
+                                    ${settlement.status}
+                                </span>
+                            `;
+
+                            actionHtml = `
+
+                                <div class="card border-success bg-light mt-3">
+
+                                    <div class="card-body p-2">
+
+                                        <div class="text-center">
+
+                                            <i class="bi bi-check-circle-fill text-success"></i>
+
+                                            <strong>
+
+                                                SETTLEMENT RECORDED
+
+                                            </strong>
+
+                                        </div>
+
+                                        <hr class="my-2">
+
+                                        <div class="d-flex justify-content-between">
+
+                                            <span>
+
+                                                Deficit Amount
+
+                                            </span>
+
+                                            <strong>
+
+                                                ₱${parseFloat(
+                                                    settlement.deficit_amount || 0
+                                                ).toLocaleString(
+                                                    undefined,
+                                                    {
+                                                        minimumFractionDigits:2,
+                                                        maximumFractionDigits:2
+                                                    }
+                                                )}
+
+                                            </strong>
+
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+
+                                            <span>
+
+                                                Status
+
+                                            </span>
+
+                                            <strong>
+
+                                                ${settlement.status}
+
+                                            </strong>
+                                        </div>
+
+                                         <div class="mt-3">
+
+                                                <button
+                                                    class="btn btn-outline-primary btn-sm w-100 btn-view-settlement"
+
+                                                    data-details='${JSON.stringify(
+                                                        settlement.details || []
+                                                    )}'
+                                                    '>
+
+                                                    <i class="bi bi-eye"></i>
+
+                                                    View Details
+
+                                                </button>
+
+                                            </div>
+
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                        }else{
+
+                            let today = new Date();
+
+                            let monthDate = new Date(
+                                monthKey + "-01"
+                            );
+
+                            let isDue =
+                                monthDate.getFullYear() < today.getFullYear()
+
+                                ||
+
+                                (
+
+                                    monthDate.getFullYear() === today.getFullYear()
+
+                                    &&
+
+                                    monthDate.getMonth() <= today.getMonth()
+
+                                );
+
+                            if (isDue) {
+
+                                let settlementDetails = [];
+
+                                $.each(
+                                    monthData.loans,
+                                    function(_, loan){
+
+                                        settlementDetails.push({
+
+                                            loan_id:
+                                                loan.loan_id,
+
+                                            loan_product_id:
+                                                loan.loan_product_id,
+
+                                            product_name:
+                                                loan.product_name,
+
+                                            due_amount:
+                                                parseFloat(
+                                                    loan.amount || 0
+                                                ),
+
+                                            paid_amount:
+                                                0,
+
+                                            unpaid_amount:
+                                                parseFloat(
+                                                    loan.amount || 0
+                                                ),
+
+                                            amount:
+                                                parseFloat(
+                                                    loan.amount || 0
+                                                )
+
+                                        });
+
+                                    }
+                                );
+
+                                actionHtml = `
+
+                                    <button
+                                        class="btn btn-warning btn-sm btn-settle mt-3 w-100"
+
+                                        data-month="${monthKey}"
+
+                                        data-amount="${monthData.total}"
+
+                                        data-details='${JSON.stringify(
+                                            settlementDetails
+                                        )}'>
+
+                                        <i class="bi bi-wallet2"></i>
+
+                                        SETTLE DEFICIT
+
+                                    </button>
+
+                                `;
+
+                            }
+                        }
 
                     }
                     else if (net > 0) {
@@ -1757,12 +3319,6 @@ borrowerView = {
 
                     }
                     else if (net < 0) {
-
-                        let settlement =
-                            borrowerView.settlements.find(
-                                x =>
-                                    x.settlement_month === monthKey
-                            );
 
                         if(settlement){
 
@@ -2764,70 +4320,70 @@ borrowerView = {
 
             }
 
-            if(yearlyDeficit > 0){
+            // if(yearlyDeficit > 0){
 
-                settlementHtml = `
+            //     settlementHtml = `
 
-                    <div class="col-12">
+            //         <div class="col-12">
 
-                        <div class="card border-warning shadow-lg">
+            //             <div class="card border-warning shadow-lg">
 
-                            <div class="card-body">
+            //                 <div class="card-body">
 
-                                <div class="row align-items-center">
+            //                     <div class="row align-items-center">
 
-                                    <div class="col-md-8">
+            //                         <div class="col-md-8">
 
-                                        <h4 class="text-warning">
+            //                             <h4 class="text-warning">
 
-                                            <i class="bi bi-wallet2"></i>
+            //                                 <i class="bi bi-wallet2"></i>
 
-                                            Yearly Deficit Summary
+            //                                 Yearly Deficit Summary
 
-                                        </h4>
+            //                             </h4>
 
-                                        <h2>
+            //                             <h2>
 
-                                            ₱${yearlyDeficit.toLocaleString(
-                                                undefined,
-                                                {
-                                                    minimumFractionDigits:2,
-                                                    maximumFractionDigits:2
-                                                }
-                                            )}
+            //                                 ₱${yearlyDeficit.toLocaleString(
+            //                                     undefined,
+            //                                     {
+            //                                         minimumFractionDigits:2,
+            //                                         maximumFractionDigits:2
+            //                                     }
+            //                                 )}
 
-                                        </h2>
+            //                             </h2>
 
-                                    </div>
+            //                         </div>
 
-                                    <div class="col-md-4 text-end">
+            //                         <div class="col-md-4 text-end">
 
-                                        <button
+            //                             <button
 
-                                            class="btn btn-warning btn-lg btn-settle-yearly"
+            //                                 class="btn btn-warning btn-lg btn-settle-yearly"
 
-                                            data-amount="${yearlyDeficit}"
+            //                                 data-amount="${yearlyDeficit}"
 
-                                            data-year="${selectedYear}">
+            //                                 data-year="${selectedYear}">
 
-                                            <i class="bi bi-cash-stack"></i>
+            //                                 <i class="bi bi-cash-stack"></i>
 
-                                            SETTLE DEFICIT
+            //                                 SETTLE DEFICIT
 
-                                        </button>
+            //                             </button>
 
-                                    </div>
+            //                         </div>
 
-                                </div>
+            //                     </div>
 
-                            </div>
+            //                 </div>
 
-                        </div>
+            //             </div>
 
-                    </div>
+            //         </div>
 
-                `;
-            }
+            //     `;
+            // }
 
 
             bonusHtml += `
@@ -2837,6 +4393,270 @@ borrowerView = {
                 </div>
 
             `;
+
+            let settlements =
+            borrowerView.funx.calculateLoanSettlements(
+                selectedYear,
+                calendarStart,
+                calendarEnd
+            );
+
+            console.log(`settlements : ${JSON.stringify(settlements)}`)
+
+            $.each(
+                settlements,
+                function(_,loan){
+
+                    let settlement = null;
+
+                    $.each(
+                        borrowerView.settlements,
+                        function (_, s) {
+
+                            if (!s.details) {
+                                return;
+                            }
+
+                            let found = s.details.find(function (detail) {
+
+                                return (
+                                    parseInt(detail.loan_id) ===
+                                    parseInt(loan.loan_id)
+                                );
+
+                            });
+
+                            if (found) {
+
+                                settlement = s;
+
+                                return false; // break $.each
+
+                            }
+
+                        }
+                    );
+
+                    let originalDeficit =
+                        parseFloat(
+                            loan.total_unpaid || 0
+                        );
+
+                    let settledAmount =
+                        parseFloat(
+                            loan.total_settled || 0
+                        );
+
+                    let remainingDeficit =
+                        parseFloat(
+                            loan.remaining_deficit || 0
+                        );
+
+                    
+
+                    settlementHtml += `
+
+                    <div class="card border-warning mb-3">
+
+                        <div class="card-body">
+
+                            <div class="row align-items-center">
+
+                                <div class="col-md-8">
+
+                                    <h5>
+
+                                        ${loan.product_name}
+
+                                    </h5>
+
+                                    <div class="mb-2">
+
+                                        <strong>
+
+                                            ${selectedYear} Outstanding Deficit
+
+                                        </strong>
+
+                                    </div>
+
+                                    <table class="table table-sm mb-0">
+
+                                        <tr>
+
+                                            <td>
+
+                                                Original Deficit
+
+                                            </td>
+
+                                            <td class="text-end">
+
+                                                ₱${originalDeficit.toLocaleString(
+                                                    undefined,
+                                                    {
+                                                        minimumFractionDigits:2,
+                                                        maximumFractionDigits:2
+                                                    }
+                                                )}
+
+                                            </td>
+
+                                        </tr>
+
+                                        <tr>
+
+                                            <td>
+
+                                                Settled Amount
+
+                                            </td>
+
+                                            <td class="text-end text-success">
+
+                                                ₱${settledAmount.toLocaleString(
+                                                    undefined,
+                                                    {
+                                                        minimumFractionDigits:2,
+                                                        maximumFractionDigits:2
+                                                    }
+                                                )}
+
+                                            </td>
+
+                                        </tr>
+
+                                        <tr class="fw-bold">
+
+                                            <td>
+
+                                                Remaining Deficit
+
+                                            </td>
+
+                                            <td class="text-end ${remainingDeficit > 0 ? 'text-danger' : 'text-success'}">
+
+                                                ₱${remainingDeficit.toLocaleString(
+                                                    undefined,
+                                                    {
+                                                        minimumFractionDigits:2,
+                                                        maximumFractionDigits:2
+                                                    }
+                                                )}
+
+                                            </td>
+
+                                        </tr>
+
+                                    </table>
+                                    
+
+                                </div>
+
+                                <div class="col-md-4 text-end">
+
+                                   ${
+                                        !settlement ?
+
+                                        `
+                                        <button
+                                            class="btn btn-warning btn-settle-loan"
+
+                                            data-loan-id="${loan.loan_id}"
+
+                                            data-total_deficit="${remainingDeficit}"
+
+                                            data-details='${JSON.stringify(
+                                                loan.details
+                                            )}'>
+
+                                            <i class="bi bi-wallet2"></i>
+
+                                            SETTLE DEFICIT
+
+                                        </button>
+                                        `
+
+                                        :
+
+                                        (
+                                            settlement.status === 'UNPAID' ||
+                                            settlement.status === 'PENDING' ||
+                                            settlement.status === 'PARTIAL'
+                                        )
+
+                                        ?
+
+                                        `
+
+                                        <div class="alert alert-warning mb-0">
+
+                                            <strong>Settlement In Progress</strong>
+
+                                            <hr class="my-2">
+
+                                            Original Deficit:
+                                            <strong>
+                                                ₱${originalDeficit.toLocaleString(undefined,{
+                                                    minimumFractionDigits:2,
+                                                    maximumFractionDigits:2
+                                                })}
+                                            </strong>
+
+                                            <br>
+
+                                            Settled:
+                                            <strong class="text-success">
+                                                ₱${settledAmount.toLocaleString(undefined,{
+                                                    minimumFractionDigits:2,
+                                                    maximumFractionDigits:2
+                                                })}
+                                            </strong>
+
+                                            <br>
+
+                                            Outstanding:
+                                            <strong class="text-danger">
+                                                ₱${remainingDeficit.toLocaleString(undefined,{
+                                                    minimumFractionDigits:2,
+                                                    maximumFractionDigits:2
+                                                })}
+                                            </strong>
+
+                                        </div>
+
+                                        `
+
+                                        :
+
+                                        `
+
+                                        <div class="alert alert-success mb-0">
+
+                                            <i class="bi bi-check-circle-fill"></i>
+
+                                            Settlement Completed
+
+                                        </div>
+
+                                        `
+
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    `;
+
+                }
+            );
+
+
 
             $("#scheduleContainer")
             .html(
@@ -2937,8 +4757,8 @@ borrowerView = {
             $("#scheduleContainer").html(html);
         },
 
-        openSettlementLoan:(deficitAmount,month)=>{
-
+        openSettlementLoan:(loanId, deficitAmount, details = [])=>{
+            borrowerView.settlemenDetailsData = details;
             $("#settlement_amount")
                 .val(deficitAmount);
 
@@ -2954,11 +4774,34 @@ borrowerView = {
                     )
                 );
 
+            $("#btnViewSettlementDetails").remove();
+
+            $("#settlementAmountLabel")
+                .closest(".modal-body")
+                .prepend(`
+
+                    <div class="mb-3 text-end">
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary btn-sm"
+                            id="btnViewSettlementDetails">
+
+                            <i class="bi bi-eye"></i>
+
+                            View Settlement Details
+
+                        </button>
+
+                    </div>
+
+                `);
+
+
             $("#settlement_remarks")
-                .val(
-                    "Settlement for deficit " +
-                    month
-                );
+            .val(
+                "Settlement for outstanding deficit"
+            );
 
             let html = '';
 
@@ -3941,7 +5784,8 @@ $(document).ready(function(){
             net_proceeds:
                 $("#settlement_amount").val(),
 
-            comakers: []
+            comakers: [],
+            details:borrowerView.settlemenDetailsData
 
         };
 
@@ -4143,26 +5987,169 @@ $(document).ready(function(){
         }
     );
     
+    // $(document).on(
+    //     'click',
+    //     '.btn-settle-yearly',
+    //     function(){
+
+    //         let amount =
+    //             parseFloat(
+    //                 $(this).data('amount')
+    //             );
+
+    //         let month =
+    //             $(this).data('month');
+
+    //         borrowerView.funx.openSettlementLoan(
+    //             amount,
+    //             month
+    //         );
+
+    //     }
+    // );
+
     $(document).on(
-        'click',
-        '.btn-settle-yearly',
+        "click",
+        ".btn-settle-loan",
         function(){
-
-            let amount =
-                parseFloat(
-                    $(this).data('amount')
-                );
-
-            let month =
-                $(this).data('month');
-
+          
             borrowerView.funx.openSettlementLoan(
-                amount,
-                month
+
+                $(this).data("loan-id"),
+
+                parseFloat(
+                    $(this).data("total_deficit")
+                ),
+
+                $(this).data("details")
+
             );
 
         }
     );
+
+    $(document)
+        .off(
+            "click",
+            "#btnViewSettlementDetails"
+        )
+        .on(
+            "click",
+            "#btnViewSettlementDetails",
+            function(){
+
+                let html = `
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-sm">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Month</th>
+
+                                    <th class="text-end">Due</th>
+
+                                    <th class="text-end">Paid</th>
+
+                                    <th class="text-end">Unpaid</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                `;
+
+                $.each(
+                    borrowerView.settlemenDetailsData,
+                    function(_,d){
+
+                        html += `
+
+                            <tr>
+
+                                <td>
+
+                                    ${d.month}
+
+                                </td>
+
+                                <td class="text-end">
+
+                                    ₱${parseFloat(
+                                        d.due || 0
+                                    ).toLocaleString(
+                                        undefined,
+                                        {
+                                            minimumFractionDigits:2
+                                        }
+                                    )}
+
+                                </td>
+
+                                <td class="text-end">
+
+                                    ₱${parseFloat(
+                                        d.paid || 0
+                                    ).toLocaleString(
+                                        undefined,
+                                        {
+                                            minimumFractionDigits:2
+                                        }
+                                    )}
+
+                                </td>
+
+                                <td class="text-end text-danger">
+
+                                    ₱${parseFloat(
+                                        d.unpaid || 0
+                                    ).toLocaleString(
+                                        undefined,
+                                        {
+                                            minimumFractionDigits:2
+                                        }
+                                    )}
+
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    }
+                );
+
+                html += `
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                `;
+
+                Swal.fire({
+
+                    title:
+                        "Settlement Details",
+
+                    html:
+                        html,
+
+                    width:
+                        900,
+
+                    confirmButtonText:
+                        "Close"
+
+                });
+
+            }
+        );
 
     $(document).on(
         'click',

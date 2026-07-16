@@ -220,14 +220,18 @@ body{
                 <form id="otp-form" class="mt-4">
 
                     <div class="d-flex justify-content-center gap-2 mb-4">
-
-                        <input type="text" maxlength="1" class="form-control otp-input otp">
-                        <input type="text" maxlength="1" class="form-control otp-input otp">
-                        <input type="text" maxlength="1" class="form-control otp-input otp">
-                        <input type="text" maxlength="1" class="form-control otp-input otp">
-                        <input type="text" maxlength="1" class="form-control otp-input otp">
-                        <input type="text" maxlength="1" class="form-control otp-input otp">
-
+                        <input type="text" maxlength="1" class="form-control otp-input otp"
+                            inputmode="numeric" autocomplete="one-time-code">
+                        <input type="text" maxlength="1" class="form-control otp-input otp"
+                            inputmode="numeric">
+                        <input type="text" maxlength="1" class="form-control otp-input otp"
+                            inputmode="numeric">
+                        <input type="text" maxlength="1" class="form-control otp-input otp"
+                            inputmode="numeric">
+                        <input type="text" maxlength="1" class="form-control otp-input otp"
+                            inputmode="numeric">
+                        <input type="text" maxlength="1" class="form-control otp-input otp"
+                            inputmode="numeric">
                     </div>
 
                     <button type="submit"

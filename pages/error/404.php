@@ -1,7 +1,4 @@
 
-<?php
-include_once __DIR__ . '/../../config.php';
-include_once __DIR__ . '/../../common/function.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -263,7 +260,7 @@ body::before{
             renamed, or is temporarily unavailable.
             Click the button below to return to the homepage.
         </p>
-        <a href="<?= url('splash') ?>" class="btn <?= isActive('loan') ? 'active' : '' ?>">
+        <a href="<?= url('splash') ?>" class="btn <?= isActive('splash') ? 'active' : '' ?>">
             🏠 Back to Home
         </a>
 
