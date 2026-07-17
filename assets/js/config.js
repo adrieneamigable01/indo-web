@@ -1,10 +1,13 @@
 var isLocal = false;
 var url = 'https://indo-pacific-api.doitcebutech.com/public/'
+var baseurl = 'https://indopacificlending.doitcebutech.com/'
 
 
 if(isLocal){
     //local url
-    var url = 'http://localhost/indo-api/public/'
+    var url = 'http://localhost/indo-pacific-api/public/'
+    var baseurl = 'http://localhost/indo-web/'
+
 }
 
 var loginApi        = `${url}login`;
