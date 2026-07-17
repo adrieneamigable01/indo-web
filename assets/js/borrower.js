@@ -353,7 +353,7 @@ borrower = {
         edit:(id)=>{
 
             window.location =
-                "add/borrower?id=" + id;
+                "edit/borrower?id=" + id;
 
         },
 
