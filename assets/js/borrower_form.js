@@ -335,6 +335,15 @@ borrowerForm = {
 
             $('#spouse_home_address')
                 .val(data.spouse_home_address);
+                
+            $('#primary_card_name')
+                .val(data.primary_card_name);
+            $('#primary_card_number')
+                .val(data.primary_card_number);
+            $('#secondary_card_name')
+                .val(data.secondary_card_name);
+            $('#secondary_card_number')
+                .val(data.secondary_card_number);
 
         },
         autoSave: () => {
@@ -371,7 +380,12 @@ borrowerForm = {
                 spouse_employer_name: $('#spouse_employer_name').val(),
                 spouse_position_name: $('#spouse_position_name').val(),
                 monthly_income: $('#monthly_income').val(),
-                spouse_home_address: $('#spouse_home_address').val()
+                spouse_home_address: $('#spouse_home_address').val(),
+                
+                primary_card_name: $('#primary_card_name').val(),
+                primary_card_number: $('#primary_card_number').val(),
+                secondary_card_name: $('#secondary_card_name').val(),
+                secondary_card_number: $('#secondary_card_number').val()
 
             };
 
@@ -525,98 +539,63 @@ $(document).ready(function(){
 
         const payload = {
 
-            last_name:
-                $('#last_name').val(),
+            last_name: $('#last_name').val(),
+            first_name: $('#first_name').val(),
+            middle_name: $('#middle_name').val(),
 
-            first_name:
-                $('#first_name').val(),
+            date_of_birth: $('#date_of_birth').val(),
+            civil_status: $('#civil_status').val(),
+            gender: $('#gender').val(),
 
-            middle_name:
-                $('#middle_name').val(),
+            mobile_no: $('#mobile_no').val(),
+            email_address: $('#email_address').val(),
+            home_address: $('#home_address').val(),
 
-            date_of_birth:
-                $('#date_of_birth').val(),
+            tin_no: $('#tin_no').val(),
+            id_presented: $('#id_presented').val(),
+            id_no: $('#id_no').val(),
 
-            civil_status:
-                $('#civil_status').val(),
+            company_school: $('#company_school').val(),
+            employer_name: $('#employer_name').val(),
+            company_address: $('#company_address').val(),
+            employment_date: $('#employment_date').val(),
+            position_name: $('#position_name').val(),
+            basic_salary: $('#basic_salary').val(),
+            annual_income: $('#annual_income').val(),
 
-            gender:
-                $('#gender').val(),
-
-            mobile_no:
-                $('#mobile_no').val(),
-
-            email_address:
-                $('#email_address').val(),
-
-            home_address:
-                $('#home_address').val(),
-
-            tin_no:
-                $('#tin_no').val(),
-
-            id_presented:
-                $('#id_presented').val(),
-
-            id_no:
-                $('#id_no').val(),
-
-            company_school:
-                $('#company_school').val(),
-
-            employer_name:
-                $('#employer_name').val(),
-
-            company_address:
-                $('#company_address').val(),
-
-            employment_date:
-                $('#employment_date').val(),
-
-            position_name:
-                $('#position_name').val(),
-
-            basic_salary:
-                $('#basic_salary').val(),
-
-            annual_income:
-                $('#annual_income').val(),
-
-            spouse_last_name:
-                $('#spouse_last_name').val(),
-
-            spouse_first_name:
-                $('#spouse_first_name').val(),
-
-            spouse_middle_name:
-                $('#spouse_middle_name').val(),
-
-            spouse_date_of_birth:
-                $('#spouse_date_of_birth').val(),
-
-            spouse_mobile_no:
-                $('#spouse_mobile_no').val(),
-
-            spouse_employer_name:
-                $('#spouse_employer_name').val(),
-
-            spouse_position_name:
-                $('#spouse_position_name').val(),
-
-            monthly_income:
-                $('#monthly_income').val(),
-
-            spouse_home_address:
-                $('#spouse_home_address').val()
+            spouse_last_name: $('#spouse_last_name').val(),
+            spouse_first_name: $('#spouse_first_name').val(),
+            spouse_middle_name: $('#spouse_middle_name').val(),
+            spouse_date_of_birth: $('#spouse_date_of_birth').val(),
+            spouse_mobile_no: $('#spouse_mobile_no').val(),
+            spouse_employer_name: $('#spouse_employer_name').val(),
+            spouse_position_name: $('#spouse_position_name').val(),
+            monthly_income: $('#monthly_income').val(),
+            spouse_home_address: $('#spouse_home_address').val()
 
         };
-         if(borrower_id){
-            payload['borrower_id'] = borrower_id;
-            borrowerForm.funx.update(payload)
-         }else{
-            borrowerForm.funx.add(payload)
-         }
-       
+
+        // Only include collateral fields if they exist (Edit page)
+        if ($('#primary_card_name').length) {
+
+            payload.primary_card_name = $('#primary_card_name').val();
+            payload.primary_card_number = $('#primary_card_number').val();
+
+            payload.secondary_card_name = $('#secondary_card_name').val();
+            payload.secondary_card_number = $('#secondary_card_number').val();
+
+        }
+
+        if (borrower_id) {
+
+            payload.borrower_id = borrower_id;
+            borrowerForm.funx.update(payload);
+
+        } else {
+
+            borrowerForm.funx.add(payload);
+
+        }
 
     }
 

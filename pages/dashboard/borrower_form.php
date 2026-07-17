@@ -1,4 +1,5 @@
 <?php
+    $isEdit = isset($_GET['id']);
     $title = "Add New Borrower";
     if(isset($_GET['id'])){
         $title = "Update Borrower";
@@ -272,6 +273,22 @@ label{
         <span>Spouse</span>
 
     </div>
+
+    <?php if($isEdit): ?>
+
+        <div class="step-item">
+
+            <div class="step-icon">
+
+                <i class="bi bi-credit-card"></i>
+
+            </div>
+
+            <span>Collateral</span>
+
+        </div>
+
+        <?php endif; ?>
 
 </div>
 
@@ -738,6 +755,112 @@ label{
     </div>
 
 </div>
+
+<?php if($isEdit): ?>
+
+<!-- STEP 5 -->
+
+<div class="form-step">
+
+    <h5 class="section-title">
+
+        Collateral Information
+
+    </h5>
+
+    <div class="card mb-3">
+
+        <div class="card-header">
+
+            Collateral
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <label>Primary Card</label>
+
+                    <select
+                        name="primary_card_name"
+                        id="primary_card_name"
+                        class="form-select">
+
+                        <option value="Development Bank of the Philippines (DBP)">
+                            Development Bank of the Philippines (DBP)
+                        </option>
+
+                        <option value="LAND BANK OF THE PHILIPPINES ( UMID )">
+                            LAND BANK OF THE PHILIPPINES (UMID)
+                        </option>
+
+                        <option value="UNION BANK OF THE PHILIPPINES ( UBP )">
+                            UNION BANK OF THE PHILIPPINES (UBP)
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    <label>Card Number</label>
+
+                    <input
+                        type="text"
+                        id="primary_card_number"
+                        class="form-control">
+
+                </div>
+
+                <div class="col-md-3 mt-3">
+
+                    <label>Secondary Card</label>
+
+                    <select
+                        name="secondary_card_name"
+                        id="secondary_card_name"
+                        class="form-select">
+
+                        <option value="Development Bank of the Philippines (DBP)">
+                            Development Bank of the Philippines (DBP)
+                        </option>
+
+                        <option value="LAND BANK OF THE PHILIPPINES ( UMID )">
+                            LAND BANK OF THE PHILIPPINES (UMID)
+                        </option>
+
+                        <option value="UNION BANK OF THE PHILIPPINES ( UBP )">
+                            UNION BANK OF THE PHILIPPINES (UBP)
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-9 mt-3">
+
+                    <label>Card Number</label>
+
+                    <input
+                        type="text"
+                        id="secondary_card_number"
+                        class="form-control">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<?php endif; ?>
 
 
 <!-- NAVIGATION -->
