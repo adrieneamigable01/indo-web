@@ -9,6 +9,7 @@ return [
     'borrowers' => 'pages/dashboard/borrowers.php',
     'view/borrower' => 'pages/dashboard/borrower_view.php',
     'add/borrower' => 'pages/dashboard/borrower_form.php',
+    'edit/borrower' => 'pages/dashboard/borrower_form.php',
     'loan' => 'pages/dashboard/loan.php',
     'vault/managers' => 'pages/dashboard/managers-vault.php',
     'vault/cashier' => 'pages/dashboard/cashier-vault.php',
