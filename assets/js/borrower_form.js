@@ -71,8 +71,8 @@ borrowerForm = {
 
                 }).then(()=>{
 
-                    window.location =
-                        'borrowers.php';
+                   window.location =
+                        `${baseurl}view/borrower?id=${borrower_id}`;
 
                 });
 
@@ -167,8 +167,8 @@ borrowerForm = {
 
                 }).then(()=>{
 
-                    window.location =
-                        'borrowers.php';
+                     window.location =
+                        `${baseurl}view/borrower?id=${borrower_id}`;
 
                 });
             });
