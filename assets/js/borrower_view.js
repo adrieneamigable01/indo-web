@@ -19,11 +19,12 @@ borrowerView = {
 
     init:()=>{
 
-        $("#btnEditBorrower").attr(
+
+         $("#btnEditBorrower").attr(
             "href",
-            "borrower_form.php?id=" +
-            borrowerId
+            `${baseurl}edit/borrower?id=${borrowerId}`
         );
+
 
         let cached = localStorage.getItem(cacheKey);
 
