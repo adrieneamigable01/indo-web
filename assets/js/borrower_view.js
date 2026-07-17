@@ -857,7 +857,7 @@ borrowerView = {
 
                     <td>
 
-                        ${row.loan_purpose}
+                        ${row.product_name}
 
                     </td>
 

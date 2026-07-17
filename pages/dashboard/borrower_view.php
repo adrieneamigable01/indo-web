@@ -685,7 +685,7 @@
 
                     <th>Amount</th>
 
-                    <th>Purpose</th>
+                    <th>Loan Type</th>
 
                     <th>Terms</th>
 
