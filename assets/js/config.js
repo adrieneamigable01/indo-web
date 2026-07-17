@@ -3,6 +3,7 @@ var url = 'https://indo-pacific-api.doitcebutech.com/public/'
 
 
 if(isLocal){
+    //local url
     var url = 'http://localhost/indo-api/public/'
 }
 
