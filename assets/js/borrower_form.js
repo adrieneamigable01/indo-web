@@ -1,6 +1,5 @@
 var borrower_id = null;
 borrowerForm = {
-
     init:()=>{
 
         borrowerForm.funx.restore();
@@ -242,7 +241,7 @@ borrowerForm = {
                     return;
 
                 }
-
+               
                 borrowerForm.funx.populate(
                     response.data
                 );
@@ -340,10 +339,16 @@ borrowerForm = {
                 .val(data.primary_card_name);
             $('#primary_card_number')
                 .val(data.primary_card_number);
+            $('#primary_card_expiry')
+                .val(data.primary_card_expiry);
+            $('#primary_card_expiry')
+                .val(data.primary_card_expiry);
             $('#secondary_card_name')
                 .val(data.secondary_card_name);
             $('#secondary_card_number')
                 .val(data.secondary_card_number);
+            $('#secondary_card_expiry')
+                .val(data.secondary_card_expiry);
 
         },
         autoSave: () => {
@@ -384,8 +389,10 @@ borrowerForm = {
                 
                 primary_card_name: $('#primary_card_name').val(),
                 primary_card_number: $('#primary_card_number').val(),
+                primary_card_expiry: $('#primary_card_expiry').val(),
                 secondary_card_name: $('#secondary_card_name').val(),
-                secondary_card_number: $('#secondary_card_number').val()
+                secondary_card_number: $('#secondary_card_number').val(),
+                secondary_card_expiry: $('#secondary_card_expiry').val()
 
             };
 
@@ -580,9 +587,11 @@ $(document).ready(function(){
 
             payload.primary_card_name = $('#primary_card_name').val();
             payload.primary_card_number = $('#primary_card_number').val();
+            payload.primary_card_expiry = $('#primary_card_expiry').val();
 
             payload.secondary_card_name = $('#secondary_card_name').val();
             payload.secondary_card_number = $('#secondary_card_number').val();
+            payload.secondary_card_expiry = $('#secondary_card_expiry').val();
 
         }
 

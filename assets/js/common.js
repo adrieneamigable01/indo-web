@@ -123,7 +123,7 @@ $(()=>{
                             };
                             if(data.error){
                                 if(xhr.status == 401){
-                                    payload.redirectLink = 'index.php';
+                                    payload.redirectLink = `${baseurl}index.php`;
                                     
                                 }
                                 jsAddon.display.showConfirmMessage(payload)

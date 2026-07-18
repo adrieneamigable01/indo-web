@@ -274,21 +274,19 @@ label{
 
     </div>
 
-    <?php if($isEdit): ?>
 
-        <div class="step-item">
+    <div class="step-item">
 
-            <div class="step-icon">
+        <div class="step-icon">
 
-                <i class="bi bi-credit-card"></i>
-
-            </div>
-
-            <span>Collateral</span>
+            <i class="bi bi-credit-card"></i>
 
         </div>
 
-        <?php endif; ?>
+        <span>Collateral</span>
+
+    </div>
+
 
 </div>
 
@@ -756,7 +754,6 @@ label{
 
 </div>
 
-<?php if($isEdit): ?>
 
 <!-- STEP 5 -->
 
@@ -805,13 +802,23 @@ label{
 
                 </div>
 
-                <div class="col-md-9">
+                <div class="col-md-5">
 
                     <label>Card Number</label>
 
                     <input
                         type="text"
                         id="primary_card_number"
+                        class="form-control">
+
+                </div>
+                <div class="col-md-4">
+
+                    <label>Card Expiry</label>
+
+                    <input
+                        type="date"
+                        id="primary_card_expiry"
                         class="form-control">
 
                 </div>
@@ -841,13 +848,23 @@ label{
 
                 </div>
 
-                <div class="col-md-9 mt-3">
+                <div class="col-md-5 mt-3">
 
                     <label>Card Number</label>
 
                     <input
                         type="text"
                         id="secondary_card_number"
+                        class="form-control">
+
+                </div>
+                <div class="col-md-4">
+
+                    <label>Card Expiry</label>
+
+                    <input
+                        type="date"
+                        id="secondary_card_expiry"
                         class="form-control">
 
                 </div>
@@ -860,7 +877,6 @@ label{
 
 </div>
 
-<?php endif; ?>
 
 
 <!-- NAVIGATION -->

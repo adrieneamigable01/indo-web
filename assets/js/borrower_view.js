@@ -16,7 +16,7 @@ borrowerView = {
     allPayments :[],
     bonusCollections :[],
     settlemenDetailsData :[],
-
+    borowerDetails:null,
     init:()=>{
 
 
@@ -254,7 +254,7 @@ borrowerView = {
                     return;
 
                 }
-
+                borrowerView.borowerDetails = response.data[0];
                 borrowerView.funx.renderBorrower(
                     response.data[0]
                 );
@@ -960,6 +960,14 @@ borrowerView = {
                                         Update Schedule
                                     </a>
                                 </li>
+                                <li>
+                                    <a class="dropdown-item text-danger"
+                                    href="#"
+                                    onclick='borrowerView.funx.openVoidLoan(${JSON.stringify(row)})'>
+                                        <i class="bi bi-x-square me-2"></i>
+                                        Void Loan
+                                    </a>
+                                </li>
 
                             </ul>
 
@@ -973,13 +981,25 @@ borrowerView = {
 
             });
 
-            if ($.fn.DataTable.isDataTable("#loanTable")) {
-                $("#loanTable").DataTable().destroy();
+            if (!borrowerView.loanTable) {
+
+                $("#loanBody").html(html);
+
+                borrowerView.loanTable = $("#loanTable").DataTable({
+                    responsive: true
+                });
+
+            } else {
+
+                borrowerView.loanTable.clear();
+
+                $("#loanBody").html(html);
+
+                borrowerView.loanTable.rows.add($("#loanBody tr"));
+
+                borrowerView.loanTable.draw(false);
+
             }
-
-            $("#loanBody").html(html);
-
-            borrowerView.funx.datatable();
 
         },
 
@@ -1186,6 +1206,182 @@ borrowerView = {
                     );
 
                     loanPage.funx.loadLoans();
+
+                });
+
+            });
+
+        },
+
+        openVoidLoan: function (loan) {
+            
+            let userdata = JSON.parse(
+
+                localStorage.getItem("userdata") || "{}"
+
+            );
+
+            if (userdata.usertype !== "Admin") {
+
+                Swal.fire({
+
+                    icon: "error",
+
+                    title: "Access Denied",
+
+                    html: `
+                        <p>Only <strong>Administrators</strong> are allowed to void a loan.</p>
+                        <p>Please request assistance from your administrator.</p>
+                    `,
+
+                    confirmButtonColor: "#dc3545"
+
+                });
+
+                return;
+
+            }
+
+            Swal.fire({
+
+                title: "Void Loan Schedule",
+
+                icon: "warning",
+
+                width: 650,
+
+                html: `
+
+                    <div class="text-start">
+
+                        <div class="alert alert-warning">
+
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                            You are about to void this loan schedule.
+
+                        </div>
+
+                        <table class="table table-sm table-borderless">
+
+                            <tr>
+                                <th width="35%">Borrower</th>
+                                <td>${loan.borrower_name || '-'}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Product Name</th>
+                                <td>${loan.product_name}</td>
+                            </tr>
+
+
+                            <tr>
+                                <th>Loan Amount</th>
+                                <td>₱${parseFloat(loan.loan_amount || 0).toLocaleString()}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Loan Terms</th>
+                                <td>${loan.loan_terms}</td>
+                            </tr>
+
+                         
+                        </table>
+
+                        <div class="mt-3">
+
+                            <label class="form-label">
+                                Reason for Void
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <textarea
+                                id="swalVoidReason"
+                                class="form-control"
+                                rows="4"
+                                placeholder="Enter the reason for voiding this schedule..."></textarea>
+
+                        </div>
+
+                    </div>
+
+                `,
+
+                showCancelButton: true,
+
+                confirmButtonText: "Void Schedule",
+
+                confirmButtonColor: "#dc3545",
+
+                preConfirm: function () {
+
+                    const voidReason = $("#swalVoidReason").val().trim();
+
+                    if (!voidReason) {
+
+                        Swal.showValidationMessage(
+                            "Please enter a reason for voiding."
+                        );
+
+                        return false;
+
+                    }
+
+                    return {
+
+                        loan_id: loan.loan_id,
+                        voidReason: voidReason
+
+                    };
+
+                }
+
+            }).then(function (result) {
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                jsAddon.display.ajaxRequest({
+
+                    url: loanApi,
+
+                    type: "DELETE",
+
+                    payload: JSON.stringify(result.value),
+
+                    dataType: "json"
+
+                }).then(function (response) {
+
+                    if (response.isError) {
+
+                        Swal.fire(
+                            "Error",
+                            response.message,
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+                    Swal.fire({
+
+                        icon: "success",
+
+                        title: "Success",
+
+                        text: response.message,
+
+                        timer: 1500,
+
+                        showConfirmButton: false
+
+                    });
+
+
+                    borrowerView.funx.getLoans();
 
                 });
 
@@ -6742,6 +6938,11 @@ $(document).ready(function(){
 
     $('#loanModal').on('shown.bs.modal', function () {
         borrowerView.funx.fillLoanProductDropdown();
+         $("#primary_card_name").val(borrowerView.borowerDetails.primary_card_name);        
+         $("#secondary_card_name").val(borrowerView.borowerDetails.secondary_card_name);        
+
+         $("#primary_card_number").val(borrowerView.borowerDetails.primary_card_number);        
+         $("#secondary_card_number").val(borrowerView.borowerDetails.secondary_card_number);        
     });
 
     $(document).on('shown.bs.tab', '[data-bs-toggle="pill"]', function (e) {
@@ -7150,6 +7351,7 @@ $(document).ready(function(){
         `);
 
     });
+
 
     function computeSettlementAmounts(){
 

@@ -663,7 +663,8 @@
             <button
                 class="btn btn-primary"
                 data-bs-toggle="modal"
-                data-bs-target="#loanModal">
+                data-bs-target="#loanModal"\
+                id="addLoanModal">
 
                 <i class="bi bi-plus-circle"></i>
 
