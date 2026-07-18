@@ -16,6 +16,7 @@ var validateOTPApi  = `${url}validateOTP`;
 var borrowerApi  = `${url}borrower`;
 var borrowerSummaryApi  = `${url}borrower/summary`;
 var borrowerLoanContractApi  = `${url}loan/contract`;
+var borrowerLoanAddendumApi  = `${url}loan/addendum`;
 // Loan
 var loanApi  = `${url}loan`;
 var paymentApi  = `${url}loan/payment`;

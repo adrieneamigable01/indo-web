@@ -949,6 +949,14 @@ borrowerView = {
                                         Loan Contract
                                     </a>
                                 </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                    href="#"
+                                    onclick="borrowerView.funx.addendum(${row.loan_id})">
+                                        <i class="bi bi-file-earmark-text me-2"></i>
+                                        Loan Addendum
+                                    </a>
+                                </li>
 
                                 <li><hr class="dropdown-divider"></li>
 
@@ -1861,6 +1869,11 @@ borrowerView = {
         contract:(loanId)=>{
 
             window.open(`${borrowerLoanContractApi}?id=${loanId}`,'_blank')
+
+        },
+        addendum:(loanId)=>{
+
+            window.open(`${borrowerLoanAddendumApi}?id=${loanId}`,'_blank')
 
         },
 
