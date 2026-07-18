@@ -224,648 +224,678 @@ label{
 <form id="borrowerForm">
     <!-- STEPPER -->
 
-<div class="stepper-container mb-5">
+    <div class="stepper-container mb-5">
 
-    <div class="step-item active">
+        <div class="step-item active">
 
-        <div class="step-icon">
+            <div class="step-icon">
 
-            <i class="bi bi-person"></i>
+                <i class="bi bi-person"></i>
+
+            </div>
+
+            <span>Personal</span>
 
         </div>
 
-        <span>Personal</span>
+        <div class="step-item">
+
+            <div class="step-icon">
+
+                <i class="bi bi-card-text"></i>
+
+            </div>
+
+            <span>Identification</span>
+
+        </div>
+
+        <div class="step-item">
+
+            <div class="step-icon">
+
+                <i class="bi bi-building"></i>
+
+            </div>
+
+            <span>Employment</span>
+
+        </div>
+
+        <div class="step-item">
+
+            <div class="step-icon">
+
+                <i class="bi bi-heart"></i>
+
+            </div>
+
+            <span>Spouse</span>
+
+        </div>
+
+
+        <div class="step-item">
+
+            <div class="step-icon">
+
+                <i class="bi bi-credit-card"></i>
+
+            </div>
+
+            <span>Collateral</span>
+
+        </div>
+
 
     </div>
 
-    <div class="step-item">
 
-        <div class="step-icon">
+    <!-- STEP 1 -->
 
-            <i class="bi bi-card-text"></i>
+    <div class="form-step active">
 
-        </div>
+        <h5 class="section-title">
 
-        <span>Identification</span>
+            Personal Information
 
-    </div>
+        </h5>
 
-    <div class="step-item">
+        <div class="row g-3">
 
-        <div class="step-icon">
+            <div class="col-md-4">
 
-            <i class="bi bi-building"></i>
+                <label class="form-label">
+                    Last Name
+                </label>
 
-        </div>
+                <input
+                    type="text"
+                    id="last_name"
+                    name="last_name"
+                    class="form-control">
 
-        <span>Employment</span>
+            </div>
 
-    </div>
+            <div class="col-md-4">
 
-    <div class="step-item">
+                <label class="form-label">
+                    First Name
+                </label>
 
-        <div class="step-icon">
+                <input
+                    type="text"
+                    id="first_name"
+                    name="first_name"
+                    class="form-control">
 
-            <i class="bi bi-heart"></i>
+            </div>
 
-        </div>
+            <div class="col-md-4">
 
-        <span>Spouse</span>
+                <label class="form-label">
+                    Middle Name
+                </label>
 
-    </div>
+                <input
+                    type="text"
+                    id="middle_name"
+                    name="middle_name"
+                    class="form-control">
 
+            </div>
 
-    <div class="step-item">
+            <div class="col-md-3">
 
-        <div class="step-icon">
+                <label class="form-label">
+                    Date of Birth
+                </label>
 
-            <i class="bi bi-credit-card"></i>
+                <input
+                    type="date"
+                    id="date_of_birth"
+                    name="date_of_birth"
+                    class="form-control">
 
-        </div>
+            </div>
 
-        <span>Collateral</span>
+            <div class="col-md-3">
 
-    </div>
+                <label class="form-label">
+                    Civil Status
+                </label>
 
+                <select
+                    id="civil_status"
+                    name="civil_status"
+                    class="form-select">
 
-</div>
+                    <option value="">
+                        Select
+                    </option>
 
+                    <option>
+                        SINGLE
+                    </option>
 
-<!-- STEP 1 -->
+                    <option>
+                        MARRIED
+                    </option>
 
-<div class="form-step active">
+                    <option>
+                        WIDOWED
+                    </option>
 
-    <h5 class="section-title">
+                </select>
 
-        Personal Information
+            </div>
 
-    </h5>
+            <div class="col-md-3">
 
-    <div class="row g-3">
+                <label class="form-label">
+                    Gender
+                </label>
 
-        <div class="col-md-4">
+                <select
+                    id="gender"
+                    name="gender"
+                    class="form-select">
 
-            <label class="form-label">
-                Last Name
-            </label>
+                    <option value="">
+                        Select
+                    </option>
 
-            <input
-                type="text"
-                id="last_name"
-                class="form-control">
+                    <option>
+                        MALE
+                    </option>
 
-        </div>
+                    <option>
+                        FEMALE
+                    </option>
 
-        <div class="col-md-4">
+                </select>
 
-            <label class="form-label">
-                First Name
-            </label>
+            </div>
 
-            <input
-                type="text"
-                id="first_name"
-                class="form-control">
+            <div class="col-md-3">
 
-        </div>
+                <label class="form-label">
+                    Mobile Number
+                </label>
 
-        <div class="col-md-4">
+                <input
+                    id="mobile_no"
+                    name="mobile_no"
+                    class="form-control">
 
-            <label class="form-label">
-                Middle Name
-            </label>
+            </div>
 
-            <input
-                type="text"
-                id="middle_name"
-                class="form-control">
+            <div class="col-md-6">
 
-        </div>
+                <label class="form-label">
+                    Email Address
+                </label>
 
-        <div class="col-md-3">
+                <input
+                    id="email_address"
+                    name="email_address"
+                    class="form-control">
 
-            <label class="form-label">
-                Date of Birth
-            </label>
+            </div>
 
-            <input
-                type="date"
-                id="date_of_birth"
-                class="form-control">
+            <div class="col-md-6">
 
-        </div>
+                <label class="form-label">
+                    Home Address
+                </label>
 
-        <div class="col-md-3">
+                <input
+                    id="home_address"
+                    name="home_address"
+                    class="form-control">
 
-            <label class="form-label">
-                Civil Status
-            </label>
-
-            <select
-                id="civil_status"
-                class="form-select">
-
-                <option value="">
-                    Select
-                </option>
-
-                <option>
-                    SINGLE
-                </option>
-
-                <option>
-                    MARRIED
-                </option>
-
-                <option>
-                    WIDOWED
-                </option>
-
-            </select>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <label class="form-label">
-                Gender
-            </label>
-
-            <select
-                id="gender"
-                class="form-select">
-
-                <option value="">
-                    Select
-                </option>
-
-                <option>
-                    MALE
-                </option>
-
-                <option>
-                    FEMALE
-                </option>
-
-            </select>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <label class="form-label">
-                Mobile Number
-            </label>
-
-            <input
-                id="mobile_no"
-                class="form-control">
-
-        </div>
-
-        <div class="col-md-6">
-
-            <label class="form-label">
-                Email Address
-            </label>
-
-            <input
-                id="email_address"
-                class="form-control">
-
-        </div>
-
-        <div class="col-md-6">
-
-            <label class="form-label">
-                Home Address
-            </label>
-
-            <input
-                id="home_address"
-                class="form-control">
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- STEP 2 -->
-
-<div class="form-step">
-
-    <h5 class="section-title">
-
-        Identification Information
-
-    </h5>
-
-    <div class="row g-3">
-
-        <div class="col-md-4">
-
-            <label class="form-label">
-                TIN Number
-            </label>
-
-            <input
-                id="tin_no"
-                class="form-control">
-
-        </div>
-
-        <div class="col-md-4">
-
-            <label class="form-label">
-                ID Presented
-            </label>
-
-            <select
-                id="id_presented"
-                class="form-select">
-
-                <option>
-                    UMID
-                </option>
-
-                <option>
-                    SSS
-                </option>
-
-                <option>
-                    PHILHEALTH
-                </option>
-
-                <option>
-                    PAGIBIG
-                </option>
-
-                <option>
-                    DRIVERS LICENSE
-                </option>
-
-            </select>
-
-        </div>
-
-        <div class="col-md-4">
-
-            <label class="form-label">
-                ID Number
-            </label>
-
-            <input
-                id="id_no"
-                class="form-control">
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
+    <!-- STEP 2 -->
 
-<!-- STEP 3 -->
+    <div class="form-step">
 
-<div class="form-step">
+        <h5 class="section-title">
 
-    <h5 class="section-title">
+            Identification Information
 
-        Employment Information
+        </h5>
 
-    </h5>
+        <div class="row g-3">
 
-    <div class="row g-3">
+            <div class="col-md-4">
 
-        <div class="col-md-6">
+                <label class="form-label">
+                    TIN Number
+                </label>
 
-            <label>
-                Company / School
-            </label>
+                <input
+                    id="tin_no"
+                    name="tin_no"
+                    class="form-control">
 
-            <input
-                id="company_school"
-                class="form-control">
+            </div>
 
-        </div>
+            <div class="col-md-4">
 
-        <div class="col-md-6">
+                <label class="form-label">
+                    ID Presented
+                </label>
 
-            <label>
-                Employer Name
-            </label>
+                <select
+                    id="id_presented"
+                    name="id_presented"
+                    class="form-select">
 
-            <input
-                id="employer_name"
-                class="form-control">
+                    <option>
+                        UMID
+                    </option>
 
-        </div>
+                    <option>
+                        SSS
+                    </option>
 
-        <div class="col-md-6">
+                    <option>
+                        PHILHEALTH
+                    </option>
 
-            <label>
-                Company Address
-            </label>
+                    <option>
+                        PAGIBIG
+                    </option>
 
-            <input
-                id="company_address"
-                class="form-control">
+                    <option>
+                        DRIVERS LICENSE
+                    </option>
 
-        </div>
+                </select>
 
-        <div class="col-md-3">
+            </div>
 
-            <label>
-                Employment Date
-            </label>
+            <div class="col-md-4">
 
-            <input
-                type="date"
-                id="employment_date"
-                class="form-control">
+                <label class="form-label">
+                    ID Number
+                </label>
 
-        </div>
+                <input
+                    id="id_no"
+                    name="id_no"
+                    class="form-control">
 
-        <div class="col-md-3">
-
-            <label>
-                Position Name
-            </label>
-
-            <input
-                id="position_name"
-                class="form-control">
-
-        </div>
-
-        <div class="col-md-3">
-
-            <label>
-                Basic Salary
-            </label>
-
-            <input
-                id="basic_salary"
-                class="form-control">
-
-        </div>
-
-        <div class="col-md-3">
-
-            <label>
-                Annual Income
-            </label>
-
-            <input
-                id="annual_income"
-                class="form-control">
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
+    <!-- STEP 3 -->
 
-<!-- STEP 4 -->
+    <div class="form-step">
 
-<div class="form-step">
+        <h5 class="section-title">
 
-    <h5 class="section-title">
+            Employment Information
 
-        Spouse Information
+        </h5>
 
-    </h5>
+        <div class="row g-3">
 
-    <div class="row g-3">
+            <div class="col-md-6">
 
-        <div class="col-md-4">
+                <label>
+                    Company / School
+                </label>
 
-            <label>
-                Last Name
-            </label>
+                <input
+                    id="company_school"
+                    name="company_school"
+                    class="form-control">
 
-            <input
-                id="spouse_last_name"
-                class="form-control">
+            </div>
 
-        </div>
+            <div class="col-md-6">
 
-        <div class="col-md-4">
+                <label>
+                    Employer Name
+                </label>
 
-            <label>
-                First Name
-            </label>
+                <input
+                    id="employer_name"
+                    name="employer_name"
+                    class="form-control">
 
-            <input
-                id="spouse_first_name"
-                class="form-control">
+            </div>
 
-        </div>
+            <div class="col-md-6">
 
-        <div class="col-md-4">
+                <label>
+                    Company Address
+                </label>
 
-            <label>
-                Middle Name
-            </label>
+                <input
+                    id="company_address"
+                    name="company_address"
+                    class="form-control">
 
-            <input
-                id="spouse_middle_name"
-                class="form-control">
+            </div>
 
-        </div>
+            <div class="col-md-3">
 
-        <div class="col-md-3">
+                <label>
+                    Employment Date
+                </label>
 
-            <label>
-                Date of Birth
-            </label>
+                <input
+                    type="date"
+                    id="employment_date"
+                    name="employment_date"
+                    class="form-control">
 
-            <input
-                type="date"
-                id="spouse_date_of_birth"
-                class="form-control">
+            </div>
 
-        </div>
+            <div class="col-md-3">
 
-        <div class="col-md-3">
+                <label>
+                    Position Name
+                </label>
 
-            <label>
-                Mobile Number
-            </label>
+                <input
+                    id="position_name"
+                    name="position_name"
+                    class="form-control">
 
-            <input
-                id="spouse_mobile_no"
-                class="form-control">
+            </div>
 
-        </div>
+            <div class="col-md-3">
 
-        <div class="col-md-6">
+                <label>
+                    Basic Salary
+                </label>
 
-            <label>
-                Employer Name
-            </label>
+                <input
+                    id="basic_salary"
+                    name="basic_salary"
+                    class="form-control">
 
-            <input
-                id="spouse_employer_name"
-                class="form-control">
+            </div>
 
-        </div>
+            <div class="col-md-3">
 
-        <div class="col-md-4">
+                <label>
+                    Annual Income
+                </label>
 
-            <label>
-                Position Name
-            </label>
+                <input
+                    id="annual_income"
+                    name="annual_income"
+                    class="form-control">
 
-            <input
-                id="spouse_position_name"
-                class="form-control">
-
-        </div>
-
-        <div class="col-md-4">
-
-            <label>
-                Monthly Income
-            </label>
-
-            <input
-                id="monthly_income"
-                class="form-control">
-
-        </div>
-
-        <div class="col-md-4">
-
-            <label>
-                Home Address
-            </label>
-
-            <input
-                id="spouse_home_address"
-                class="form-control">
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
+    <!-- STEP 4 -->
 
-<!-- STEP 5 -->
+    <div class="form-step">
 
-<div class="form-step">
+        <h5 class="section-title">
 
-    <h5 class="section-title">
+            Spouse Information
 
-        Collateral Information
+        </h5>
 
-    </h5>
+        <div class="row g-3">
 
-    <div class="card mb-3">
+            <div class="col-md-4">
 
-        <div class="card-header">
+                <label>
+                    Last Name
+                </label>
 
-            Collateral
+                <input
+                    id="spouse_last_name"
+                    name="spouse_last_name"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label>
+                    First Name
+                </label>
+
+                <input
+                    id="spouse_first_name"
+                    name="spouse_first_name"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label>
+                    Middle Name
+                </label>
+
+                <input
+                    id="spouse_middle_name"
+                    name="spouse_middle_name"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <label>
+                    Date of Birth
+                </label>
+
+                <input
+                    type="date"
+                    id="spouse_date_of_birth"
+                    name="spouse_date_of_birth"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <label>
+                    Mobile Number
+                </label>
+
+                <input
+                    id="spouse_mobile_no"
+                    name="spouse_mobile_no"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-6">
+
+                <label>
+                    Employer Name
+                </label>
+
+                <input
+                    id="spouse_employer_name"
+                    name="spouse_employer_name"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label>
+                    Position Name
+                </label>
+
+                <input
+                    id="spouse_position_name"
+                    name="spouse_position_name"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label>
+                    Monthly Income
+                </label>
+
+                <input
+                    id="monthly_income"
+                    name="monthly_income"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label>
+                    Home Address
+                </label>
+
+                <input
+                    id="spouse_home_address"
+                    name="spouse_home_address"
+                    class="form-control">
+
+            </div>
 
         </div>
 
-        <div class="card-body">
+    </div>
 
-            <div class="row">
 
-                <div class="col-md-3">
+    <!-- STEP 5 -->
 
-                    <label>Primary Card</label>
+    <div class="form-step">
 
-                    <select
-                        name="primary_card_name"
-                        id="primary_card_name"
-                        class="form-select">
+        <h5 class="section-title">
 
-                        <option value="Development Bank of the Philippines (DBP)">
-                            Development Bank of the Philippines (DBP)
-                        </option>
+            Collateral Information
 
-                        <option value="LAND BANK OF THE PHILIPPINES ( UMID )">
-                            LAND BANK OF THE PHILIPPINES (UMID)
-                        </option>
+        </h5>
 
-                        <option value="UNION BANK OF THE PHILIPPINES ( UBP )">
-                            UNION BANK OF THE PHILIPPINES (UBP)
-                        </option>
+        <div class="card mb-3">
 
-                    </select>
+            <div class="card-header">
 
-                </div>
+                Collateral
 
-                <div class="col-md-5">
+            </div>
 
-                    <label>Card Number</label>
+            <div class="card-body">
 
-                    <input
-                        type="text"
-                        id="primary_card_number"
-                        class="form-control">
+                <div class="row">
 
-                </div>
-                <div class="col-md-4">
+                    <div class="col-md-3">
 
-                    <label>Card Expiry</label>
+                        <label>Primary Card</label>
 
-                    <input
-                        type="date"
-                        id="primary_card_expiry"
-                        class="form-control">
+                        <select
+                            name="primary_card_name"
+                            id="primary_card_name"
+                            class="form-select">
 
-                </div>
+                            <option value="Development Bank of the Philippines (DBP)">
+                                Development Bank of the Philippines (DBP)
+                            </option>
 
-                <div class="col-md-3 mt-3">
+                            <option value="LAND BANK OF THE PHILIPPINES ( UMID )">
+                                LAND BANK OF THE PHILIPPINES (UMID)
+                            </option>
 
-                    <label>Secondary Card</label>
+                            <option value="UNION BANK OF THE PHILIPPINES ( UBP )">
+                                UNION BANK OF THE PHILIPPINES (UBP)
+                            </option>
 
-                    <select
-                        name="secondary_card_name"
-                        id="secondary_card_name"
-                        class="form-select">
+                        </select>
 
-                        <option value="Development Bank of the Philippines (DBP)">
-                            Development Bank of the Philippines (DBP)
-                        </option>
+                    </div>
 
-                        <option value="LAND BANK OF THE PHILIPPINES ( UMID )">
-                            LAND BANK OF THE PHILIPPINES (UMID)
-                        </option>
+                    <div class="col-md-5">
 
-                        <option value="UNION BANK OF THE PHILIPPINES ( UBP )">
-                            UNION BANK OF THE PHILIPPINES (UBP)
-                        </option>
+                        <label>Card Number</label>
 
-                    </select>
+                        <input
+                            type="text"
+                            id="primary_card_number"
+                            class="form-control">
 
-                </div>
+                    </div>
+                    <div class="col-md-4">
 
-                <div class="col-md-5 mt-3">
+                        <label>Card Expiry</label>
 
-                    <label>Card Number</label>
+                        <input
+                            type="date"
+                            id="primary_card_expiry"
+                            class="form-control">
 
-                    <input
-                        type="text"
-                        id="secondary_card_number"
-                        class="form-control">
+                    </div>
 
-                </div>
-                <div class="col-md-4">
+                    <div class="col-md-3 mt-3">
 
-                    <label>Card Expiry</label>
+                        <label>Secondary Card</label>
 
-                    <input
-                        type="date"
-                        id="secondary_card_expiry"
-                        class="form-control">
+                        <select
+                            name="secondary_card_name"
+                            id="secondary_card_name"
+                            class="form-select">
+
+                            <option value="Development Bank of the Philippines (DBP)">
+                                Development Bank of the Philippines (DBP)
+                            </option>
+
+                            <option value="LAND BANK OF THE PHILIPPINES ( UMID )">
+                                LAND BANK OF THE PHILIPPINES (UMID)
+                            </option>
+
+                            <option value="UNION BANK OF THE PHILIPPINES ( UBP )">
+                                UNION BANK OF THE PHILIPPINES (UBP)
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-5 mt-3">
+
+                        <label>Card Number</label>
+
+                        <input
+                            type="text"
+                            id="secondary_card_number"
+                            class="form-control">
+
+                    </div>
+                    <div class="col-md-4">
+
+                        <label>Card Expiry</label>
+
+                        <input
+                            type="date"
+                            id="secondary_card_expiry"
+                            class="form-control">
+
+                    </div>
 
                 </div>
 
@@ -875,9 +905,7 @@ label{
 
     </div>
 
-</div>
-
-
+</form>
 
 <!-- NAVIGATION -->
 
@@ -905,7 +933,7 @@ label{
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/common.js"></script>
 <script src="../assets/js/config.js"></script>

@@ -32,6 +32,8 @@ var releaseLoanApi   = `${url}loan/release`;
 var approveLoanApi   = `${url}loan/approve`;
 var rejectLoanApi   = `${url}loan/reject`;
 var updateScheduleApi   = `${url}loan/update-schedule`;
+var sendLoanOtpApi   = `${url}loan/send-otp`;
+var validateLoanOtpApi   = `${url}loan/validate-otp`;
 
 
 var managerVaultTransactionsApi     = `${url}loan/reject`;

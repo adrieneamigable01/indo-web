@@ -909,358 +909,367 @@
 
         <div
             class="modal-dialog modal-xl modal-dialog-scrollable">
+            <form id="loanForm">
+                <div class="modal-content">
+                
+                        <div class="modal-header bg-primary text-white">
 
-            <div class="modal-content">
+                            <h5 class="modal-title">
 
-                <div class="modal-header bg-primary text-white">
+                                Create Loan
 
-                    <h5 class="modal-title">
+                            </h5>
 
-                        Create Loan
+                            <button
+                                type="button"
+                                class="btn-close btn-close-white"
+                                data-bs-dismiss="modal">
 
-                    </h5>
-
-                    <button
-                        type="button"
-                        class="btn-close btn-close-white"
-                        data-bs-dismiss="modal">
-
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <!-- Loan Information -->
-
-                    <div class="card mb-3">
-
-                        <div class="card-header">
-
-                            Loan Information
+                            </button>
 
                         </div>
+                        
+                        <div class="modal-body">
 
-                        <div class="card-body">
+                            <!-- Loan Information -->
 
-                            <div class="row">
+                            <div class="card mb-3">
 
-                                <div class="col-md-4">
+                                <div class="card-header">
 
-                                    <label>
-                                        Loan Product
-                                    </label>
-
-                                    <select
-                                        id="loan_product_id"
-                                        class="form-control">
-                                    </select>
+                                    Loan Information
 
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="card-body">
 
-                                    <label>
-                                        Loan Amount
-                                    </label>
+                                    <div class="row">
 
-                                    <input
-                                        type="number"
-                                        id="loan_amount"
-                                        class="form-control">
+                                        <div class="col-md-4">
+
+                                            <label>
+                                                Loan Product
+                                            </label>
+
+                                            <select
+                                                id="loan_product_id"
+                                                name="loan_product_id"
+                                                class="form-control">
+                                            </select>
+
+                                        </div>
+
+                                        <div class="col-md-4">
+
+                                            <label>
+                                                Loan Amount
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                id="loan_amount"
+                                                name="loan_amount"
+                                                class="form-control">
+
+                                        </div>
+
+                                        <div class="col-md-4">
+
+                                            <label>
+                                                Loan Terms
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                id="loan_terms"
+                                                name="loan_terms"
+                                                class="form-control">
+
+                                        </div>
+
+                                        <div class="col-md-4 mt-3">
+
+                                            <label>
+
+                                                Monthly Interest Deduction
+
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                class="form-control"
+                                                id="monthly_interest_deduction"
+                                                name="monthly_interest_deduction"
+                                                value="4000">
+
+                                        </div>
+
+                                        <div class="col-md-4 mt-3">
+
+                                            <label>
+                                                Interest Rate
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                id="approved_interest_rate"
+                                                name="approved_interest_rate"
+                                                class="form-control">
+
+                                        </div>
+
+                                        <div class="col-md-4 mt-3">
+
+                                            <label>
+                                                Processing Fee
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                id="approved_processing_fee"
+                                                name="approved_processing_fee"
+                                                value="0"
+                                                class="form-control">
+
+                                        </div>
+
+                                        <div class="col-md-4 mt-3">
+                                            <label>Interest Amount</label>
+                                            <input
+                                                type="number"
+                                                id="interest_amount"
+                                                class="form-control"
+                                                readonly>
+                                        </div>
+
+                                        <div class="col-md-4 mt-3">
+                                            <label>Processing Fee Amount</label>
+                                            <input
+                                                type="number"
+                                                id="processingfee_amount"
+                                                class="form-control"
+                                                readonly>
+                                        </div>
+
+                                        <div class="col-md-4 mt-3">
+                                            <label>Net Proceeds</label>
+                                            <input
+                                                type="number"
+                                                id="net_proceeds"
+                                                class="form-control"
+                                                readonly>
+                                        </div>
+
+                                    </div>
 
                                 </div>
 
-                                <div class="col-md-4">
+                            </div>
 
-                                    <label>
-                                        Loan Terms
-                                    </label>
+                            <!-- ATM Cards -->
 
-                                    <input
-                                        type="number"
-                                        id="loan_terms"
-                                        class="form-control">
+                            <div class="card mb-3">
 
-                                </div>
+                                <div class="card-header">
 
-                                <div class="col-md-4 mt-3">
-
-                                    <label>
-
-                                        Monthly Interest Deduction
-
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        id="monthly_interest_deduction"
-                                        value="4000">
+                                    Collateral
 
                                 </div>
 
-                                <div class="col-md-4 mt-3">
+                                <div class="card-body">
 
-                                    <label>
-                                        Interest Rate
-                                    </label>
+                                    <div class="row">
 
-                                    <input
-                                        type="number"
-                                        id="approved_interest_rate"
-                                        class="form-control">
+                                        <div class="col-md-3">
+
+                                            <label>
+
+                                                Primary Card
+
+                                            </label>
+                                            <select name="primary_card_name" id="primary_card_name" class="form-control">
+                                                <option value="Development Bank of the Philippines (DBP)">Development Bank of the Philippines (DBP)</option>
+                                                <option value="LAND BANK OF THE PHILIPPINES ( UMID )">LAND BANK OF THE PHILIPPINES ( UMID )</option>
+                                                <option value="UNION BANK OF THE PHILIPPINES ( UBP )">UNION BANK OF THE PHILIPPINES ( UBP )</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-9">
+
+                                            <label>
+
+                                                Card Number
+
+                                            </label>
+
+                                            <input
+                                                type="text"
+                                                id="primary_card_number"
+                                                name="primary_card_number"
+                                                class="form-control">
+
+                                        </div>
+
+                                        <div class="col-md-3 mt-3">
+
+                                            <label>
+
+                                                Secondary Card
+
+                                            </label>
+                                            <select name="secondary_card_name" id="secondary_card_name" class="form-control">
+                                                <option value="Development Bank of the Philippines (DBP)">Development Bank of the Philippines (DBP)</option>
+                                                <option value="LAND BANK OF THE PHILIPPINES ( UMID )">LAND BANK OF THE PHILIPPINES ( UMID )</option>
+                                                <option value="UNION BANK OF THE PHILIPPINES ( UBP )">UNION BANK OF THE PHILIPPINES ( UBP )</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-9 mt-3">
+
+                                            <label>
+
+                                                Card Number
+
+                                            </label>
+
+                                            <input
+                                                type="text"
+                                                id="secondary_card_number"
+                                                name="secondary_card_number"
+                                                class="form-control">
+
+                                        </div>
+
+                                    </div>
 
                                 </div>
 
-                                <div class="col-md-4 mt-3">
+                            </div>
 
-                                    <label>
-                                        Processing Fee
-                                    </label>
+                            <!-- CO-MAKERS -->
 
-                                    <input
-                                        type="number"
-                                        id="approved_processing_fee"
-                                        value="0"
-                                        class="form-control">
+                            <div class="card">
+
+                                <div class="card-header d-flex justify-content-between">
+
+                                    <span>
+
+                                        Co-Makers
+
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        id="addCoMaker">
+
+                                        + Add Co-Maker
+
+                                    </button>
 
                                 </div>
 
-                                <div class="col-md-4 mt-3">
-                                    <label>Interest Amount</label>
-                                    <input
-                                        type="number"
-                                        id="interest_amount"
-                                        class="form-control"
-                                        readonly>
+                                <div
+                                    class="card-body"
+                                    id="coMakerContainer">
+
                                 </div>
 
-                                <div class="col-md-4 mt-3">
-                                    <label>Processing Fee Amount</label>
-                                    <input
-                                        type="number"
-                                        id="processingfee_amount"
-                                        class="form-control"
-                                        readonly>
+                            </div>
+
+                            <div class="card mt-3">
+
+                                <div class="card-header">
+
+                                    Bonus / Incentive Deductions
+
                                 </div>
 
-                                <div class="col-md-4 mt-3">
-                                    <label>Net Proceeds</label>
-                                    <input
-                                        type="number"
-                                        id="net_proceeds"
-                                        class="form-control"
-                                        readonly>
+                                <div class="card-body">
+
+                                    <table class="table table-bordered">
+
+                                        <thead>
+
+                                            <tr>
+
+                                                <th>Deduction Type</th>
+
+                                                <th>Amount</th>
+
+                                                <th width="100">Action</th>
+
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody id="bonusDeductionBody">
+                                                
+                                        </tbody>
+
+                                    </table>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        id="btnAddBonusDeduction">
+
+                                        Add Deduction
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+                            <div class="card mt-3">
+
+                                <div class="card-header">
+
+                                    Loan Purpose
+
+                                </div>
+
+                                <div class="card-body">
+
+                                <div class="row">
+                                        <div class="col-md-12 mt-3">
+                                            <textarea
+                                                id="loan_purpose"
+                                                name="loan_purpose"
+                                                class="form-control">
+
+                                            </textarea>
+
+                                        </div>
+                                </div>
                                 </div>
 
                             </div>
 
                         </div>
 
-                    </div>
-
-                    <!-- ATM Cards -->
-
-                    <div class="card mb-3">
-
-                        <div class="card-header">
-
-                            Collateral
-
-                        </div>
-
-                        <div class="card-body">
-
-                            <div class="row">
-
-                                <div class="col-md-3">
-
-                                    <label>
-
-                                        Primary Card
-
-                                    </label>
-                                    <select name="primary_card_name" id="primary_card_name" class="form-control">
-                                        <option value="Development Bank of the Philippines (DBP)">Development Bank of the Philippines (DBP)</option>
-                                        <option value="LAND BANK OF THE PHILIPPINES ( UMID )">LAND BANK OF THE PHILIPPINES ( UMID )</option>
-                                        <option value="UNION BANK OF THE PHILIPPINES ( UBP )">UNION BANK OF THE PHILIPPINES ( UBP )</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-9">
-
-                                    <label>
-
-                                        Card Number
-
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        id="primary_card_number"
-                                        class="form-control">
-
-                                </div>
-
-                                <div class="col-md-3 mt-3">
-
-                                    <label>
-
-                                        Secondary Card
-
-                                    </label>
-                                    <select name="secondary_card_name" id="secondary_card_name" class="form-control">
-                                        <option value="Development Bank of the Philippines (DBP)">Development Bank of the Philippines (DBP)</option>
-                                        <option value="LAND BANK OF THE PHILIPPINES ( UMID )">LAND BANK OF THE PHILIPPINES ( UMID )</option>
-                                        <option value="UNION BANK OF THE PHILIPPINES ( UBP )">UNION BANK OF THE PHILIPPINES ( UBP )</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-9 mt-3">
-
-                                    <label>
-
-                                        Card Number
-
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        id="secondary_card_number"
-                                        class="form-control">
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- CO-MAKERS -->
-
-                    <div class="card">
-
-                        <div class="card-header d-flex justify-content-between">
-
-                            <span>
-
-                                Co-Makers
-
-                            </span>
+                        <div class="modal-footer">
 
                             <button
-                                type="button"
-                                class="btn btn-primary btn-sm"
-                                id="addCoMaker">
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
 
-                                + Add Co-Maker
+                                Close
+
+                            </button>
+
+                            <button
+                                id="btnSaveLoan"
+                                type="submit"
+                                class="btn btn-success">
+
+                                Save Loan
 
                             </button>
 
                         </div>
-
-                        <div
-                            class="card-body"
-                            id="coMakerContainer">
-
-                        </div>
-
                     </div>
-
-                    <div class="card mt-3">
-
-                        <div class="card-header">
-
-                            Bonus / Incentive Deductions
-
-                        </div>
-
-                        <div class="card-body">
-
-                            <table class="table table-bordered">
-
-                                <thead>
-
-                                    <tr>
-
-                                        <th>Deduction Type</th>
-
-                                        <th>Amount</th>
-
-                                        <th width="100">Action</th>
-
-                                    </tr>
-
-                                </thead>
-
-                                <tbody id="bonusDeductionBody">
-
-                                </tbody>
-
-                            </table>
-
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id="btnAddBonusDeduction">
-
-                                Add Deduction
-
-                            </button>
-
-                        </div>
-
-                    </div>
-                    <div class="card mt-3">
-
-                        <div class="card-header">
-
-                            Loan Purpose
-
-                        </div>
-
-                        <div class="card-body">
-
-                           <div class="row">
-                                <div class="col-md-12 mt-3">
-                                    <textarea
-                                        id="loan_purpose"
-                                        class="form-control">
-
-                                    </textarea>
-
-                                </div>
-                           </div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="modal-footer">
-
-                    <button
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal">
-
-                        Close
-
-                    </button>
-
-                    <button
-                        id="btnSaveLoan"
-                        class="btn btn-success">
-
-                        Save Loan
-
-                    </button>
-
-                </div>
-
-            </div>
-
+                </form> 
         </div>
 
     </div>
@@ -1610,7 +1619,7 @@
 
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>    

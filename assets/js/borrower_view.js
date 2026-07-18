@@ -347,62 +347,39 @@ borrowerView = {
             });
 
         },
-        renderBorrower:(row)=>{
+        
+        renderBorrower: (row) => {
+
+            if (!row) {
+                console.error("renderBorrower(): borrower is undefined.", row);
+                return;
+            }
+
             $("#borrowerName").text(
-                row.last_name +
-                ", " +
-                row.first_name +
-                " " +
-                row.middle_name
+                `${row.last_name}, ${row.first_name} ${row.middle_name ?? ""}`
             );
 
-            $("#borrowerId").text(
-                row.borrower_id
-            );
-
-            $("#borrowerMobile").text(
-                row.mobile_no
-            );
-
-            $("#borrowerEmail").text(
-                row.email_address
-            );
-
-            $("#borrowerAddress").text(
-                row.home_address
-            );
-
-            $("#borrowerCivilStatus").text(
-                row.civil_status
-            );
-
-            $("#borrowerGender").text(
-                row.gender
-            );
-
-            $("#borrowerDob").text(
-                row.date_of_birth
-            );
+            $("#borrowerId").text(row.borrower_id);
+            $("#borrowerMobile").text(row.mobile_no);
+            $("#borrowerEmail").text(row.email_address);
+            $("#borrowerAddress").text(row.home_address);
+            $("#borrowerCivilStatus").text(row.civil_status);
+            $("#borrowerGender").text(row.gender);
+            $("#borrowerDob").text(row.date_of_birth);
 
             $("#borrowerStatus")
-            .removeClass()
-            .addClass(
-                row.isActive == 1
-                ?
-                "badge bg-success"
-                :
-                "badge bg-danger"
-            )
-            .text(
-                row.isActive == 1
-                ?
-                "ACTIVE"
-                :
-                "INACTIVE"
-            );
-
+                .removeClass()
+                .addClass(
+                    row.isActive == 1
+                        ? "badge bg-success"
+                        : "badge bg-danger"
+                )
+                .text(
+                    row.isActive == 1
+                        ? "ACTIVE"
+                        : "INACTIVE"
+                );
         },
-
         summary:(data,response)=>{
 
             if(data.length === 0){
@@ -1225,7 +1202,7 @@ borrowerView = {
             
             let userdata = JSON.parse(
 
-                localStorage.getItem("userdata") || "{}"
+            localStorage.getItem("userdata") || "{}"
 
             );
 
@@ -1252,148 +1229,220 @@ borrowerView = {
 
             Swal.fire({
 
-                title: "Void Loan Schedule",
-
-                icon: "warning",
-
-                width: 650,
-
-                html: `
-
-                    <div class="text-start">
-
-                        <div class="alert alert-warning">
-
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-
-                            You are about to void this loan schedule.
-
-                        </div>
-
-                        <table class="table table-sm table-borderless">
-
-                            <tr>
-                                <th width="35%">Borrower</th>
-                                <td>${loan.borrower_name || '-'}</td>
-                            </tr>
-
-                            <tr>
-                                <th>Product Name</th>
-                                <td>${loan.product_name}</td>
-                            </tr>
-
-
-                            <tr>
-                                <th>Loan Amount</th>
-                                <td>₱${parseFloat(loan.loan_amount || 0).toLocaleString()}</td>
-                            </tr>
-
-                            <tr>
-                                <th>Loan Terms</th>
-                                <td>${loan.loan_terms}</td>
-                            </tr>
-
-                         
-                        </table>
-
-                        <div class="mt-3">
-
-                            <label class="form-label">
-                                Reason for Void
-                                <span class="text-danger">*</span>
-                            </label>
-
-                            <textarea
-                                id="swalVoidReason"
-                                class="form-control"
-                                rows="4"
-                                placeholder="Enter the reason for voiding this schedule..."></textarea>
-
-                        </div>
-
-                    </div>
-
-                `,
-
-                showCancelButton: true,
-
-                confirmButtonText: "Void Schedule",
-
-                confirmButtonColor: "#dc3545",
-
-                preConfirm: function () {
-
-                    const voidReason = $("#swalVoidReason").val().trim();
-
-                    if (!voidReason) {
-
-                        Swal.showValidationMessage(
-                            "Please enter a reason for voiding."
-                        );
-
-                        return false;
-
-                    }
-
-                    return {
-
-                        loan_id: loan.loan_id,
-                        voidReason: voidReason
-
-                    };
-
+                title: "Sending OTP...",
+                html: "Please wait while we send a One-Time Password (OTP) for your loan deletion request.",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
                 }
 
-            }).then(function (result) {
+            });
 
-                if (!result.isConfirmed) {
+            jsAddon.display.ajaxRequest({
+
+                url: sendLoanOtpApi,
+
+                type: "POST",
+
+                payload: {
+
+                    userid: userdata.userid,
+                    loan_id: loan.loan_id,
+                    request_type:'delete_loan'
+
+                },
+
+                dataType: "json"
+
+            }).then(function(response){
+                 Swal.close(); // Close loading dialog
+                if(response.isError){
+
+                    Swal.fire(
+                        "Error",
+                        response.message,
+                        "error"
+                    );
+
                     return;
                 }
 
-                jsAddon.display.ajaxRequest({
+                  Swal.fire({
 
-                    url: loanApi,
+                        title: "Void Loan",
 
-                    type: "DELETE",
+                        icon: "warning",
 
-                    payload: JSON.stringify(result.value),
+                        width: 650,
 
-                    dataType: "json"
+                        html: `
 
-                }).then(function (response) {
+                            <div class="text-start">
 
-                    if (response.isError) {
+                                <div class="alert alert-warning">
 
-                        Swal.fire(
-                            "Error",
-                            response.message,
-                            "error"
-                        );
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
 
-                        return;
+                                    You are about to void this loan schedule.
 
-                    }
+                                </div>
 
-                    Swal.fire({
+                                <table class="table table-sm table-borderless">
 
-                        icon: "success",
+                                    <tr>
+                                        <th width="35%">Borrower</th>
+                                        <td>${loan.borrower_name || '-'}</td>
+                                    </tr>
 
-                        title: "Success",
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <td>${loan.product_name}</td>
+                                    </tr>
 
-                        text: response.message,
 
-                        timer: 1500,
+                                    <tr>
+                                        <th>Loan Amount</th>
+                                        <td>₱${parseFloat(loan.loan_amount || 0).toLocaleString()}</td>
+                                    </tr>
 
-                        showConfirmButton: false
+                                    <tr>
+                                        <th>Loan Terms</th>
+                                        <td>${loan.loan_terms}</td>
+                                    </tr>
+
+                                
+                                </table>
+                                 <div class="mt-3">
+
+                                    <label class="form-label">
+                                        OTP Code
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <input
+                                        id="swalLoanOtpCode"
+                                        class="form-control">
+
+                                </div>
+                                <div class="mt-3">
+
+                                    <label class="form-label">
+                                        Reason for Void
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <textarea
+                                        id="swalVoidReason"
+                                        class="form-control"
+                                        rows="4"
+                                        placeholder="Enter the reason for voiding this schedule..."></textarea>
+
+                                </div>
+
+                            </div>
+
+                        `,
+
+                        showCancelButton: true,
+
+                        confirmButtonText: "Void Loan",
+
+                        confirmButtonColor: "#dc3545",
+
+                        preConfirm: function () {
+
+                            const voidReason = $("#swalVoidReason").val().trim();
+                            const otpCode = $("#swalLoanOtpCode").val().trim();
+
+                            if (!otpCode) {
+                                Swal.showValidationMessage("Please enter the OTP code.");
+                                return false;
+                            }
+
+                            if (!voidReason) {
+                                Swal.showValidationMessage("Please enter a reason for voiding.");
+                                return false;
+                            }
+
+                            return jsAddon.display.ajaxRequest({
+
+                                url: validateLoanOtpApi,
+                                type: "POST",
+                                payload: {
+                                    userid: userdata.userid,
+                                    loan_id: loan.loan_id,
+                                    request_type: "delete_loan",
+                                    otp: otpCode
+                                },
+                                dataType: "json"
+
+                            }).then(function(response){
+
+                                if(response.isError){
+
+                                    Swal.showValidationMessage(response.message);
+
+                                    // Keep the modal open
+                                    return false;
+
+                                }
+
+                                return jsAddon.display.ajaxRequest({
+
+                                    url: loanApi,
+                                    type: "DELETE",
+                                    payload: JSON.stringify({
+                                        loan_id: loan.loan_id,
+                                        voidReason: voidReason
+                                    }),
+                                    dataType: "json"
+
+                                });
+
+                            }).then(function(response){
+
+                                if(response.isError){
+
+                                    Swal.showValidationMessage(response.message);
+
+                                    // Keep the modal open
+                                    return false;
+
+                                }
+
+                                return response;
+
+                            });
+
+                        }
+
+                    }).then(function(result){
+
+                        if(!result.isConfirmed){
+                            return;
+                        }
+
+                        Swal.fire({
+
+                            icon: "success",
+                            title: "Success",
+                            text: result.value.message,
+                            timer: 1500,
+                            showConfirmButton: false
+
+                        });
+
+                        borrowerView.funx.getLoans();
 
                     });
 
-
-                    borrowerView.funx.getLoans();
-
-                });
-
             });
+
+            
+            
+          
+          
 
         },
 
@@ -6669,7 +6718,133 @@ $(document).ready(function(){
         borrowerView.funx.generateSchedule();
     });
 
-    $("#btnSaveLoan").click(function(){
+    $.validator.addMethod(
+        "notEqualTo",
+        function(value, element, param) {
+            return value != $(param).val();
+        },
+        "Primary and Secondary cards must be different."
+    );
+
+    $("#loanForm").validate({
+
+        rules: {
+
+            loan_product_id: {
+                required: true
+            },
+
+            loan_amount: {
+                required: true,
+                min: 1,
+                max: 2000000
+            },
+
+            loan_terms: {
+                required: true,
+                number: true,
+                min: 1
+            },
+
+            monthly_interest_deduction: {
+                required: true,
+                number: true
+            },
+
+            approved_interest_rate: {
+                required: true,
+                number: true
+            },
+
+            approved_processing_fee: {
+                required: true,
+                number: true
+            },
+
+            primary_card_number: {
+                required: true
+            },
+            secondary_card_number: {
+                required: true
+            },
+            primary_card_name: {
+                required: true
+            },
+            secondary_card_name: {
+                required: true,
+                notEqualTo: "#primary_card_name"
+            },
+            
+
+            loan_purpose: {
+                required: true
+            }
+
+        },
+
+        messages: {
+
+            loan_product_id: "Please select a loan product.",
+
+            loan_amount: "Loan amount is required.",
+
+            loan_terms: "Loan terms is required.",
+
+            monthly_interest_deduction: "Monthly interest deduction is required.",
+
+            approved_interest_rate: "Interest rate is required.",
+
+            approved_processing_fee: "Processing fee is required.",
+
+            primary_card_number: "Collateral is required.",
+
+            loan_purpose: "Loan purpose is required.",
+            secondary_card_name: {
+                required: "Please select the secondary card.",
+                notEqualTo: "Secondary card must be different from the primary card."
+            }
+
+        },
+
+        errorClass: "is-invalid",
+
+        validClass: "is-valid",
+
+        highlight: function(element) {
+
+            $(element)
+                .addClass("is-invalid")
+                .removeClass("is-valid");
+
+        },
+
+        unhighlight: function(element) {
+
+            $(element)
+                .removeClass("is-invalid")
+                .addClass("is-valid");
+
+        }
+
+    });
+
+    $("#btnSaveLoan").click(function(e){
+        e.preventDefault();
+
+        if (!$("#loanForm").valid()) {
+            return;
+        }
+
+        if ($(".co-maker-item").length === 0) {
+            console.log("No co-makers");
+            Swal.fire({
+                icon: "warning",
+                title: "Co-Maker Required",
+                text: "Please add at least one co-maker."
+            });
+
+            return;
+        }
 
         let comakers = [];
         let bonusDeductions = [];
@@ -7362,6 +7537,81 @@ $(document).ready(function(){
             </tr>
 
         `);
+
+    });
+
+    $(document).on('change', '#loan_product_id', function () {
+
+        const loanProductId = $(this).val();
+        $("#bonusDeductionBody").empty();
+
+        if (loanProductId == "1") {
+
+            const deductions = [
+                { type: "MIDYEAR",  label: "Midyear Bonus",      amount: 25000 },
+                { type: "YEAR_END", label: "Year End Bonus",     amount: 25000 },
+                { type: "PBB",      label: "PBB",                amount: 10000 },
+                { type: "CLOTHING", label: "Clothing Allowance", amount: 6000 },
+                { type: "CHALK",    label: "Chalk Allowance",    amount: 5000 },
+                { type: "PEI",      label: "PEI",                amount: 5000 }
+            ];
+
+            $.each(deductions, function (_, deduction) {
+
+                $("#bonusDeductionBody").append(`
+                    <tr>
+
+                        <td>
+                            <select class="form-control deduction_type">
+
+                                <option value="MIDYEAR" ${deduction.type == 'MIDYEAR' ? 'selected' : ''}>
+                                    Midyear Bonus
+                                </option>
+
+                                <option value="YEAR_END" ${deduction.type == 'YEAR_END' ? 'selected' : ''}>
+                                    Year End Bonus
+                                </option>
+
+                                <option value="PBB" ${deduction.type == 'PBB' ? 'selected' : ''}>
+                                    PBB
+                                </option>
+
+                                <option value="CLOTHING" ${deduction.type == 'CLOTHING' ? 'selected' : ''}>
+                                    Clothing Allowance
+                                </option>
+
+                                <option value="CHALK" ${deduction.type == 'CHALK' ? 'selected' : ''}>
+                                    Chalk Allowance
+                                </option>
+
+                                <option value="PEI" ${deduction.type == 'PEI' ? 'selected' : ''}>
+                                    PEI
+                                </option>
+
+                            </select>
+                        </td>
+
+                        <td>
+                            <input
+                                type="number"
+                                class="form-control deduction_amount"
+                                value="${deduction.amount}">
+                        </td>
+
+                        <td>
+                            <button
+                                type="button"
+                                class="btn btn-danger btn-remove-deduction">
+                                Remove
+                            </button>
+                        </td>
+
+                    </tr>
+                `);
+
+            });
+
+        }
 
     });
 

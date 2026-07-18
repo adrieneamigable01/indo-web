@@ -510,7 +510,11 @@ $(document).ready(function(){
 
     /* NEXT */
 
-    $('#btnNext').click(function(){
+   $('#btnNext').click(function(){
+
+        if(!validateCurrentStep()){
+            return;
+        }
 
         if(currentStep < steps.length - 1){
 
@@ -518,11 +522,168 @@ $(document).ready(function(){
 
             showStep(currentStep);
 
-            return;
+        }else{
+
+            saveBorrower();
 
         }
 
-        saveBorrower();
+    });
+
+    function validateCurrentStep(){
+
+        let valid = true;
+
+        $(".form-step")
+            .eq(currentStep)
+            .find("input, select, textarea")
+            .each(function(){
+
+                valid = $("#borrowerForm").validate().element(this) && valid;
+
+            });
+
+        return valid;
+
+    }
+
+    $("#borrowerForm").validate({
+
+        rules: {
+
+            // STEP 1
+            last_name: {
+                required: true
+            },
+            first_name: {
+                required: true
+            },
+            date_of_birth: {
+                required: true
+            },
+            civil_status: {
+                required: true
+            },
+            gender: {
+                required: true
+            },
+            mobile_no: {
+                required: true
+            },
+            email_address: {
+                required: true,
+                email: true
+            },
+            home_address: {
+                required: true
+            },
+
+            // STEP 3 - Employment
+            company_school: {
+                required: true
+            },
+            employer_name: {
+                required: true
+            },
+            company_address: {
+                required: true
+            },
+            employment_date: {
+                required: true
+            },
+            position_name: {
+                required: true
+            },
+            basic_salary: {
+                required: true,
+                number: true
+            },
+            annual_income: {
+                required: true,
+                number: true
+            },
+
+            // STEP 4 - Spouse (Required only if Married)
+            spouse_last_name: {
+                required: function () {
+                    return $("#civil_status").val() === "MARRIED";
+                }
+            },
+            spouse_first_name: {
+                required: function () {
+                    return $("#civil_status").val() === "MARRIED";
+                }
+            },
+            spouse_date_of_birth: {
+                required: function () {
+                    return $("#civil_status").val() === "MARRIED";
+                }
+            },
+            spouse_mobile_no: {
+                required: function () {
+                    return $("#civil_status").val() === "MARRIED";
+                }
+            },
+            spouse_employer_name: {
+                required: function () {
+                    return $("#civil_status").val() === "MARRIED";
+                }
+            },
+            spouse_position_name: {
+                required: function () {
+                    return $("#civil_status").val() === "MARRIED";
+                }
+            },
+            monthly_income: {
+                required: function () {
+                    return $("#civil_status").val() === "MARRIED";
+                },
+                number: true
+            },
+            spouse_home_address: {
+                required: function () {
+                    return $("#civil_status").val() === "MARRIED";
+                }
+            }
+
+        },
+
+        messages: {
+
+            company_school: "Company / School is required.",
+            employer_name: "Employer Name is required.",
+            company_address: "Company Address is required.",
+            employment_date: "Employment Date is required.",
+            position_name: "Position Name is required.",
+            basic_salary: "Basic Salary is required.",
+            annual_income: "Annual Income is required.",
+
+            spouse_last_name: "Spouse Last Name is required.",
+            spouse_first_name: "Spouse First Name is required.",
+            spouse_date_of_birth: "Spouse Date of Birth is required.",
+            spouse_mobile_no: "Spouse Mobile Number is required.",
+            spouse_employer_name: "Spouse Employer Name is required.",
+            spouse_position_name: "Spouse Position Name is required.",
+            monthly_income: "Monthly Income is required.",
+            spouse_home_address: "Spouse Home Address is required."
+
+        },
+
+        errorElement: "div",
+
+        errorClass: "invalid-feedback",
+
+        highlight: function (element) {
+            $(element).addClass("is-invalid");
+        },
+
+        unhighlight: function (element) {
+            $(element).removeClass("is-invalid");
+        },
+
+        errorPlacement: function (error, element) {
+            error.insertAfter(element);
+        }
 
     });
 
