@@ -1270,7 +1270,8 @@ let cashierVaultPage = {
 
                 dataType:"json",
                 payload:{
-                    cashier_id:cashierVaultPage.funx.getSelectedCashier()
+                    cashier_id:cashierVaultPage.funx.getSelectedCashier(),
+                    business_date:$("#filterBusinessDate").val()
                 },
 
             }).then(function(response){
