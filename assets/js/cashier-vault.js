@@ -5253,11 +5253,31 @@ let cashierVaultPage = {
 
                             </option>
 
+                            <option value="Full Payment">
+
+                                Full Payment
+
+                            </option>
+
                             <option value="Expense">
 
                                 Expense
 
                             </option>
+
+                            <option value="SUKLI">
+
+                                SUKLI
+
+                            </option>
+
+                            <option value="Deposit">
+
+                                Deposit
+
+                            </option>
+
+
                             <option value="Expense">
 
                                 OTHERS
