@@ -336,7 +336,7 @@ href="assets/css/loan.css">
 
                 <th>Terms</th>
 
-                <th>Applied</th>
+                <!-- <th>Applied</th> -->
 
                 <th>Status</th>
 

@@ -1,6 +1,7 @@
 var isLocal = false;
 var url = 'https://indo-pacific-api.doitcebutech.com/public/'
 var baseurl = 'https://indopacificlending.doitcebutech.com/'
+var version = 'Version 1.0.2';
 
 
 if(isLocal){
@@ -17,6 +18,7 @@ var borrowerApi  = `${url}borrower`;
 var borrowerSummaryApi  = `${url}borrower/summary`;
 var borrowerLoanContractApi  = `${url}loan/contract`;
 var borrowerLoanAddendumApi  = `${url}loan/addendum`;
+var borrowerGetSettlementDeficitApi  = `${url}borrower/settlement-deficit`;
 // Loan
 var loanApi  = `${url}loan`;
 var paymentApi  = `${url}loan/payment`;
@@ -61,3 +63,5 @@ const dailyCloseApi     = `${url}cashierdailyclose`;
 const dailyCloseSummaryApi     = `${url}cashierdailyclose/summary`;
 const dailyCloseApproveApi     = `${url}cashiervault/approve-return-vault`;
 const dailyClosRejectApi     = `${url}cashiervault/reject-return-vault`;
+
+$(".version-badge").text(version);

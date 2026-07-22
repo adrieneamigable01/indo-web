@@ -96,54 +96,280 @@ let loanPage = {
         |--------------------------------------------------------------------------
         */
 
-        loadLoans:function(){
+        // loadLoans:function(){
 
-            jsAddon.display.ajaxRequest({
+        //     jsAddon.display.ajaxRequest({
 
-                url:loanApi,
+        //         url:loanApi,
 
-                type:'GET',
+        //         type:'GET',
 
-                payload:{
-                    status:
-                        $("#filterStatus").val(),
+        //         payload:{
+        //             status:
+        //                 $("#filterStatus").val(),
+        //         },
+
+        //         dataType:'json'
+
+        //     }).then(function(response){
+
+        //         if(response.isError){
+
+        //             Swal.fire(
+
+        //                 "Error",
+
+        //                 response.message,
+
+        //                 "error"
+
+        //             );
+
+        //             return;
+
+        //         }
+
+        //         loanPage.loans =
+        //             response.data;
+
+        //         loanPage.funx.summary(
+        //             response.data
+        //         );
+
+        //         loanPage.funx.renderTable(
+        //             response.data
+        //         );
+
+        //     });
+
+        // },
+
+        loadLoans: function () {
+
+            if (loanPage.table) {
+
+                loanPage.table.destroy();
+
+            }
+
+            loanPage.table = $("#loanTable").DataTable({
+
+                processing: true,
+
+                serverSide: true,
+
+                destroy: true,
+
+                responsive: true,
+
+                autoWidth: false,
+
+                scrollX: true,
+
+                searching: false,
+
+                ordering: true,
+
+                pageLength: 10,
+
+                order: [[0, "desc"]],
+
+                ajax: function (data, callback) {
+
+                    jsAddon.display.ajaxRequest({
+
+                        url: loanApi,
+
+                        type: "GET",
+
+                        payload: {
+
+                            draw: data.draw,
+
+                            start: data.start,
+
+                            length: data.length,
+
+                            orderColumn:
+                                data.columns[data.order[0].column].data,
+
+                            orderDir:
+                                data.order[0].dir,
+
+                            status:
+                                $("#filterStatus").val(),
+
+                            search:
+                                $("#txtSearch").val()
+
+                        },
+
+                        dataType: "json"
+
+                    }).then(function (response) {
+
+                        if (response.isError) {
+
+                            Swal.fire(
+                                "Error",
+                                response.message,
+                                "error"
+                            );
+
+                            return;
+                        }
+
+                        loanPage.loans = {};
+                        
+
+                        $.each(response.data, function (_, row) {
+
+                            loanPage.loans[row.loan_id] = row;
+
+                        });
+
+                        // Update summary cards using current page data
+                        loanPage.funx.summary(response.data);
+
+                        callback({
+
+                            draw: response.draw,
+
+                            recordsTotal: response.recordsTotal,
+
+                            recordsFiltered: response.recordsFiltered,
+
+                            data: response.data
+
+                        });
+
+                    });
+
                 },
 
-                dataType:'json'
+                columns: [
 
-            }).then(function(response){
+                    {
+                        data: "loan_id"
+                    },
 
-                if(response.isError){
+                    {
+                        data: "borrower_name"
+                    },
 
-                    Swal.fire(
+                    {
+                        data: "product_name"
+                    },
+                    {
+                        data: "loan_amount",
+                        render: function (data) {
 
-                        "Error",
+                            return jsAddon.display.money(data);
 
-                        response.message,
+                        }
+                    },
+                    {
+                        data: "approved_interest_rate",
+                        render: function(data) {
 
-                        "error"
+                            if (data === null || data === undefined || data === "") {
+                                return "-";
+                            }
 
-                    );
+                            return data;
 
-                    return;
+                        }
+                    },
+                    {
+                        data: "loan_terms"
+                    },
+                    {
+                        data: "status",
+                        render: function (data) {
 
-                }
+                            return loanPage.funx.statusBadge(data);
 
-                loanPage.loans =
-                    response.data;
+                        }
+                    },
 
-                loanPage.funx.summary(
-                    response.data
-                );
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row) {
 
-                loanPage.funx.renderTable(
-                    response.data
-                );
+                            return loanPage.funx.actionButtons(row);
+
+                        }
+                    }
+
+                ]
 
             });
 
         },
+        statusBadge: function(status) {
 
+            switch ((status || "").toUpperCase()) {
+
+                case "RELEASED":
+                    return `
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle-fill"></i>
+                            RELEASED
+                        </span>
+                    `;
+
+                case "PENDING":
+                    return `
+                        <span class="badge bg-warning text-dark">
+                            <i class="bi bi-hourglass-split"></i>
+                            PENDING
+                        </span>
+                    `;
+
+                case "APPROVED":
+                    return `
+                        <span class="badge bg-primary">
+                            <i class="bi bi-patch-check-fill"></i>
+                            APPROVED
+                        </span>
+                    `;
+
+                case "DECLINED":
+                    return `
+                        <span class="badge bg-danger">
+                            <i class="bi bi-x-circle-fill"></i>
+                            DECLINED
+                        </span>
+                    `;
+
+                case "CANCELLED":
+                    return `
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-slash-circle-fill"></i>
+                            CANCELLED
+                        </span>
+                    `;
+
+                case "COMPLETED":
+                case "PAID":
+                    return `
+                        <span class="badge bg-info text-dark">
+                            <i class="bi bi-cash-stack"></i>
+                            ${status}
+                        </span>
+                    `;
+
+                default:
+                    return `
+                        <span class="badge bg-light text-dark border">
+                            ${status || "N/A"}
+                        </span>
+                    `;
+            }
+
+        },
         getStatusBadge:function(status){
 
             let badge = "secondary";
@@ -432,80 +658,75 @@ let loanPage = {
         |--------------------------------------------------------------------------
         */
 
-        actionButtons:function(loan){
+        actionButtons: function (loan) {
 
-            let html = `
-
-                <button
-
-                    class="btn btn-sm btn-info btn-view"
-
+            let menu = `
+                <li>
+                    <a class="dropdown-item btn-view"
+                    href="javascript:void(0)"
                     data-id="${loan.loan_id}">
-
-                    <i class="bi bi-eye"></i>
-
-                </button>
-
+                        <i class="bi bi-eye me-2 text-info"></i>
+                        View
+                    </a>
+                </li>
             `;
 
-            switch(
+            switch (String(loan.status).toUpperCase()) {
 
-                String(
-                    loan.status
-                ).toUpperCase()
+                case "PENDING":
 
-            ){
-
-                case 'PENDING':
-
-                    html += `
-
-                        <button
-
-                            class="btn btn-sm btn-success btn-approve"
-
+                    menu += `
+                        <li>
+                            <a class="dropdown-item btn-approve"
+                            href="javascript:void(0)"
                             data-id="${loan.loan_id}">
+                                <i class="bi bi-check-circle me-2 text-success"></i>
+                                Approve
+                            </a>
+                        </li>
 
-                            <i class="bi bi-check-lg"></i>
-
-                        </button>
-
-                        <button
-
-                            class="btn btn-sm btn-danger btn-disapprove"
-
+                        <li>
+                            <a class="dropdown-item btn-disapprove"
+                            href="javascript:void(0)"
                             data-id="${loan.loan_id}">
-
-                            <i class="bi bi-x-lg"></i>
-
-                        </button>
-
+                                <i class="bi bi-x-circle me-2 text-danger"></i>
+                                Disapprove
+                            </a>
+                        </li>
                     `;
+                    break;
 
-                break;
+                case "APPROVED":
 
-                case 'APPROVED':
-
-                    html += `
-
-                        <button
-
-                            class="btn btn-sm btn-primary btn-release"
-
+                    menu += `
+                        <li>
+                            <a class="dropdown-item btn-release"
+                            href="javascript:void(0)"
                             data-id="${loan.loan_id}">
-
-                            <i class="bi bi-cash-stack"></i>
-
-                        </button>
-
+                                <i class="bi bi-cash-stack me-2 text-primary"></i>
+                                Release Loan
+                            </a>
+                        </li>
                     `;
-
-                break;
-
+                    break;
             }
 
-            return html;
+            return `
+                <div class="dropdown">
+                    <button
+                        class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
 
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        ${menu}
+                    </ul>
+                </div>
+            `;
         },
         /*
         |--------------------------------------------------------------------------
@@ -514,17 +735,7 @@ let loanPage = {
         */
         viewLoan:function(loanId){
 
-            let loan =
-
-                loanPage.loans.find(
-
-                    x =>
-
-                    x.loan_id ==
-
-                    loanId
-
-                );
+            let loan = loanPage.loans[String(loanId)];
 
             if(
                 !loan
@@ -895,17 +1106,7 @@ let loanPage = {
 
         showApprove:function(loanId){
 
-            let loan =
-
-                loanPage.loans.find(
-
-                    x =>
-
-                    x.loan_id ==
-
-                    loanId
-
-                );
+            let loan = loanPage.loans[String(loanId)];
 
             if(!loan){
 
@@ -1120,9 +1321,7 @@ let loanPage = {
 
         showDisapprove:function(loanId){
 
-            let loan = loanPage.loans.find(
-                x => x.loan_id == loanId
-            );
+            let loan = loanPage.loans[String(loanId)];
 
             if(!loan){
 
@@ -1274,11 +1473,7 @@ let loanPage = {
 
         showRelease:function(loanId){
 
-            let loan =
-                loanPage.loans.find(
-                    x =>
-                        x.loan_id == loanId
-                );
+            let loan = loanPage.loans[String(loanId)];
 
             if(!loan){
 

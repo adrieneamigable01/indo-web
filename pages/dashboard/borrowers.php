@@ -97,7 +97,7 @@ href="assets/css/loan.css">
 <div class="content">
 
     <!-- TOPBAR -->
-
+    
     <div class="topbar d-flex justify-content-between align-items-center">
 
         <div>

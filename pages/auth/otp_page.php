@@ -139,6 +139,13 @@ body{
     }
 
 }
+.version-badge{
+    background:#eef3f8;
+    padding:5px 12px;
+    border-radius:20px;
+    display:inline-block;
+    margin-top:10px;
+}
 
 </style>
 </head>
@@ -274,6 +281,14 @@ body{
                     <small>
                         Internal Back Office Portal
                     </small>
+
+                    <div class="version-badge">
+                        
+                    </div>
+
+                    <div class="mt-3">
+                        © 2026 Indo Pacific Lending
+                    </div>
 
                 </div>
 

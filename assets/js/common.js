@@ -1,6 +1,17 @@
 $(()=>{
     jsAddon = {
         display:{
+            logout:()=>{
+                
+            },
+            money: function(amount){
+
+                return Number(amount || 0).toLocaleString('en-PH', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+            },
             getDate:(date) => {
                 const year = date.getFullYear();
                 const month = ("0" + (date.getMonth() + 1)).slice(-2);

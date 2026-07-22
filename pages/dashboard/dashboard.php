@@ -15,29 +15,12 @@
 <!-- SIDEBAR -->
 <?php include_once('common/sidenav.php') ?>
 
+
 <!-- CONTENT -->
 
 <div class="content">
-
-    <div class="topbar d-flex justify-content-between">
-
-        <div>
-            <h4 class="mb-0">
-                Dashboard Overview
-            </h4>
-        </div>
-
-        <div>
-            <button class="btn btn-light">
-                <i class="bi bi-bell"></i>
-            </button>
-
-            <button class="btn btn-primary">
-                Administrator
-            </button>
-        </div>
-
-    </div>
+    
+    <?php include_once('common/topbar.php') ?>
 
     <!-- KPI -->
 
