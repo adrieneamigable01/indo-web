@@ -5229,12 +5229,24 @@ let cashierVaultPage = {
 
                             </option>
 
+                            <option value="SALARY PRINCIPAL + INTEREST">
+
+                                SALARY PRINCIPAL + INTEREST
+
+                            </option>
+
                             <option value="Short Term Loan">
 
                                 Short Term Loan
 
                             </option>
 
+                            <option value="Bracket Loan">
+
+                                Bracket Loan
+
+                            </option>
+                            
                             <option value="Bracket Loan">
 
                                 Bracket Loan
@@ -5274,6 +5286,60 @@ let cashierVaultPage = {
                             <option value="Deposit">
 
                                 Deposit
+
+                            </option>
+
+                            <option value="HARDSHIP">
+
+                                HARDSHIP
+
+                            </option>
+
+                            <option value="DIFFERENTIAL">
+
+                                DIFFERENTIAL
+
+                            </option>
+
+                            <option value="MONETIZATION">
+
+                                MONETIZATION
+
+                            </option>
+
+                            <option value="LOYALTY">
+
+                                LOYALTY
+
+                            </option>
+
+                            <option value="REFUND">
+
+                                REFUND
+
+                            </option>
+
+                            <option value="ANNIVERSARY BONUS">
+
+                                ANNIVERSARY BONUS
+
+                            </option>
+
+                            <option value="MEDICAL ALLOWANCE">
+
+                                MEDICAL ALLOWANCE
+
+                            </option>
+
+                            <option value="TAX REFUND">
+
+                                TAX REFUND
+
+                            </option>
+
+                            <option value="TEACHERS CASH GIFT">
+
+                                TEACHERS CASH GIFT
 
                             </option>
 
