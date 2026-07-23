@@ -68,7 +68,7 @@ let cashierVaultPage = {
 
         cashierVaultPage.funx.events();
 
-        cashierVaultPage.funx.autoRefresh();
+        // cashierVaultPage.funx.autoRefresh();
 
         cashierVaultPage.funx.keyboardShortcut();
 
@@ -5246,7 +5246,6 @@ let cashierVaultPage = {
                                 Bracket Loan
 
                             </option>
-                            
                             <option value="Bracket Loan">
 
                                 Bracket Loan
