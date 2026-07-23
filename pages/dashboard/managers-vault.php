@@ -41,15 +41,6 @@ href="../assets/css/loan.css">
 
 <?php include_once('common/sidenav.php'); ?>
 
-<!-- ===================================================== -->
-<!-- CONTENT -->
-<!-- ===================================================== -->
-
-<!-- ===================================================== -->
-<!-- CONTENT -->
-<!-- ===================================================== -->
-
-<div class="content">
 
     <!-- ================================================= -->
     <!-- PAGE HEADER -->
@@ -60,7 +51,8 @@ href="../assets/css/loan.css">
                justify-content-between
                align-items-center
                flex-wrap
-               mb-4">
+               mb-4
+               mt-5">
 
         <div>
 
@@ -1081,4 +1073,5 @@ href="../assets/css/loan.css">
 <script src="../assets/js/common.js"></script>
 
 <script src="../assets/js/managers-vault.js"></script>
+<script src="../assets/js/dashboardMain.js"></script>
 </html>

@@ -100,18 +100,14 @@ href="../assets/css/loan.css">
 <!-- CONTENT -->
 <!-- ===================================================== -->
 
-<div class="content">
-
-    <!-- ================================================= -->
-    <!-- PAGE HEADER -->
-    <!-- ================================================= -->
 
     <div
         class="d-flex
                justify-content-between
                align-items-center
                flex-wrap
-               mb-4">
+               mb-4
+               mt-5">
 
         <div>
 
@@ -1395,7 +1391,7 @@ href="../assets/css/loan.css">
 <script src="../assets/js/common.js"></script>
 
 <script src="../assets/js/cashier-vault.js"></script>
-
+<script src="../assets/js/dashboardMain.js"></script>
 </body>
 
 </html>

@@ -1628,7 +1628,7 @@
 <script src="../assets/js/common.js"></script>
 <script src="../assets/js/config.js"></script>
 <script src="../assets/js/borrower_view.js"></script>
-
+<script src="../assets/js/dashboardMain.js"></script>
 </body>
 
 </html>

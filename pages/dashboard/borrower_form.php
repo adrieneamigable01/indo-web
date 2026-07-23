@@ -938,3 +938,4 @@ label{
 <script src="../assets/js/common.js"></script>
 <script src="../assets/js/config.js"></script>
 <script src="../assets/js/borrower_form.js"></script>
+<script src="../assets/js/dashboardMain.js"></script>

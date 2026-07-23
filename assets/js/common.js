@@ -159,61 +159,97 @@ $(()=>{
                     })
                 })
             },
-            ajaxFilesRequest:(payload)=>{
-                let token = jsAddon.display.getSessionDataNoParse('token');
-                payload.icon = payload.hasOwnProperty('type') ? payload.type : 'get';
-                payload.url = payload.hasOwnProperty('url') ? payload.url : '/';
-                payload.dataType =  payload.hasOwnProperty('dataType') ? payload.dataType : 'json';
-                payload.payload =  payload.hasOwnProperty('payload') ? payload.payload : {};
-                payload.payload.append('token', token);
-                return new Promise((res,rej)=>{
+            ajaxUpload:(payload)=>{
 
-                   
+                let token = jsAddon.display.getSessionDataNoParse('token');
+
+                payload.type = payload.hasOwnProperty('type') ? payload.type : 'POST';
+                payload.url = payload.hasOwnProperty('url') ? payload.url : '/';
+                payload.dataType = payload.hasOwnProperty('dataType') ? payload.dataType : 'json';
+                payload.payload = payload.hasOwnProperty('payload') ? payload.payload : new FormData();
+
+                return new Promise((res, rej)=>{
+
                     $.ajax({
+
                         type:payload.type,
+
                         url:payload.url,
-                        dataType:payload.dataType,
+
                         data:payload.payload,
-                        contentType: false,
-                        processData: false,
-                        // beforeSend: function(xhr) {
-                        //     xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-                        // },
-                        error:function(xhr, status, error){
-                            jsAddon.display.removefullPageLoader()
-                            let data = JSON.parse(xhr.responseText);
-                            let payload = {
-                                icon:'warning',
-                                title:'System Error',
-                                showCancelButton:false,
-                                confirmButtonText:'Ok',
-                                text:data.message
-                            };
-                            if(data._isError){
-                                if(xhr.status == 401){
-                                    payload.redirectLink = 'index.php';
-                                    
-                                }
-                                jsAddon.display.showConfirmMessage(payload)
-                                jsAddon.display.logout();
-                            }
+
+                        dataType:payload.dataType,
+
+                        processData:false,
+
+                        contentType:false,
+
+                        cache:false,
+
+                        beforeSend:function(xhr){
+
+                            xhr.setRequestHeader(
+                                'Authorization',
+                                'Bearer ' + token
+                            );
+
                         },
-                        success:function(response){
-                            if(!response._isError){
-                                res(response)
-                            }else{
-                                jsAddon.display.showConfirmMessage({
+
+                        error:function(xhr,status,error){
+
+                            console.log(error);
+                            console.log(status);
+
+                            jsAddon.display.removefullPageLoader();
+
+                            try{
+
+                                let data = JSON.parse(xhr.responseText);
+
+                                let payload = {
+
                                     icon:'warning',
+
                                     title:'System Error',
-                                    text:response.reason,
+
+                                    text:data.message,
+
                                     showCancelButton:false,
-                                    confirmButtonText:'Ok',
-                                })
+
+                                    confirmButtonText:'Ok'
+
+                                };
+
+                                if(data.error && xhr.status == 401){
+
+                                    payload.redirectLink = `${baseurl}index.php`;
+
+                                    jsAddon.display.logout();
+
+                                }
+
+                                jsAddon.display.showConfirmMessage(payload);
+
+                            }catch(e){
+
+                                console.error(xhr.responseText);
+
                             }
-                            
+
+                            rej(xhr);
+
+                        },
+
+                        success:function(response){
+
+                            res(response);
+
                         }
-                    })
-                })
+
+                    });
+
+                });
+
             },
             getQueryParam:(param) => {
                 // Create a new URLSearchParams object from the current URL's query string

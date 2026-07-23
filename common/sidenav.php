@@ -124,3 +124,8 @@
 
 </div>
 
+<!-- CONTENT -->
+
+<div class="content">
+    
+    <?php include_once('common/topbar.php') ?>

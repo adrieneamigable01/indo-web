@@ -16,11 +16,7 @@
 <?php include_once('common/sidenav.php') ?>
 
 
-<!-- CONTENT -->
 
-<div class="content">
-    
-    <?php include_once('common/topbar.php') ?>
 
     <!-- KPI -->
 
@@ -666,6 +662,10 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="assets/js/config.js"></script>
 
+<script src="assets/js/common.js"></script>
+
+<script src="assets/js/dashboardMain.js"></script>
 </body>
 </html>

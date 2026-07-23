@@ -47,6 +47,10 @@ var loanproductsApi  = `${url}loanproducts`;
 
 const managerVaultApi = url + "managervault";
 const userApi = url + "user/get/cashier";
+const userGetProfileApi = url + "user/get/profile";
+const updateUserProfileApi = url + "user/update/profile";
+const updateUserProfileImageApi = url + "user/update/profile-image";
+const userGetLogsApi = url + "user/get/logs";
 const managerTransanferToCashierApi = url + "managervault/transfer/cashier";
 
 

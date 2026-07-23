@@ -463,3 +463,50 @@ body{
     width:18px;
 
 }
+
+    .navbar{
+        position: fixed;
+        top: 0;
+        left: 270px;          /* Same as sidebar width */
+        right: 0;
+        height: 70px;
+        z-index: 1050;
+
+        background: #fff;
+        box-shadow: 0 4px 20px rgba(0,0,0,.05);
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .navbar .dropdown-toggle::after{
+        margin-left:12px;
+    }
+
+    .dropdown-menu{
+        width:260px;
+        border-radius:15px;
+    }
+
+    .dropdown-item{
+        padding:.75rem 1rem;
+        transition:.2s;
+    }
+
+    .dropdown-item:hover{
+        background:#f8f9fa;
+    }
+
+    .dropdown-item i{
+        width:22px;
+    }
+
+    .navbar img{
+        transition:.2s;
+    }
+
+    .navbar img:hover{
+        transform:scale(1.05);
+    }
+    .topbar{
+         margin-top: 90px;
+    }
+

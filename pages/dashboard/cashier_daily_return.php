@@ -102,9 +102,6 @@ href="../assets/css/loan.css">
 
 <?php include_once('common/sidenav.php'); ?>
 
-<!-- Content -->
-
-<div class="content">
 
     <!-- Topbar -->
 
@@ -874,7 +871,7 @@ href="../assets/css/loan.css">
 <!-- Daily Close JS -->
 
 <script src="../assets/js/dailyclose.js"></script>
-
+<script src="../assets/js/dashboardMain.js"></script>
 </body>
 
 </html>

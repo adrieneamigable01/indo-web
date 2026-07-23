@@ -1,164 +1,162 @@
 <style>
+    .profile-trigger{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
 
-    .navbar{
-        position: fixed;
-        top: 0;
-        left: 270px;          /* Same as sidebar width */
-        right: 0;
-        height: 70px;
-        z-index: 1050;
+.profile-avatar{
+    position:relative;
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    padding:3px;
+    background:linear-gradient(135deg,#0d6efd,#6ea8fe);
+    transition:all .25s ease;
+    box-shadow:0 4px 12px rgba(13,110,253,.25);
+}
 
-        background: #fff;
-        box-shadow: 0 4px 20px rgba(0,0,0,.05);
-        border-bottom: 1px solid #e5e7eb;
-    }
+.profile-avatar:hover{
+    transform:translateY(-2px) scale(1.05);
+    box-shadow:0 8px 18px rgba(13,110,253,.35);
+}
 
-    .navbar .dropdown-toggle::after{
-        margin-left:12px;
-    }
+.profile-avatar-img{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    object-fit:cover;
+    border:3px solid #fff;
+    background:#f8f9fa;
+}
 
-    .dropdown-menu{
-        width:260px;
-        border-radius:15px;
-    }
-
-    .dropdown-item{
-        padding:.75rem 1rem;
-        transition:.2s;
-    }
-
-    .dropdown-item:hover{
-        background:#f8f9fa;
-    }
-
-    .dropdown-item i{
-        width:22px;
-    }
-
-    .navbar img{
-        transition:.2s;
-    }
-
-    .navbar img:hover{
-        transform:scale(1.05);
-    }
-
+/* Optional online indicator */
+.profile-avatar::after{
+    content:"";
+    position:absolute;
+    bottom:4px;
+    right:4px;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#28a745;
+    border:2px solid #fff;
+}
 </style>
-
 <nav class="navbar bg-white shadow-sm rounded-4 px-4 py-3 mb-4">
-        <!-- Left -->
-        <div>
 
-            <h4 class="fw-bold mb-0 text-primary">
-                <?= $pageTitle ?? "Dashboard"; ?>
-            </h4>
+    <!-- Left -->
+    <div>
 
-            <small class="text-muted">
-                Indo-Pacific Lending Corporation
-            </small>
+        <h4 class="fw-bold mb-0 text-primary">
+            <?= $pageTitle ?? "Dashboard"; ?>
+        </h4>
 
-        </div>
+        <small class="text-muted">
+            Indo-Pacific Lending Corporation
+        </small>
 
-        <!-- Right -->
-        <div class="dropdown">
+    </div>
 
-            <a href="#"
-               class="d-flex align-items-center text-decoration-none dropdown-toggle"
-               data-bs-toggle="dropdown"
-               aria-expanded="false">
+    <!-- Right -->
+    <div class="dropdown">
 
-                <img
-                    src=""
-                    class="rounded-circle border shadow-sm"
-                    width="45"
-                    height="45"
-                    style="object-fit:cover;">
+        <a href="#"
+            class="profile-trigger text-decoration-none"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
 
-                <div class="ms-3 text-start">
+                <div class="profile-avatar">
 
-                    <div class="fw-semibold text-dark">
-
-
-                    </div>
-
-                    <small class="text-muted">
-
-
-                    </small>
+                    <img
+                        id="navProfileImage"
+                        src=""
+                        alt="Profile"
+                        class="profile-avatar-img">
 
                 </div>
 
             </a>
 
-            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
 
-                <li>
+            <li>
 
-                    <div class="px-3 py-3 text-center">
+                <div class="px-3 py-3 text-center">
 
-                        <img
-                            src=""
-                            class="rounded-circle border mb-2"
-                            width="70"
-                            height="70"
-                            style="object-fit:cover;">
+                    <!-- Large Profile Image -->
+                    <img
+                        id="navProfileImageLarge"
+                        src=""
+                        class="rounded-circle border mb-2"
+                        width="70"
+                        height="70"
+                        style="object-fit:cover;">
 
-                        <div class="fw-bold">
+                    <!-- Large Name -->
+                    <div
+                        id="navFullNameLarge"
+                        class="fw-bold">
 
-
-                        </div>
-
-                        <small class="text-muted">
-
-
-                        </small>
+                        -
 
                     </div>
 
-                </li>
+                    <!-- Large Role -->
+                    <small
+                        id="navRoleLarge"
+                        class="text-muted">
 
-                <li><hr class="dropdown-divider"></li>
+                        -
 
-                <li>
+                    </small>
 
-                    <a class="dropdown-item" href="<?= url('profile') ?>">
+                </div>
 
-                        <i class="bi bi-person-circle me-2 text-primary"></i>
+            </li>
 
-                        My Profile
+            <li><hr class="dropdown-divider"></li>
 
-                    </a>
+            <li>
 
-                </li>
+                <a class="dropdown-item" href="<?= url('user-profile') ?>">
 
-                <li>
+                    <i class="bi bi-person-circle me-2 text-primary"></i>
 
-                    <a class="dropdown-item" href="<?= url('security') ?>">
+                    My Profile
 
-                        <i class="bi bi-shield-lock me-2 text-warning"></i>
+                </a>
 
-                        Security Settings
+            </li>
 
-                    </a>
+            <li>
 
-                </li>
+                <a class="dropdown-item" href="<?= url('security') ?>">
 
-                <li><hr class="dropdown-divider"></li>
+                    <i class="bi bi-shield-lock me-2 text-warning"></i>
 
-                <li>
+                    Security Settings
 
-                    <a class="dropdown-item text-danger" href="<?= url('logout') ?>">
+                </a>
 
-                        <i class="bi bi-box-arrow-right me-2"></i>
+            </li>
 
-                        Logout
+            <li><hr class="dropdown-divider"></li>
 
-                    </a>
+            <li>
 
-                </li>
+                <a class="dropdown-item text-danger" href="<?= url('logout') ?>">
 
-            </ul>
+                    <i class="bi bi-box-arrow-right me-2"></i>
 
-        </div>
+                    Logout
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </div>
 
 </nav>

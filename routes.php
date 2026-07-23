@@ -5,6 +5,7 @@ return [
     '' => 'pages/auth/index.php',
     'login' => 'pages/auth/index.php',
     'otp' => 'pages/auth/otp_page.php',
+    'user-profile' => 'pages/dashboard/profile.php',
     'dashboard' => 'pages/dashboard/dashboard.php',
     'borrowers' => 'pages/dashboard/borrowers.php',
     'view/borrower' => 'pages/dashboard/borrower_view.php',

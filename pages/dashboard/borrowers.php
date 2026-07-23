@@ -92,9 +92,6 @@ href="assets/css/loan.css">
 <?php include_once('common/sidenav.php') ?>
 
 
-<!-- CONTENT -->
-
-<div class="content">
 
     <!-- TOPBAR -->
     
@@ -316,6 +313,7 @@ href="assets/css/loan.css">
 <script src="assets/js/config.js"></script>
 <script src="assets/js/common.js"></script>
 <script src="assets/js/borrower.js"></script>
+<script src="assets/js/dashboardMain.js"></script>
 
 </body>
 </html>
