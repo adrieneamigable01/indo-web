@@ -30,7 +30,7 @@ const dashboardMain = {
 
         renderNavbar:function(){
 
-            const defaultImage = `${baseurl}assets/images/user-image.jpg`;
+            const defaultImage = "https://api.dicebear.com/9.x/personas/svg?seed=default";
 
             const image = dashboardMain.user.user_image
                 ? `${url}${dashboardMain.user.user_image}`
