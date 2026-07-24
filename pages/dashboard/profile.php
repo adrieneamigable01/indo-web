@@ -192,10 +192,10 @@
                 -
             </span>
 
-            <span id="user_type"
+            <!-- <span id="user_type"
                 class="badge bg-success px-3 py-2">
                 -
-            </span>
+            </span> -->
 
             <hr>
 
@@ -258,12 +258,26 @@
 
                     <span class="text-muted">
 
-                        User Type
+                        Email:
 
                     </span>
 
-                    <span id="account_usertype"
-                        class="badge bg-success">
+                    <span id="email-address">
+
+                        -
+
+                    </span>
+
+                </div>
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+
+                    <span class="text-muted">
+
+                        Mobile Number:
+
+                    </span>
+
+                    <span id="mobile-number">
 
                         -
 
@@ -324,120 +338,136 @@
                 Personal Information
 
             </h5>
+            <form id="frmProfile">
+                <div class="row g-3">
 
-            <div class="row g-3">
+                    <div class="col-md-4">
 
-                <div class="col-md-4">
+                        <label class="info-label">
 
-                    <label class="info-label">
+                            First Name
 
-                        First Name
+                        </label>
 
-                    </label>
+                        <input
+                            id="firstname"
+                            name="firstname"
+                            type="text"
+                            class="form-control">
 
-                    <input
-                        id="firstname"
-                        name="firstname"
-                        type="text"
-                        class="form-control">
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="info-label">
+
+                            Middle Name
+
+                        </label>
+
+                        <input
+                            id="middlename"
+                            name="middlename"
+                            type="text"
+                            class="form-control">
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="info-label">
+
+                            Last Name
+
+                        </label>
+
+                        <input
+                            id="lastname"
+                            name="lastname"
+                            type="text"
+                            class="form-control">
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="info-label">
+
+                            Birthdate
+
+                        </label>
+
+                        <input
+                            id="birthdate"
+                            name="birthdate"
+                            type="date"
+                            class="form-control">
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="info-label">
+
+                            Mobile Number
+
+                        </label>
+
+                        <input
+                            id="mobile_number"
+                            name="mobile_number"
+                            type="text"
+                            class="form-control">
+                         <div class="form-text text-muted">
+
+                            <i class="bi bi-phone-fill me-1 text-success"></i>
+
+                            This mobile number may be used to receive OTPs, security alerts, and important account notifications.
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <label class="info-label">
+
+                            Email Address
+
+                        </label>
+
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            class="form-control">
+                        <div class="form-text text-muted">
+
+                            <i class="bi bi-envelope-fill me-1 text-primary"></i>
+
+                            This email address will be used to receive your One-Time Password (OTP) for account verification and security.
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-12 text-end mt-3">
+
+                        <button
+                            type="button"
+                            id="btnUpdateProfile"
+                            class="btn btn-success">
+
+                            <i class="bi bi-check-circle"></i>
+
+                            Save Changes
+
+                        </button>
+
+                    </div>
 
                 </div>
-
-                <div class="col-md-4">
-
-                    <label class="info-label">
-
-                        Middle Name
-
-                    </label>
-
-                    <input
-                        id="middlename"
-                        name="middlename"
-                        type="text"
-                        class="form-control">
-
-                </div>
-
-                <div class="col-md-4">
-
-                    <label class="info-label">
-
-                        Last Name
-
-                    </label>
-
-                    <input
-                        id="lastname"
-                        name="lastname"
-                        type="text"
-                        class="form-control">
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <label class="info-label">
-
-                        Birthdate
-
-                    </label>
-
-                    <input
-                        id="birthdate"
-                        name="birthdate"
-                        type="date"
-                        class="form-control">
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <label class="info-label">
-
-                        Mobile Number
-
-                    </label>
-
-                    <input
-                        id="mobile_number"
-                        name="mobile_number"
-                        type="text"
-                        class="form-control">
-
-                </div>
-
-                <div class="col-md-12">
-
-                    <label class="info-label">
-
-                        Email Address
-
-                    </label>
-
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        class="form-control">
-
-                </div>
-
-                <div class="col-12 text-end mt-3">
-
-                    <button
-                        id="btnUpdateProfile"
-                        class="btn btn-success">
-
-                        <i class="bi bi-check-circle"></i>
-
-                        Save Changes
-
-                    </button>
-
-                </div>
-
-            </div>
+            </form>
 
         </div>
 
@@ -634,6 +664,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
 
 <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/jquery.validate.min.js"></script>
 <script src="assets/js/config.js"></script>
 
 <script src="assets/js/common.js"></script>

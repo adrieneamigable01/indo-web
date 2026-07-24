@@ -109,7 +109,6 @@ var profile = {
 
             $("#role").text(data.role);
 
-            $("#user_type").text(data.usertype);
 
             // Left Card - Account Information
             $("#account_userid").text(data.userid);
@@ -150,6 +149,9 @@ var profile = {
             $("#mobile_number").val(data.mobile_number);
 
             $("#email").val(data.email);
+            $("#email-address").text(data.email);
+            $("#mobile-number").text(data.mobile_number);
+            $("#last_password_update").val(data.last_password_update);
 
         },
 
@@ -247,6 +249,107 @@ var profile = {
 
         },
 
+        sendOTP: function () {
+
+            const userData = JSON.parse(localStorage.getItem("userdata"));
+
+            $("#btnSendOTP")
+                .prop("disabled", true)
+                .html('<span class="spinner-border spinner-border-sm me-1"></span> Sending...');
+
+            jsAddon.display.ajaxRequest({
+
+                url: userSendOTPApi,
+
+                type: "POST",
+
+                payload: {
+
+                    userid: userData.userid,
+
+                    request_type: "change_user_password"
+
+                },
+
+                dataType: "json"
+
+            }).then(function (response) {
+
+                $("#btnSendOTP")
+                    .prop("disabled", false)
+                    .text("Resend OTP");
+
+                if(response.isError){
+
+                    Swal.showValidationMessage(response.message);
+
+                    return;
+                }
+
+                $("#otpMessage")
+                    .removeClass("d-none")
+                    .html(`
+                        <div class="alert alert-success py-2 mb-0">
+                            <i class="bi bi-check-circle-fill me-1"></i>
+                            OTP has been sent to your registered email.
+                        </div>
+                    `);
+
+            }).catch(function () {
+
+                 $("#btnSendOTP")
+                    .prop("disabled", false)
+                    .html("Send OTP");
+
+                $("#otpMessage").html(`
+                    <div class="alert alert-danger py-2 mb-0">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        Unable to process your request. Please try again.
+                    </div>
+                `);
+
+            });
+
+        },
+        changePassword: function (payload) {
+
+            return jsAddon.display.ajaxRequest({
+
+                url: userChangePasswordApi,
+
+                type: "POST",
+
+                payload: payload,
+
+                dataType: "json"
+
+            }).then(function (response) {
+
+                if (response.isError) {
+
+                    Swal.showValidationMessage(response.message);
+
+                    return false;
+                }
+
+                return response;
+
+            }).catch(function (xhr) {
+
+                let message = "Unable to change password.";
+
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+
+                Swal.showValidationMessage(message);
+
+                return false;
+
+            });
+
+        },
+        
         events:()=>{
 
             $("#btnEditProfile")
@@ -264,11 +367,176 @@ var profile = {
 
             });
 
-            $("#btnChangePassword")
-            .click(function(){
+            $("#btnChangePassword").click(function () {
 
-                window.location =
-                    `${baseurl}security`;
+                Swal.fire({
+
+                    title: "Change Password",
+
+                    width: 550,
+
+                    html: `
+
+                        <div class="text-start">
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Old Password
+                                </label>
+
+                                <input
+                                    type="password"
+                                    id="swalOldPassword"
+                                    class="form-control"
+                                    placeholder="Enter your current password">
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    New Password
+                                </label>
+
+                                <input
+                                    type="password"
+                                    id="swalNewPassword"
+                                    class="form-control"
+                                    placeholder="Enter your new password">
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Confirm Password
+                                </label>
+
+                                <input
+                                    type="password"
+                                    id="swalConfirmPassword"
+                                    class="form-control"
+                                    placeholder="Confirm your new password">
+
+                            </div>
+
+                            <div class="mb-0">
+
+                                <label class="form-label fw-semibold">
+                                    One-Time Password (OTP)
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input
+                                        type="text"
+                                        id="swalOTP"
+                                        class="form-control"
+                                        placeholder="Enter OTP">
+
+                                    <button
+                                        class="btn btn-outline-primary"
+                                        type="button"
+                                        id="btnSendOTP">
+
+                                        Send OTP
+
+                                    </button>
+
+                                </div>
+
+                                <div class="form-text">
+                                    An OTP will be sent to your registered email.
+                                </div>
+                                <div id="otpMessage" class="mt-2 d-none"></div>
+                            </div>
+
+                        </div>
+
+                    `,
+
+                    focusConfirm: false,
+
+                    showCancelButton: true,
+
+                    confirmButtonText: "Change Password",
+
+                    cancelButtonText: "Cancel",
+                    showLoaderOnConfirm: true,
+                    allowOutsideClick: () => !Swal.isLoading(),
+                    didOpen: () => {
+
+                        $("#btnSendOTP").on("click", function () {
+
+                            profile.funx.sendOTP();
+
+                        });
+
+                    },
+                   preConfirm: () => {
+
+                        const oldPassword = $("#swalOldPassword").val().trim();
+                        const newPassword = $("#swalNewPassword").val().trim();
+                        const confirmPassword = $("#swalConfirmPassword").val().trim();
+                        const otp = $("#swalOTP").val().trim();
+
+                        // Client-side validation
+                        if (!oldPassword) {
+                            Swal.showValidationMessage("Old password is required.");
+                            return false;
+                        }
+
+                        if (!newPassword) {
+                            Swal.showValidationMessage("New password is required.");
+                            return false;
+                        }
+
+                        if (newPassword.length < 8) {
+                            Swal.showValidationMessage("New password must be at least 8 characters.");
+                            return false;
+                        }
+
+                        if (confirmPassword !== newPassword) {
+                            Swal.showValidationMessage("Passwords do not match.");
+                            return false;
+                        }
+
+                        if (!otp) {
+                            Swal.showValidationMessage("OTP is required.");
+                            return false;
+                        }
+
+                        return profile.funx.changePassword({
+                            userid: profile.user.userid,
+                            old_password: oldPassword,
+                            new_password: newPassword,
+                            confirm_password: confirmPassword,
+                            otp: otp
+                        });
+
+                    }
+
+
+                }).then((result) => {
+
+                    if (result.isConfirmed && result.value) {
+
+                        Swal.fire({
+
+                            icon: "success",
+
+                            title: "Password Changed",
+
+                            text: result.value.message,
+
+                            confirmButtonText: "OK"
+
+                        });
+
+                    }
+
+                });
 
             });
 
@@ -641,10 +909,52 @@ $(document).ready(function(){
 
     profile.init();
 
-    $("#btnUploadPhoto").click(function () {
+$("#btnUploadPhoto").click(function (e) {
 
-      profile.funx.updateProfileImage();
+    e.preventDefault();
+
+    if (!profile.selectedProfileImage) {
+
+        Swal.fire({
+            icon: "warning",
+            title: "No Image Selected",
+            text: "Please select and crop a profile photo first."
+        });
+
+        return;
+    }
+
+    Swal.fire({
+
+        icon: "question",
+
+        title: "Upload Profile Photo?",
+
+        text: "Are you sure you want to update your profile photo?",
+
+        showCancelButton: true,
+
+        confirmButtonColor: "#198754",
+
+        cancelButtonColor: "#6c757d",
+
+        confirmButtonText: '<i class="bi bi-upload"></i> Yes, Upload',
+
+        cancelButtonText: "Cancel",
+
+        reverseButtons: true
+
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            profile.funx.updateProfileImage();
+
+        }
+
     });
+
+});
 
 $("#user_image").change(function () {
 
@@ -668,10 +978,122 @@ $("#user_image").change(function () {
 });
 
 $("#btnUpdateProfile").click(function(){
+    if(!$("#frmProfile").valid()){
+        return;
+    }
 
-    profile.funx.update();
+    Swal.fire({
+
+        icon:"question",
+
+        title:"Update Profile?",
+
+        text:"Are you sure you want to save the changes?",
+
+        showCancelButton:true,
+
+        confirmButtonColor:"#198754",
+
+        cancelButtonColor:"#6c757d",
+
+        confirmButtonText:"Yes, Save",
+
+        cancelButtonText:"Cancel"
+
+    }).then((result)=>{
+
+        if(result.isConfirmed){
+
+            profile.funx.update();
+
+        }
+
+    });
 
 });
+
+$("#frmProfile").validate({
+
+    rules:{
+
+        firstname:{
+            required:true
+        },
+
+        lastname:{
+            required:true
+        },
+
+        birthdate:{
+            required:true
+        },
+
+        mobile_number:{
+            required:true,
+            minlength:11,
+            maxlength:15,
+            digits:true
+        },
+
+        email:{
+            required:true,
+            email:true
+        }
+
+    },
+
+    messages:{
+
+        firstname:{
+            required:"First name is required."
+        },
+
+        lastname:{
+            required:"Last name is required."
+        },
+
+        birthdate:{
+            required:"Birthdate is required."
+        },
+
+        mobile_number:{
+            required:"Mobile number is required.",
+            minlength:"Mobile number must be 11 digits.",
+            maxlength:"Mobile number must be 11 digits.",
+            digits:"Only numbers are allowed."
+        },
+
+        email:{
+            required:"Email address is required.",
+            email:"Please enter a valid email address."
+        }
+
+    },
+
+    errorElement:"div",
+
+    errorClass:"invalid-feedback",
+
+    highlight:function(element){
+
+        $(element).addClass("is-invalid");
+
+    },
+
+    unhighlight:function(element){
+
+        $(element).removeClass("is-invalid");
+
+    },
+
+    errorPlacement:function(error, element){
+
+        error.insertAfter(element);
+
+    }
+
+});
+
 $("#cameraInput, #galleryInput").on("change", function () {
 
     const file = this.files[0];

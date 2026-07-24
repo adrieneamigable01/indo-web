@@ -47,6 +47,8 @@ var loanproductsApi  = `${url}loanproducts`;
 
 const managerVaultApi = url + "managervault";
 const userApi = url + "user/get/cashier";
+const userSendOTPApi = url + "user/otp/change-password";
+const userChangePasswordApi = url + "user/change-password";
 const userGetProfileApi = url + "user/get/profile";
 const updateUserProfileApi = url + "user/update/profile";
 const updateUserProfileImageApi = url + "user/update/profile-image";
@@ -67,5 +69,13 @@ const dailyCloseApi     = `${url}cashierdailyclose`;
 const dailyCloseSummaryApi     = `${url}cashierdailyclose/summary`;
 const dailyCloseApproveApi     = `${url}cashiervault/approve-return-vault`;
 const dailyClosRejectApi     = `${url}cashiervault/reject-return-vault`;
+
+
+const borrowerSalaryApi = url + "borrower/salary/get";
+const borrowerSalaryDetailsApi = url + "borrower/salary/details";
+const saveBorrowerSalaryApi = url + "borrower/salary/save";
+const deleteBorrowerSalaryApi = url + "borrower/salary/delete";
+const saveBulkSalaryApi = url + "borrower/salary/bulk-save";
+const borrowerSalarySummaryApi = url + "borrower/salary/summary";
 
 $(".version-badge").text(version);
