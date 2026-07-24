@@ -36,10 +36,61 @@
         Dashboard
     </a>
 
-    <a href="<?= url('borrowers') ?>" class="menu-item <?= isActive('borrowers') ? 'active' : '' ?>">
-        <i class="bi bi-people"></i>
-        Borrowers
+
+    <!-- Borrowers -->
+
+    <a class="menu-item d-flex justify-content-between align-items-center
+        <?= (
+            isActive('borrowers') ||
+            isActive('borrower/salary')
+        ) ? 'active' : '' ?>"
+        data-bs-toggle="collapse"
+        href="#borrowerMenu"
+        role="button"
+        aria-expanded="<?= (
+            isActive('borrowers') ||
+            isActive('borrower/salary')
+        ) ? 'true' : 'false' ?>"
+        aria-controls="borrowerMenu">
+
+        <span>
+
+            <i class="bi bi-people"></i>
+
+            Borrowers
+
+        </span>
+
+        <i class="bi bi-chevron-down"></i>
+
     </a>
+
+    <div
+        class="collapse <?= (
+            isActive('borrowers') ||
+            isActive('borrower/salary')
+        ) ? 'show' : '' ?>"
+        id="borrowerMenu">
+
+        <a href="<?= url('borrowers') ?>"
+        class="menu-item ps-5 <?= isActive('borrowers') ? 'active' : '' ?>">
+
+            <i class="bi bi-person-lines-fill"></i>
+
+            View Borrowers
+
+        </a>
+
+        <a href="<?= url('borrower/salary') ?>"
+        class="menu-item ps-5 <?= isActive('borrower/salary') ? 'active' : '' ?>">
+
+            <i class="bi bi-cash-stack"></i>
+
+            Borrower Salary
+
+        </a>
+
+    </div>
 
     <a href="<?= url('loan') ?>" class="menu-item <?= isActive('loan') ? 'active' : '' ?>">
         <i class="bi bi-cash-stack"></i>
