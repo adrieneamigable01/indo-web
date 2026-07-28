@@ -955,10 +955,25 @@
                     Business Date
                 </label>
 
+                <select
+                    id="cashier_date_filter"
+                    class="form-select mb-2">
+
+                    <option value="ALL" selected>
+                        All Transactions
+                    </option>
+
+                    <option value="DATE">
+                        Filter by Business Date
+                    </option>
+
+                </select>
+
                 <input
                     type="date"
                     id="cashier_business_date"
-                    class="form-control">
+                    class="form-control"
+                    disabled>
 
             </div>
 
@@ -973,11 +988,8 @@
                     class="form-select">
 
                     <option value="">All</option>
-                    <option value="LOAN_RELEASE">Loan Release</option>
-                    <option value="PAYMENT">Payment</option>
-                    <option value="SETTLEMENT">Settlement</option>
-                    <option value="EXPENSE">Expense</option>
-                    <option value="ADJUSTMENT">Adjustment</option>
+                    <option value="CASH IN">CASH IN</option>
+                    <option value="CASH OUT">CASH OUT</option>
 
                 </select>
 

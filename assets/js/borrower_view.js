@@ -6354,7 +6354,10 @@ borrowerView = {
 
                     borrower_id: borrowerId,
 
-                    business_date: $("#cashier_business_date").val(),
+                    business_date:
+                    $("#cashier_date_filter").val() === "ALL"
+                        ? ""
+                        : $("#cashier_business_date").val(),
 
                     transaction_type: $("#cashier_transaction_type").val(),
 
@@ -6628,6 +6631,87 @@ $(document).ready(function(){
 
 
     
+    $(document)
+
+    .off("change", "#cashier_date_filter")
+
+    .on("change", "#cashier_date_filter", function () {
+
+        if ($(this).val() === "DATE") {
+
+            $("#cashier_business_date")
+                .prop("disabled", false);
+
+        } else {
+
+            $("#cashier_business_date")
+                .val("")
+                .prop("disabled", true);
+
+        }
+
+    });
+
+
+    $(document)
+
+        // Search button
+        .off("click", "#btnSearchCashierTransactions")
+        .on("click", "#btnSearchCashierTransactions", function () {
+
+            borrowerView.funx.loadCashierTransactions();
+
+        })
+
+        // Press Enter in search box
+        .off("keypress", "#cashier_search")
+        .on("keypress", "#cashier_search", function (e) {
+
+            if (e.which === 13) {
+
+                borrowerView.funx.loadCashierTransactions();
+
+            }
+
+        })
+
+        // Transaction type changed
+        .off("change", "#cashier_transaction_type")
+        .on("change", "#cashier_transaction_type", function () {
+
+            borrowerView.funx.loadCashierTransactions();
+
+        })
+
+        // Business date changed
+        .off("change", "#cashier_business_date")
+        .on("change", "#cashier_business_date", function () {
+
+            borrowerView.funx.loadCashierTransactions();
+
+        })
+
+        // All Transactions / Filter by Date
+        .off("change", "#cashier_date_filter")
+        .on("change", "#cashier_date_filter", function () {
+
+            if ($(this).val() === "DATE") {
+
+                $("#cashier_business_date")
+                    .prop("disabled", false);
+
+            } else {
+
+                $("#cashier_business_date")
+                    .val("")
+                    .prop("disabled", true);
+
+            }
+
+            borrowerView.funx.loadCashierTransactions();
+
+        });
+
 
     $("#schedule_until").val(
         today.getFullYear() +
