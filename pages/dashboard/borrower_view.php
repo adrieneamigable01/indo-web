@@ -641,6 +641,21 @@
 
     </li>
 
+     <li class="nav-item">
+
+        <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#cashierTransactionTab">
+
+            <i class="bi bi-receipt"></i>
+
+            Cashier Transcations
+
+        </button>
+
+    </li>
+
 </ul>
 
 
@@ -898,6 +913,143 @@
 
         <div id="scheduleContainer" class="row"></div>
         <div id="scheduleContainer" class="row"></div>
+
+    </div>
+
+</div>
+<div class="tab-pane fade"
+     id="cashierTransactionTab">
+
+    <div class="table-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h5 class="mb-0">
+                    Cashier Transactions
+                </h5>
+
+                <small class="text-muted">
+                    Complete transaction history related to this borrower.
+                </small>
+            </div>
+
+            <button
+                class="btn btn-outline-primary"
+                id="btnRefreshCashierTransactions">
+
+                <i class="bi bi-arrow-clockwise"></i>
+                Refresh
+
+            </button>
+
+        </div>
+
+        <div class="row mb-3">
+
+        
+
+            <div class="col-md-3">
+
+                <label class="form-label">
+                    Business Date
+                </label>
+
+                <input
+                    type="date"
+                    id="cashier_business_date"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <label class="form-label">
+                    Transaction Type
+                </label>
+
+                <select
+                    id="cashier_transaction_type"
+                    class="form-select">
+
+                    <option value="">All</option>
+                    <option value="LOAN_RELEASE">Loan Release</option>
+                    <option value="PAYMENT">Payment</option>
+                    <option value="SETTLEMENT">Settlement</option>
+                    <option value="EXPENSE">Expense</option>
+                    <option value="ADJUSTMENT">Adjustment</option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label class="form-label">
+                    Search
+                </label>
+
+                <input
+                    type="text"
+                    id="cashier_search"
+                    class="form-control"
+                    placeholder="Reference No. / Remarks">
+
+            </div>
+
+            <div class="col-md-2">
+
+                <label>&nbsp;</label>
+
+                <button
+                    class="btn btn-primary w-100"
+                    id="btnSearchCashierTransactions">
+
+                    <i class="bi bi-search"></i>
+
+                    Search
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <table
+            id="cashierTransactionTable"
+            class="table table-bordered table-hover align-middle">
+
+            <thead class="table-light">
+
+                <tr>
+
+                    <th width="120">Business Date</th>
+
+                    <th width="180">Reference No.</th>
+
+                    <th width="160">Transaction</th>
+
+                    <th>Description</th>
+
+                    <th width="140" class="text-end">
+                        Amount
+                    </th>
+
+                    <th width="140">
+                        Cashier
+                    </th>
+
+                    <th width="90">
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+  
+
+        </table>
 
     </div>
 

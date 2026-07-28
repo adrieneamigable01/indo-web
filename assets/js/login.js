@@ -4,7 +4,7 @@ document.getElementById('password');
 
 login = {
     init:()=> {
-
+        
     },
     funx:{
         login:(form)=>{
@@ -26,8 +26,15 @@ login = {
                 success:function(response){
                     console.log(response);
                     if(!response.isError){
+                         // Save user data for OTP
+                        localStorage.setItem("userdata", JSON.stringify(response.data));
+
+                        // Save account for quick login
+                        login.funx.saveAccount({
+                            email: $("input[name=email]").val(),
+                            name: response.data.firstname + " " + response.data.lastname
+                        });
                         if( response.message.includes("OTP Send to your") ){
-                            localStorage.setItem('userdata',JSON.stringify(response.data))
                             window.location = "otp";
                         }
                     }else{
@@ -98,6 +105,46 @@ login = {
                 
 
             });
+        },
+        saveAccount:(account) =>{
+
+            let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+
+            // Remove duplicate email
+            accounts = accounts.filter(a => a.email !== account.email);
+
+            // Add newest login first
+            accounts.unshift(account);
+
+            // Keep only last 5 accounts
+            accounts = accounts.slice(0,5);
+
+            localStorage.setItem("accounts", JSON.stringify(accounts));
+
+        },
+        loadLastAccount:() =>{
+
+            const accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+
+            if(accounts.length === 0)
+                return;
+
+            const account = accounts[0];
+
+            $("input[name=email]").val(account.email);
+
+            $("#saved-account").html(`
+                <div class="alert alert-light border mb-3">
+                    <strong>${account.name}</strong><br>
+                    <small>${account.email}</small>
+                    <a href="#" id="change-account" class="float-end">
+                        Change account
+                    </a>
+                </div>
+            `);
+
+            $("input[name=email]").closest(".mb-3").hide();
+
         }
     }
 
@@ -105,7 +152,7 @@ login = {
 
 
 $(document).ready(function(){
-
+    login.funx.loadLastAccount();
     $("#login-form").validate({
 
         rules:{
@@ -201,6 +248,19 @@ function updateClock()
         .innerHTML =
         now.toLocaleTimeString();
 }
+
+$(document).on("click","#change-account",function(e){
+
+    e.preventDefault();
+    localStorage.removeItem("accounts")
+
+    $("#saved-account").html("");
+
+    $("input[name=email]").val("");
+
+    $("input[name=email]").closest(".mb-3").show();
+
+});
 
 setInterval(updateClock,1000);
 updateClock();

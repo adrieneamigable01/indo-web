@@ -332,9 +332,9 @@ body{
                 -->
 
                 <form id="login-form">
-
+                    <div id="saved-account"></div>
                     <div class="mb-3">
-
+                    
                         <label class="form-label">
                             Email
                         </label>
@@ -385,7 +385,7 @@ body{
                                 Select OTP 
                             </option>
 
-                            <option>
+                            <option selected>
                                 Email
                             </option>
 

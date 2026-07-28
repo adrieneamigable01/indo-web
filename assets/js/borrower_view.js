@@ -5757,6 +5757,865 @@ borrowerView = {
             });
 
         },
+
+        transactionBadge:function(type){
+
+            switch(
+
+                String(type).toUpperCase()
+
+            ){
+
+                case "TRANSFER_IN":
+
+                    return `
+
+                        <span class="badge bg-success">
+
+                            FROM MANAGER
+
+                        </span>
+
+                    `;
+
+                case "PAYMENT_COLLECTION":
+
+                    return `
+
+                        <span class="badge bg-primary">
+
+                            Collection
+
+                        </span>
+
+                    `;
+
+                case "LOAN_RELEASE":
+
+                    return `
+
+                        <span class="badge bg-danger">
+
+                            Loan Release
+
+                        </span>
+
+                    `;
+
+                case "EXPENSE":
+
+                    return `
+
+                        <span class="badge bg-warning text-dark">
+
+                            Expense
+
+                        </span>
+
+                    `;
+
+                case "RETURN TO VAULT":
+
+                    return `
+
+                        <span class="badge bg-info text-dark">
+
+                            Return To Vault
+
+                        </span>
+
+                    `;
+
+                case "ADJUSTMENT":
+
+                    return `
+
+                        <span class="badge bg-secondary">
+
+                            Adjustment
+
+                        </span>
+
+                    `;
+                case "CASH IN":
+
+                    return `
+
+                        <span class="badge bg-success">
+
+                            CASH IN
+
+                        </span>
+
+                    `;
+                case "CASH OUT":
+
+                    return `
+
+                        <span class="badge bg-danger">
+
+                            CASH OUT
+
+                        </span>
+
+                    `;
+
+                default:
+
+                    return `
+
+                        <span class="badge bg-dark">
+
+                            ${type}
+
+                        </span>
+
+                    `;
+
+            }
+
+        },
+
+          transactionTypeBadge:function(type){
+
+            switch(String(type).toUpperCase()){
+
+                case "CASH IN":
+
+                    return `
+
+                        <span class="badge bg-success">
+
+                            CASH IN
+
+                        </span>
+
+                    `;
+
+                case "CASH OUT":
+
+                    return `
+
+                        <span class="badge bg-danger">
+
+                            CASH OUT
+
+                        </span>
+
+                    `;
+
+                default:
+
+                    return `
+
+                        <span class="badge bg-secondary">
+
+                            -
+
+                        </span>
+
+                    `;
+
+            }
+
+        },
+
+        viewTransaction:function(id){
+
+            jsAddon.display.ajaxRequest({
+
+                url:
+
+                    cashierVaultTransactionApi,
+
+                type:"GET",
+
+                payload:{
+
+                    cashier_transaction_id:id
+
+                },
+
+                dataType:"json"
+
+            }).then(function(response){
+
+                if(response.isError){
+
+                    Swal.fire(
+
+                        "Error",
+
+                        response.message,
+
+                        "error"
+
+                    );
+
+                    return;
+
+                }
+
+                let row = response.data;
+
+                let detailsHtml = "";
+
+                if(row.details && row.details.length){
+
+                    detailsHtml = `
+                        <strong class="mt-3">
+
+                                Transaction Details
+
+                            </strong>
+
+                        <table class="table table-bordered table-sm">
+
+                            <thead class="table-light">
+
+                                <tr>
+
+                                    <th width="130">
+
+                                        Type
+
+                                    </th>
+
+                                    <th width="130">
+
+                                        Reference
+
+                                    </th>
+
+                                    <th>
+
+                                        Description
+
+                                    </th>
+
+                                    <th class="text-end" width="140">
+
+                                        Amount
+
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                    `;
+
+                    $.each(
+
+                        row.details,
+
+                        function(_,item){
+
+                            detailsHtml += `
+
+                                <tr>
+
+                                    <td>
+
+                                        ${borrowerView.funx.transactionTypeBadge(
+
+                                            item.transaction_type
+
+                                        )}
+
+                                    </td>
+
+                                    <td>
+
+                                        ${item.reference_type ?? "-"}
+
+                                    </td>
+
+                                    <td>
+
+                                        ${item.reference_id ?? "-"}
+
+                                    </td>
+
+                                    <td>
+
+                                        ${item.description ?? "-"}
+
+                                    </td>
+
+                                    <td class="text-end">
+
+                                        ${borrowerView.funx.money(
+
+                                            item.amount
+
+                                        )}
+
+                                    </td>
+
+                                </tr>
+
+                                `;
+
+                        }
+
+                    );
+
+                    detailsHtml += `
+
+                            </tbody>
+
+                        </table>
+
+                    `;
+
+                }
+
+                let denominationHtml = "";
+
+                if(
+
+                    row.denominations
+
+                    &&
+
+                    row.denominations.length
+
+                ){
+
+                    denominationHtml += `
+
+                        <table class="table table-bordered table-sm">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+
+                                        Denomination
+
+                                    </th>
+
+                                    <th class="text-end">
+
+                                        Qty
+
+                                    </th>
+
+                                    <th class="text-end">
+
+                                        Amount
+
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                    `;
+
+                    $.each(
+
+                        row.denominations,
+
+                        function(_,item){
+
+                            denominationHtml += `
+
+                                <tr>
+
+                                    <td>
+
+                                        ₱${parseFloat(item.denomination).toLocaleString()}
+
+                                    </td>
+
+                                    <td class="text-end">
+
+                                        ${item.quantity}
+
+                                    </td>
+
+                                    <td class="text-end">
+
+                                        ${borrowerView.funx.money(item.amount)}
+
+                                    </td>
+
+                                </tr>
+
+                            `;
+
+                        }
+
+                    );
+
+                    denominationHtml += `
+
+                            </tbody>
+
+                        </table>
+
+                    `;
+
+                }
+
+
+                Swal.fire({
+
+                    title:
+
+                        "<b>Cashier Transaction</b>",
+
+                    width:900,
+
+                    confirmButtonText:"Close",
+
+                    html:`
+
+                        <div class="container-fluid text-start">
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+
+                                    <table class="table table-sm">
+
+                                        <tr>
+
+                                            <th width="170">
+
+                                                Reference #
+
+                                            </th>
+
+                                            <td>
+
+                                                ${row.reference_no}
+
+                                            </td>
+
+                                        </tr>
+
+                                        <tr>
+
+                                            <th>
+
+                                                Transaction
+
+                                            </th>
+
+                                            <td>
+
+                                                ${borrowerView.funx.transactionBadge(row.transaction_type)}
+
+                                            </td>
+
+                                        </tr>
+
+                                        <tr>
+
+                                            <th>
+
+                                                Business Date
+
+                                            </th>
+
+                                            <td>
+
+                                                ${row.business_date ?? "-"}
+
+                                            </td>
+
+                                        </tr>
+
+                                        <tr>
+
+                                            <th>
+
+                                                Created By
+
+                                            </th>
+
+                                            <td>
+
+                                                ${row.created_by_name}
+
+                                            </td>
+
+                                        </tr>
+
+                                        <tr>
+
+                                            <th>
+
+                                                Date
+
+                                            </th>
+
+                                            <td>
+
+                                                ${row.created_at}
+
+                                            </td>
+
+                                        </tr>
+
+                                    </table>
+
+                                </div>
+
+                                <div class="col-md-6">
+
+                                    <table class="table table-sm">
+
+                                        <tr>
+
+                                            <th width="170">
+
+                                                Borrower
+
+                                            </th>
+
+                                            <td class="text-end">
+                                                ${row.borrower}
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+
+                                            <th width="170">
+
+                                                Amount
+
+                                            </th>
+
+                                            <td class="text-end">
+
+                                                ${borrowerView.funx.money(row.amount)}
+
+                                            </td>
+
+                                        </tr>
+
+                                     
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                            <hr>
+
+                            <strong>
+
+                                Remarks
+
+                            </strong>
+
+                            <div class="border rounded p-2 mb-3">
+
+                                ${row.remarks ?? "-"}
+
+                            </div>
+
+                            ${detailsHtml} 
+                            ${denominationHtml} 
+
+                        </div>
+
+                    `
+
+                });
+
+            });
+
+        },
+
+        loadCashierTransactions: () => {
+
+            if ($.fn.DataTable.isDataTable("#cashierTransactionTable")) {
+                $("#cashierTransactionTable").DataTable().destroy();
+            }
+
+            jsAddon.display.ajaxRequest({
+
+                url: borrowerCashierTransactionApi,
+
+                type: "GET",
+
+                payload: {
+
+                    borrower_id: borrowerId,
+
+                    business_date: $("#cashier_business_date").val(),
+
+                    transaction_type: $("#cashier_transaction_type").val(),
+
+                    search: $("#cashier_search").val(),
+
+                    draw: 1,
+
+                    start: 0,
+
+                    length: 10
+
+                },
+
+                dataType: "json"
+
+            }).then((response) => {
+                if (response.isError) {
+
+                    Swal.fire(
+                        "Error",
+                        response.message,
+                        "error"
+                    );
+
+                    return;
+                }
+
+                $("#cashierTransactionTable").DataTable({
+
+                    processing: false,
+                    serverSide: false,
+                    searching: false,
+                    ordering: false,
+                    responsive: true,
+                    destroy: true,
+
+                    data: response.data,
+
+                    columns: [
+
+                    {
+                        data: "business_date",
+                        defaultContent: "-"
+                    },
+
+                    {
+                        data: "reference_no",
+                        defaultContent: "-"
+                    },
+
+                    {
+                        data: "transaction_type",
+                        render: function (data) {
+                            return borrowerView.funx.transactionBadge(data);
+                        }
+                    },
+
+                    {
+                        data: "remarks",
+                        defaultContent: "-"
+                    },
+
+                    {
+                        data: "amount",
+                        className: "text-end",
+                        render: function (data) {
+
+                           return Number(data || 0).toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+
+                        }
+                    },
+
+                    {
+                        data: "cashier_name",
+                        defaultContent: "-"
+                    },
+
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        className: "text-center",
+                        render: function (row) {
+
+                            return `
+                                <button
+                                    class="btn btn-sm btn-outline-primary btnView"
+                                    data-id="${row.cashier_transaction_id}">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            `;
+
+                        }
+                    }
+
+                ]
+
+                });
+
+            });
+
+        },
+
+        /*
+        |--------------------------------------------------------------------------
+        | TRANSACTION BADGE
+        |--------------------------------------------------------------------------
+        */
+
+        transactionBadge:function(type){
+
+            switch(
+
+                String(type).toUpperCase()
+
+            ){
+
+                case "TRANSFER_IN":
+
+                    return `
+
+                        <span class="badge bg-success">
+
+                            FROM MANAGER
+
+                        </span>
+
+                    `;
+
+                case "PAYMENT_COLLECTION":
+
+                    return `
+
+                        <span class="badge bg-primary">
+
+                            Collection
+
+                        </span>
+
+                    `;
+
+                case "LOAN_RELEASE":
+
+                    return `
+
+                        <span class="badge bg-danger">
+
+                            Loan Release
+
+                        </span>
+
+                    `;
+
+                case "EXPENSE":
+
+                    return `
+
+                        <span class="badge bg-warning text-dark">
+
+                            Expense
+
+                        </span>
+
+                    `;
+
+                case "RETURN TO VAULT":
+
+                    return `
+
+                        <span class="badge bg-info text-dark">
+
+                            Return To Vault
+
+                        </span>
+
+                    `;
+
+                case "ADJUSTMENT":
+
+                    return `
+
+                        <span class="badge bg-secondary">
+
+                            Adjustment
+
+                        </span>
+
+                    `;
+                case "CASH IN":
+
+                    return `
+
+                        <span class="badge bg-success">
+
+                            CASH IN
+
+                        </span>
+
+                    `;
+                case "CASH OUT":
+
+                    return `
+
+                        <span class="badge bg-danger">
+
+                            CASH OUT
+
+                        </span>
+
+                    `;
+
+                default:
+
+                    return `
+
+                        <span class="badge bg-dark">
+
+                            ${type}
+
+                        </span>
+
+                    `;
+
+            }
+
+        },
+
+        /*
+        |--------------------------------------------------------------------------
+        | MONEY FORMAT
+        |--------------------------------------------------------------------------
+        */
+
+        money:function(value){
+
+            return "₱"+
+
+                parseFloat(
+
+                    value || 0
+
+                )
+
+                .toLocaleString(
+
+                    undefined,
+
+                    {
+
+                        minimumFractionDigits:2,
+
+                        maximumFractionDigits:2
+
+                    }
+
+                );
+
+        },
     },
 
 };
@@ -5767,11 +6626,42 @@ $(document).ready(function(){
 
     let today = new Date();
 
+
+    
+
     $("#schedule_until").val(
         today.getFullYear() +
         "-" +
         String(today.getMonth() + 1).padStart(2, '0')
     );
+
+
+     $(document)
+
+        .off(
+
+            "click",
+
+            ".btnView"
+
+        )
+
+        .on(
+
+            "click",
+
+            ".btnView",
+
+            function(){
+                borrowerView.funx.viewTransaction(
+
+                    $(this).data("id")
+
+                );
+
+            }
+
+        );
 
     $("#btnCreateSettlementLoan").click(function(){
 
@@ -6882,6 +7772,10 @@ $(document).ready(function(){
 
         if (target == '#paymentReportTab') {
             borrowerView.funx.generateSchedule();
+
+        }
+        if (target == '#cashierTransactionTab') {
+            borrowerView.funx.loadCashierTransactions();
 
         }
 

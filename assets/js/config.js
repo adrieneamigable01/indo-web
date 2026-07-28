@@ -78,5 +78,6 @@ const saveBorrowerSalaryApi = url + "borrower/salary/save";
 const deleteBorrowerSalaryApi = url + "borrower/salary/delete";
 const saveBulkSalaryApi = url + "borrower/salary/bulk-save";
 const borrowerSalarySummaryApi = url + "borrower/salary/summary";
+const borrowerCashierTransactionApi = url + "borrower/cashier-transaction";
 
 $(".version-badge").text(version);
