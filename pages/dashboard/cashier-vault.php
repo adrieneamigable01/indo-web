@@ -149,6 +149,14 @@ href="../assets/css/loan.css">
             </button>
 
             <button
+                type="button"
+                id="btnExportExcel"
+                class="btn btn-info">
+                <i class="bi bi-file-earmark-excel"></i>
+                Export Excel
+            </button>   
+
+            <button
                 class="btn btn-secondary"
                 id="btnRefresh">
 
@@ -157,6 +165,8 @@ href="../assets/css/loan.css">
                 Refresh
 
             </button>
+
+            
 
         </div>
 

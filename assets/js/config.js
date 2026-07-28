@@ -64,6 +64,7 @@ const cashierVaultApi     = `${url}cashiervault`;
 const cashierVaultTransactionApi     = `${url}cashiervault/transaction-details`;
 const cashierVaultSummaryApi     = `${url}cashiervault/transaction-summary`;
 const cashierVaultReturnApi     = `${url}cashiervault/return-vault`;
+const cashierVaultExportExcelApi     = `${url}cashiervault/export`;
 
 const dailyCloseApi     = `${url}cashierdailyclose`;
 const dailyCloseSummaryApi     = `${url}cashierdailyclose/summary`;

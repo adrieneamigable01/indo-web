@@ -12,7 +12,7 @@
 
 
 // const cashierVaultDailyCloseApi =
-//     base_url +
+//     baseurl +
 //     "api/cashierVault/dailyClose";
 
 /*
@@ -2475,7 +2475,7 @@ let cashierVaultPage = {
 
             window.open(
 
-                base_url +
+                baseurl +
 
                 "cashierVault/print/" +
 
@@ -2520,7 +2520,7 @@ let cashierVaultPage = {
 
                     url:
 
-                        base_url +
+                        baseurl +
 
                         "api/cashierVault/receiveFromManager",
 
@@ -2638,7 +2638,7 @@ let cashierVaultPage = {
 
                     url:
 
-                        base_url +
+                        baseurl +
 
                         "api/cashierVault/returnToVault",
 
@@ -2693,7 +2693,7 @@ let cashierVaultPage = {
 
             window.open(
 
-                base_url +
+                baseurl +
 
                 "cashierVault/printTransaction/" +
 
@@ -2715,7 +2715,7 @@ let cashierVaultPage = {
 
             window.open(
 
-                base_url +
+                baseurl +
 
                 "cashierVault/printDailyClose/" +
 
@@ -2737,7 +2737,7 @@ let cashierVaultPage = {
 
             window.location =
 
-                base_url +
+                baseurl +
 
                 "cashierVault/exportExcel?" +
 
@@ -2769,7 +2769,7 @@ let cashierVaultPage = {
 
             window.open(
 
-                base_url +
+                baseurl +
 
                 "cashierVault/exportPDF?" +
 
@@ -3237,7 +3237,7 @@ let cashierVaultPage = {
 
                     url:
 
-                        base_url +
+                        baseurl +
 
                         "api/cashierVault/addCollection",
 
@@ -3343,7 +3343,7 @@ let cashierVaultPage = {
 
                     url:
 
-                        base_url +
+                        baseurl +
 
                         "api/cashierVault/addExpense",
 
@@ -3473,7 +3473,7 @@ let cashierVaultPage = {
 
                     url:
 
-                        base_url +
+                        baseurl +
 
                         "api/cashierVault/addAdjustment",
 
@@ -4034,7 +4034,7 @@ let cashierVaultPage = {
 
                 $.get(
 
-                    base_url +
+                    baseurl +
 
                     "api/session/check"
 
@@ -6153,95 +6153,212 @@ $(function(){
 
     $(document)
 
-    .off("click",".btnDelete")
+        .off("click",".btnDelete")
 
-    .on("click",".btnDelete",function(){
+        .on("click",".btnDelete",function(){
 
-        let id = $(this).data("id");
-        Swal.fire({
+            let id = $(this).data("id");
+            Swal.fire({
 
-            icon:"warning",
+                icon:"warning",
 
-            title:"Delete Transaction?",
+                title:"Delete Transaction?",
 
-            html:`
+                html:`
 
-                This transaction will be marked as
+                    This transaction will be marked as
 
-                <b>VOID</b>.
+                    <b>VOID</b>.
 
-                <br><br>
+                    <br><br>
 
-                Continue?
+                    Continue?
 
-            `,
+                `,
 
-            showCancelButton:true,
+                showCancelButton:true,
 
-            confirmButtonColor:"#dc3545",
+                confirmButtonColor:"#dc3545",
 
-            confirmButtonText:"Delete"
+                confirmButtonText:"Delete"
 
-        }).then(function(result){
+            }).then(function(result){
 
-            if(!result.isConfirmed){
-
-                return;
-
-            }
-
-            jsAddon.display.ajaxRequest({
-
-                url:cashierVaultApi,
-
-                type:"DELETE",
-
-                payload:JSON.stringify({
-                    cashier_id:cashierVaultPage.funx.getSelectedCashier(),
-                    cashier_transaction_id:id,
-                    business_date:$("#filterBusinessDate").val(),
-
-                }),
-
-                dataType:"json"
-
-            }).then(function(response){
-
-                if(response.isError){
-
-                    Swal.fire(
-
-                        "Error",
-
-                        response.message,
-
-                        "error"
-
-                    );
+                if(!result.isConfirmed){
 
                     return;
 
                 }
 
-                Swal.fire({
+                jsAddon.display.ajaxRequest({
 
-                    icon:"success",
+                    url:cashierVaultApi,
 
-                    title:"Deleted",
+                    type:"DELETE",
 
-                    text:response.message,
+                    payload:JSON.stringify({
+                        cashier_id:cashierVaultPage.funx.getSelectedCashier(),
+                        cashier_transaction_id:id,
+                        business_date:$("#filterBusinessDate").val(),
 
-                    timer:1500,
+                    }),
 
-                    showConfirmButton:false
+                    dataType:"json"
+
+                }).then(function(response){
+
+                    if(response.isError){
+
+                        Swal.fire(
+
+                            "Error",
+
+                            response.message,
+
+                            "error"
+
+                        );
+
+                        return;
+
+                    }
+
+                    Swal.fire({
+
+                        icon:"success",
+
+                        title:"Deleted",
+
+                        text:response.message,
+
+                        timer:1500,
+
+                        showConfirmButton:false
+
+                    });
+
+                    cashierVaultPage.funx.loadTransactions();
+
+                    cashierVaultPage.funx.loadSummary();
 
                 });
 
-                cashierVaultPage.funx.loadTransactions();
-
-                cashierVaultPage.funx.loadSummary();
-
             });
+
+        });
+
+    $("#btnExportExcel").off("click").on("click", function () {
+
+        Swal.fire({
+            title: "Export Cashier Transactions",
+            html: `
+                <div class="text-start">
+                    <label class="form-label fw-bold">
+                        Business Date
+                    </label>
+                    <input
+                        type="date"
+                        id="exportBusinessDate"
+                        class="form-control"
+                        value="${$("#filterBusinessDate").val() || new Date().toISOString().split("T")[0]}"
+                    >
+                </div>
+            `,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Download Excel",
+            confirmButtonColor: "#198754",
+            cancelButtonText: "Cancel",
+            preConfirm: () => {
+
+                const businessDate = $("#exportBusinessDate").val();
+
+                if (!businessDate) {
+
+                    Swal.showValidationMessage(
+                        "Please select a business date."
+                    );
+
+                    return false;
+
+                }
+
+                return {
+                    business_date: businessDate
+                };
+
+            }
+
+        }).then(async function (result) {
+
+            if (!result.isConfirmed) {
+                return;
+            }
+
+       
+            const token = JSON.parse(localStorage.getItem("userdata")).access_token;
+
+            const params = new URLSearchParams({
+                business_date: result.value.business_date,
+                transaction_type: $("#filterTransaction").val(),
+                search: $("#txtSearch").val(),
+                cashier_id: cashierVaultPage.funx.getSelectedCashier()
+            });
+
+            const response = await fetch(
+                `${cashierVaultExportExcelApi}?` + params.toString(),
+                {
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                }
+            );
+
+            if (!response.ok) {
+
+                console.log(await response.text());
+
+                Swal.fire(
+                    "Export Failed",
+                    "Server returned an error.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+            const contentType = response.headers.get("content-type");
+
+            console.log(contentType);
+
+            if (contentType && contentType.includes("application/json")) {
+
+                const json = await response.json();
+
+                console.log(json);
+
+                Swal.fire(
+                    "Export Failed",
+                    json.message,
+                    "error"
+                );
+
+                return;
+
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `CashierVault-${result.value.business_date}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            window.URL.revokeObjectURL(url);
 
         });
 
