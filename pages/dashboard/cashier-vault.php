@@ -390,6 +390,7 @@ href="../assets/css/loan.css">
 
                             <input
                                 type="text"
+                                name="txtSearch"
                                 id="txtSearch"
                                 class="form-control"
                                 placeholder="Reference">

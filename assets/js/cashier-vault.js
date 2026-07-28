@@ -575,9 +575,7 @@ let cashierVaultPage = {
 
                             search:
 
-                                $("#txtSearch")
-
-                                .val(),
+                                $("#txtSearch").val(),
                             cashier_id:
     cashierVaultPage.funx.getSelectedCashier()
 
