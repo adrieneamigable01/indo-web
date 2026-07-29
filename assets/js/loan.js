@@ -164,7 +164,7 @@ let loanPage = {
 
                 autoWidth: false,
 
-                scrollX: true,
+                // scrollX: true,
 
                 searching: false,
 

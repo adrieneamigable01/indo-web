@@ -342,8 +342,36 @@ borrowerView = {
 
                 borrowerView.payments =
                 response.payments || [];
-                borrowerView.bonusCollections =
-                response.bonusCollection || [];
+                borrowerView.bonusCollections = [];
+
+                $.each(borrowerView.loans, function (_, loan) {
+
+                    if (loan.bonus_deductions && loan.bonus_deductions.length > 0) {
+
+                        $.each(loan.bonus_deductions, function (_, bonus) {
+
+                            borrowerView.bonusCollections.push({
+
+                                loan_id: loan.loan_id,
+                                loan_product_id: loan.loan_product_id,
+                                product_name: loan.product_name,
+
+                                bonus_deduction_id: bonus.bonus_deduction_id,
+                                deduction_type: bonus.deduction_type,
+                                amount: bonus.amount,
+                                expected_amount: bonus.amount,
+
+                                is_paid: bonus.is_paid,
+                                payment_date: bonus.payment_date,
+                                payment_id: bonus.payment_id
+
+                            });
+
+                        });
+
+                    }
+
+                });
                 return response;
 
             });
@@ -1078,6 +1106,20 @@ borrowerView = {
 
                         </div>
 
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Monthly Deduction
+                            </label>
+
+                            <input
+                                id="swalInterestDeductionAmount"
+                                class="form-control"
+                                type="number"
+                                value="${loan.monthly_interest_deduction}">
+
+                        </div>
+
                         <div class="col-md-12">
 
                             <label class="form-label">
@@ -1131,6 +1173,9 @@ borrowerView = {
                         release_date:
 
                             $("#swalReleaseDate").val(),
+                        monthly_interest_deduction:
+
+                            $("#swalInterestDeductionAmount").val(),
                         delete_by :userdata.userid,
                         void_reason:$("#swalVoidReason").val()
 
@@ -3065,23 +3110,25 @@ borrowerView = {
                                     dueDate.getMonth() + 1
                                 ).padStart(2, "0");
 
-                            let amount =
+                            let amount = 0;
 
-                                parseFloat(
-                                    schedule.principal_due || 0
-                                )
+                            // Product 5 uses monthly_interest_deduction
+                            if (parseInt(loan.loan_product_id) === 5) {
 
-                                +
-
-                                parseFloat(
-                                    schedule.interest_due || 0
-                                )
-
-                                +
-
-                                parseFloat(
-                                    schedule.penalty_due || 0
+                                amount = parseFloat(
+                                    loan.monthly_interest_deduction || 0
                                 );
+
+                            }
+                            // All other products use schedule amounts
+                            else {
+
+                                amount =
+                                    parseFloat(schedule.principal_due || 0) +
+                                    parseFloat(schedule.interest_due || 0) +
+                                    parseFloat(schedule.penalty_due || 0);
+
+                            }
 
                             months[monthKey]
                             .loans
@@ -4356,227 +4403,169 @@ borrowerView = {
             `;
 
             
-            if(
-                borrowerView.bonusCollections &&
-                borrowerView.bonusCollections.length > 0
-            ){
+            let hasBonus = false;
 
-                $.each(
-                    borrowerView.bonusCollections,
-                    function(_,bonus){
+            $.each(borrowerView.loans, function (_, loan) {
 
-                        let statusBadge = '';
-                        let actionButton = '';
+                if (!loan.bonus_deductions || loan.bonus_deductions.length === 0) {
+                    return;
+                }
 
-                        if(
-                            bonus.status === 'NO_CREDIT'
-                        ){
+                hasBonus = true;
 
-                            if(
-                                bonus.settlement_id
-                            ){
-                                if(
-                                    bonus.settlement_status !== 'SETTLED'
-                                ){
-
-                                    totalBonusSettlement +=
-                                        parseFloat(
-                                            bonus.expected_amount || 0
-                                        );
-
-                                }
-
-
-                                statusBadge = `
-
-                                    <span class="badge bg-info">
-
-                                        ADDED TO SETTLEMENT
-
-                                    </span>
-
-                                `;
-
-                                actionButton = `
-
-                                    <button
-                                        class="btn btn-primary btn-sm btn-view-settlement"
-
-                                        data-settlement-id="${bonus.settlement_id}">
-
-                                        <i class="bi bi-eye"></i>
-
-                                        VIEW SETTLEMENT
-
-                                    </button>
-
-                                `;
-
-                            }
-                            else{
-
-                                statusBadge = `
-
-                                    <span class="badge bg-secondary">
-
-                                        NO BENEFIT CREDITED
-
-                                    </span>
-
-                                `;
-
-                                actionButton = `
-
-                                    <button
-                                        class="btn btn-warning btn-sm btn-settle-bonus"
-
-                                        data-loan-id="${bonus.loan_id}"
-
-                                        data-bonus-deduction-id="${bonus.bonus_deduction_id}"
-
-                                        data-type="${bonus.deduction_type}"
-
-                                        data-amount="${bonus.expected_amount}">
-
-                                        <i class="bi bi-wallet2"></i>
-
-                                        ADD TO SETTLEMENT
-
-                                    </button>
-
-                                `;
-
-                            }
-
-                        }
-                        else if(
-                            bonus.status ===
-                            'CREDITED'
-                        ){
-
-                            statusBadge = `
-
-                                <span class="badge bg-warning text-dark">
-
-                                    CREDITED
-
-                                </span>
-
-                            `;
-
-                            actionButton = `
-
-                                <button
-                                    class="btn btn-success btn-sm btn-pay-bonus"
-
-                                    data-collection-id="${bonus.bonus_collection_id}"
-
-                                    data-type="${bonus.deduction_type}"
-
-                                    data-deduction-amount="${bonus.expected_amount}"
-
-                                    data-credited-amount="${bonus.credited_amount}">
-
-                                    PAY NOW
-
-                                </button>
-
-                            `;
-
-                        }
-                        else if(
-                            bonus.status ===
-                            'PAID'
-                        ){
-
-                            statusBadge = `
-
-                                <span class="badge bg-success">
-
-                                    PAID
-
-                                </span>
-
-                            `;
-
-                            actionButton = `
-
-                                <button
-                                    class="btn btn-info btn-sm btn-view-bonus"
-
-                                    data-payment-id="${bonus.payment_id}"
-
-                                    data-collection-id="${bonus.bonus_collection_id}">
-
-                                    VIEW DETAILS
-
-                                </button>
-
-                            `;
-
-                        }
-
-                        bonusHtml += `
-
-                            <div class="row border-bottom py-2 align-items-center">
-
-                                <div class="col-md-3">
-
-                                    <strong>
-
-                                        ${bonus.deduction_type}
-
-                                    </strong>
-
-                                </div>
-
-                                <div class="col-md-3">
-
-                                    ₱${parseFloat(
-                                        bonus.expected_amount || 0
-                                    ).toLocaleString(
-                                        undefined,
-                                        {
-                                            minimumFractionDigits:2,
-                                            maximumFractionDigits:2
-                                        }
-                                    )}
-
-                                </div>
-
-                                <div class="col-md-3">
-
-                                    ${statusBadge}
-
-                                </div>
-
-                                <div class="col-md-3 text-end">
-
-                                    ${actionButton}
-
-                                </div>
-
-                            </div>
-
-                        `;
-
-                    }
-                );
-
-            }
-            else{
-
+                // Loan title only
                 bonusHtml += `
 
-                    <div class="text-muted">
+                    <div class="mt-3 mb-2">
 
-                        No bonus deductions configured.
+                        <h6 class="fw-bold text-primary">
+
+                            ${loan.product_name}
+
+                        </h6>
+
+                        <hr>
 
                     </div>
 
                 `;
 
-                
+                $.each(loan.bonus_deductions, function (_, bonus) {
+
+                    // Copy the values from your original bonusCollections
+                    bonus.loan_id = loan.loan_id;
+                    bonus.expected_amount = bonus.expected_amount || bonus.amount;
+
+                    let statusBadge = '';
+                    let actionButton = '';
+
+                    if (bonus.status === 'NO_CREDIT' || !bonus.status) {
+
+                        if (bonus.settlement_id) {
+
+                            if (bonus.settlement_status !== 'SETTLED') {
+
+                                totalBonusSettlement += parseFloat(
+                                    bonus.expected_amount || 0
+                                );
+
+                            }
+
+                            statusBadge = `
+                                <span class="badge bg-info">
+                                    ADDED TO SETTLEMENT
+                                </span>
+                            `;
+
+                            actionButton = `
+                                <button
+                                    class="btn btn-primary btn-sm btn-view-settlement"
+                                    data-settlement-id="${bonus.settlement_id}">
+                                    <i class="bi bi-eye"></i>
+                                    VIEW SETTLEMENT
+                                </button>
+                            `;
+
+                        } else {
+
+                            statusBadge = `
+                                <span class="badge bg-secondary">
+                                    NO BENEFIT CREDITED
+                                </span>
+                            `;
+
+                            actionButton = `
+                                <button
+                                    class="btn btn-warning btn-sm btn-settle-bonus"
+                                    data-loan-id="${loan.loan_id}"
+                                    data-bonus-deduction-id="${bonus.bonus_deduction_id}"
+                                    data-type="${bonus.deduction_type}"
+                                    data-amount="${bonus.expected_amount}">
+                                    <i class="bi bi-wallet2"></i>
+                                    ADD TO SETTLEMENT
+                                </button>
+                            `;
+
+                        }
+
+                    } else if (bonus.status === 'CREDITED') {
+
+                        statusBadge = `
+                            <span class="badge bg-warning text-dark">
+                                CREDITED
+                            </span>
+                        `;
+
+                        actionButton = `
+                            <button
+                                class="btn btn-success btn-sm btn-pay-bonus"
+                                data-collection-id="${bonus.bonus_collection_id}"
+                                data-type="${bonus.deduction_type}"
+                                data-deduction-amount="${bonus.expected_amount}"
+                                data-credited-amount="${bonus.credited_amount}">
+                                PAY NOW
+                            </button>
+                        `;
+
+                    } else if (bonus.status === 'PAID') {
+
+                        statusBadge = `
+                            <span class="badge bg-success">
+                                PAID
+                            </span>
+                        `;
+
+                        actionButton = `
+                            <button
+                                class="btn btn-info btn-sm btn-view-bonus"
+                                data-payment-id="${bonus.payment_id}"
+                                data-collection-id="${bonus.bonus_collection_id}">
+                                VIEW DETAILS
+                            </button>
+                        `;
+
+                    }
+
+                    bonusHtml += `
+
+                        <div class="row border-bottom py-2 align-items-center">
+
+                            <div class="col-md-3">
+                                <strong>${bonus.deduction_type}</strong>
+                            </div>
+
+                            <div class="col-md-3">
+                                ₱${parseFloat(
+                                    bonus.expected_amount || 0
+                                ).toLocaleString(undefined,{
+                                    minimumFractionDigits:2,
+                                    maximumFractionDigits:2
+                                })}
+                            </div>
+
+                            <div class="col-md-3">
+                                ${statusBadge}
+                            </div>
+
+                            <div class="col-md-3 text-end">
+                                ${actionButton}
+                            </div>
+
+                        </div>
+
+                    `;
+
+                });
+
+            });
+
+            if (!hasBonus) {
+
+                bonusHtml += `
+                    <div class="text-muted">
+                        No bonus deductions configured.
+                    </div>
+                `;
 
             }
 
@@ -6821,7 +6810,8 @@ $(document).ready(function(){
                 $("#settlement_amount").val(),
 
             comakers: [],
-            details:borrowerView.settlemenDetailsData
+            details:borrowerView.settlemenDetailsData,
+            
 
         };
 
