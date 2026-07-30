@@ -307,8 +307,8 @@
                 Edit
 
             </a>
-
-            <a href="borrowers.php"
+            
+            <a href="<?= url('borrowers') ?>"
                class="btn btn-secondary">
 
                 <i class="bi bi-arrow-left"></i>
