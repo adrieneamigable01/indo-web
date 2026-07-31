@@ -16,6 +16,8 @@ return [
     'vault/managers' => 'pages/dashboard/managers-vault.php',
     'vault/cashier' => 'pages/dashboard/cashier-vault.php',
     'vault/cashier-return' => 'pages/dashboard/cashier_daily_return.php',
+    'bank' => 'pages/dashboard/bank.php',
+    'view/bank' => 'pages/dashboard/bank_view.php',
     'splash' => 'pages/splash.php',
 
 ];

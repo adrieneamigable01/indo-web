@@ -80,4 +80,15 @@ const saveBulkSalaryApi = url + "borrower/salary/bulk-save";
 const borrowerSalarySummaryApi = url + "borrower/salary/summary";
 const borrowerCashierTransactionApi = url + "borrower/cashier-transaction";
 
+const bankApi = url + "bank";
+const banksApi = url + "bank/banks";
+const bankDetailsApi = url + "bankaccounts/details";
+const bankSummaryApi = url + "bankaccounts/summary";
+
+const bankTransactionsApi = url + "bankaccounts/transactions";
+const bankAccountAllApi = url + "bankaccounts/all";
+
+const bankTranactionDetailsApi = url + "bankaccounts/transactions";
+const bankTranactionDetailsDashboardApi = url + "bankaccounts/transactions/dashboard";
+
 $(".version-badge").text(version);

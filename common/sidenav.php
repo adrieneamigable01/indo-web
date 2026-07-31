@@ -97,6 +97,11 @@
         Loans
     </a>
 
+    <a href="<?= url('bank') ?>" class="menu-item <?= isActive('loan') ? 'active' : '' ?>">
+        <i class="bi bi-bank"></i>
+        Bank Accouns
+    </a>
+
     <!-- <a href="<?= url('vault/managers') ?>" class="menu-item <?= isActive('vault/managers') ? 'active' : '' ?>">
         <i class="bi bi-wallet2"></i>
         Managers Vault
