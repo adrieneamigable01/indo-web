@@ -2960,7 +2960,9 @@ borrowerView = {
                             if (
                                 parseInt(
                                     loan.loan_product_id
-                                ) === 1
+                                ) === 1 ||  parseInt(
+                                    loan.loan_product_id
+                                ) === 6
                             ) {
 
                                 let dueDate =
