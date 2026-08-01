@@ -8244,6 +8244,9 @@ $(document).ready(function(){
                         <option value="PEI">
                             PEI
                         </option>
+                        <option value="SRI">
+                            SRI
+                        </option>
 
                     </select>
 
