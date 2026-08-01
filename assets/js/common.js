@@ -2,7 +2,40 @@ $(()=>{
     jsAddon = {
         display:{
             logout:()=>{
-                
+                jsAddon.display.ajaxRequest({
+                    type:'get',
+                    url:logoutApi,
+                    
+                }).then(function (response) {
+
+                    Swal.fire(
+
+                        "Success",
+
+                        response.message,
+
+                        "success"
+
+                    ).then(function () {
+                        localStorage.removeItem("accounts");
+                        localStorage.removeItem("userdata");
+                           window.location.href = `${baseurl}index.php`
+                    });
+
+                })
+                .catch(function (error) {
+
+                    Swal.fire(
+
+                        "Error",
+
+                        error.message,
+
+                        "error"
+
+                    );
+
+                });
             },
             money: function(amount){
 
@@ -99,6 +132,31 @@ $(()=>{
                     }
                 });
             },
+            showLogoutConfirmMessage: function (payload) {
+
+                return Swal.fire({
+
+                    icon: payload.icon,
+
+                    title: payload.title,
+
+                    text: payload.text,
+
+                    html: payload.html,
+
+                    showCancelButton: payload.showCancelButton,
+
+                    confirmButtonText: payload.confirmButtonText,
+
+                    cancelButtonText: payload.cancelButtonText,
+
+                    confirmButtonColor: payload.confirmButtonColor,
+
+                    cancelButtonColor: payload.cancelButtonColor
+
+                });
+
+            },
             userdata:()=>{
                 return localStorage.getItem('session')!= null ? JSON.parse(atob(localStorage.getItem('session'))) : null;
             },
@@ -120,26 +178,56 @@ $(()=>{
                         beforeSend: function(xhr) {
                             xhr.setRequestHeader('Authorization', 'Bearer ' + token);
                         },
-                        error:function(xhr, status, error){
-                            console.log(`error : ${error}`)
-                            console.log(`status : ${status}`)
-                            jsAddon.display.removefullPageLoader()
-                            let data = JSON.parse(xhr.responseText);
-                            let payload = {
-                                icon:'warning',
-                                title:'System Error',
-                                showCancelButton:false,
-                                confirmButtonText:'Ok',
-                                text:data.message
+                        error: function (xhr, status, error) {
+
+                            console.log(xhr);
+
+                            jsAddon.display.removefullPageLoader();
+
+                            let data = {
+                                message: "Unexpected error."
                             };
-                            if(data.error){
-                                if(xhr.status == 401){
-                                    payload.redirectLink = `${baseurl}index.php`;
-                                    
-                                }
-                                jsAddon.display.showConfirmMessage(payload)
-                                jsAddon.display.logout();
+
+                            try {
+
+                                data = JSON.parse(xhr.responseText);
+
+                            } catch (e) {
+
+                                data.message = error;
+
                             }
+                            
+                            // Unauthorized only
+                            if (xhr.status === 401) {
+
+                               jsAddon.display.showConfirmMessage({
+
+                                    icon: "warning",
+
+                                    title: "Unauthorized",
+
+                                    text: data.message,
+
+                                    showCancelButton: false,
+
+                                    confirmButtonText: "OK"
+
+                                }).then((result) => {
+
+                                    if (result.isConfirmed) {
+
+                                        jsAddon.display.logout();
+
+                                    }
+
+                                });
+
+                            }
+
+                            // Reject promise for all other errors
+                            rej(data);
+
                         },
                         success:function(response){
                             // if(!response._isError){
@@ -195,51 +283,88 @@ $(()=>{
 
                         },
 
-                        error:function(xhr,status,error){
+                        // error:function(xhr,status,error){
 
-                            console.log(error);
-                            console.log(status);
+                        //     console.log(error);
+                        //     console.log(status);
+
+                        //     jsAddon.display.removefullPageLoader();
+
+                        //     try{
+
+                        //         let data = JSON.parse(xhr.responseText);
+
+                        //         let payload = {
+
+                        //             icon:'warning',
+
+                        //             title:'System Error',
+
+                        //             text:data.message,
+
+                        //             showCancelButton:false,
+
+                        //             confirmButtonText:'Ok'
+
+                        //         };
+
+                        //         if(data.error && xhr.status == 401){
+
+                        //             payload.redirectLink = `${baseurl}index.php`;
+
+                        //             jsAddon.display.logout();
+
+                        //         }
+
+                        //         jsAddon.display.showConfirmMessage(payload);
+
+                        //     }catch(e){
+
+                        //         console.error(xhr.responseText);
+
+                        //     }
+
+                        //     rej(xhr);
+
+                        // },
+                        error: function (xhr, status, error) {
 
                             jsAddon.display.removefullPageLoader();
 
-                            try{
+                            let response = {
+                                isError: true,
+                                message: "Unexpected error."
+                            };
 
-                                let data = JSON.parse(xhr.responseText);
+                            try {
 
-                                let payload = {
+                                response = JSON.parse(xhr.responseText);
 
-                                    icon:'warning',
+                            } catch (e) {
 
-                                    title:'System Error',
-
-                                    text:data.message,
-
-                                    showCancelButton:false,
-
-                                    confirmButtonText:'Ok'
-
-                                };
-
-                                if(data.error && xhr.status == 401){
-
-                                    payload.redirectLink = `${baseurl}index.php`;
-
-                                    jsAddon.display.logout();
-
-                                }
-
-                                jsAddon.display.showConfirmMessage(payload);
-
-                            }catch(e){
-
-                                console.error(xhr.responseText);
+                                response.message = error;
 
                             }
 
-                            rej(xhr);
+                            // Only logout if Unauthorized
+                            if (xhr.status === 401) {
+
+                                jsAddon.display.showConfirmMessage({
+                                    icon: "warning",
+                                    title: "Unauthorized",
+                                    text: response.message,
+                                    showCancelButton: false,
+                                    confirmButtonText: "Ok"
+                                });
+
+                                jsAddon.display.logout();
+
+                            }
+
+                            // IMPORTANT
+                            rej(response);
 
                         },
-
                         success:function(response){
 
                             res(response);

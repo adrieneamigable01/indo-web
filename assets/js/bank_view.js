@@ -5,7 +5,7 @@ const bankView = {
     account: {},
 
     transactionTable: null,
-
+    banks: [],
     funx: {
 
         initialize: function () {
@@ -31,7 +31,7 @@ const bankView = {
                 return;
 
             }
-
+            bankView.funx.loadBanks();
             bankView.funx.initializeEvents();
 
             bankView.funx.loadAccountDetails();
@@ -46,14 +46,13 @@ const bankView = {
 
             $("#btnBack").on("click", function () {
 
-                window.location =
-                    "bank.html";
+                window.history.back();
 
             });
 
             $("#btnEditBank").on("click", function () {
 
-                bankView.funx.editBank();
+               bankView.funx.editBankAccount(bankView.bankAccountId)
 
             });
 
@@ -90,6 +89,35 @@ const bankView = {
                     ).draw();
 
                 });
+
+        },
+        loadBanks: function () {
+
+            jsAddon.display.ajaxRequest({
+
+                url: banksApi,
+
+                type: "GET",
+
+                dataType: "json"
+
+            }).then(function (response) {
+
+                if (response.isError) {
+
+                    Swal.fire(
+                        "Error",
+                        response.message,
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+                bankView.banks = response.data;
+
+            });
 
         },
         loadAccountDetails: function () {
@@ -231,20 +259,58 @@ const bankView = {
                     )
                     .addClass(
 
-                        account.is_active == 1
+                        account.account_status == "ACTIVE"
                             ? "bg-success"
                             : "bg-danger"
 
                     )
                     .text(
 
-                        account.is_active == 1
+                        account.account_status == 1
                             ? "ACTIVE"
-                            : "INACTIVE"
+                            : "CLOSED"
 
                     );
 
+                
+                /*
+                |--------------------------------------------------------------------------
+                | STATUS
+                |--------------------------------------------------------------------------
+                */
+
+                const isClosed = account.account_status === "CLOSED";
+
+                $("#viewStatus")
+                    .removeClass("bg-success bg-danger")
+                    .addClass(
+                        isClosed
+                            ? "bg-danger"
+                            : "bg-success"
+                    )
+                    .text(
+                        isClosed
+                            ? "CLOSED"
+                            : "ACTIVE"
+                    );
+
+                /*
+                |--------------------------------------------------------------------------
+                | ENABLE / DISABLE ACTION BUTTONS
+                |--------------------------------------------------------------------------
+                */
+
+                $("#btnEditBank").prop("disabled", isClosed);
+
+                $("#btnDeposit").prop("disabled", isClosed);
+
+                $("#btnWithdraw").prop("disabled", isClosed);
+
+                $("#btnTransfer").prop("disabled", isClosed);
+
             });
+
+            
 
         },
         loadTransactions: function () {
@@ -481,7 +547,20 @@ const bankView = {
 
                                     <li><hr class="dropdown-divider"></li>
 
-                                  
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item text-danger"
+                                            href="javascript:void(0)"
+                                            onclick="bankView.funx.voidTransaction(${row.bank_transaction_id})">
+
+                                            <i class="fas fa-ban me-2"></i>
+
+                                            Void Transaction
+
+                                        </a>
+
+                                    </li>
                                 `;
                             }
 
@@ -528,7 +607,7 @@ const bankView = {
                 const d = response.data;
                 $("#currentBalance").text(jsAddon.display.money(d.current_balance));
                 $("#openingBalance").text(jsAddon.display.money(d.opening_balance));
-                $("#totalDeposits").text(jsAddon.display.money(d.totalDeposits));
+                $("#totalDeposits").text(jsAddon.display.money(d.total_deposits));
                 $("#totalWithdrawals").text(jsAddon.display.money(d.total_withdrawals));
                 $("#totalTransfers").text(jsAddon.display.money(d.total_transfers));
                 $("#totalTransactions").text(d.total_transactions);
@@ -1247,6 +1326,757 @@ const bankView = {
             });
 
         },
+        editBankAccount: function (bankAccountId) {
+
+            if (!bankView.account) {
+
+                Swal.fire(
+                    "Error",
+                    "Bank account not found.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+            bankView.funx.openBankAccountForm(bankView.account);
+
+        },
+        openBankAccountForm: (account = null) => {
+
+            Swal.fire({
+
+                title: account
+                ? "Edit Bank Account"
+                : "Add Bank Account",
+
+                width: 700,
+
+                showCancelButton: true,
+
+                confirmButtonText: "Save",
+
+                cancelButtonText: "Cancel",
+
+                focusConfirm: false,
+
+               html: `
+
+                <div class="container-fluid text-start">
+
+                    <!-- BANK INFORMATION -->
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold">
+
+                            Card Preview
+
+                        </label>
+
+                        <div
+                            id="swalCardPreview"
+                            class="atm-card theme-${account?.card_theme ?? 'blue'}">
+
+                            <div class="card-chip"></div>
+
+                            <div class="card-header">
+
+                                <div>
+
+                                    <small>Bank</small>
+
+                                    <h6 id="previewBankName">
+
+                                        ${account?.bank_name ?? 'Bank Name'}
+
+                                    </h6>
+
+                                </div>
+
+                            </div>
+
+                            <div class="card-holder">
+
+                                <small>Account Holder</small>
+
+                                <div id="previewAccountName">
+
+                                    ${account?.account_name ?? 'Account Holder'}
+
+                                </div>
+
+                            </div>
+
+                            <div
+                                class="account-number"
+                                id="previewAccountNumber">
+
+                                ${account?.account_number ?? '0000 0000 0000 0000'}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-light rounded p-3 mb-3 border">
+
+                        <h6 class="fw-bold text-primary mb-3">
+
+                            <i class="fas fa-university me-2"></i>
+
+                            Bank Information
+
+                        </h6>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label fw-semibold">
+
+                                    Bank
+
+                                </label>
+
+                                <select
+                                    id="swal_bank_id"
+                                    class="form-select"
+                                    style="width:100%">
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label fw-semibold">
+
+                                    Currency
+
+                                </label>
+
+                                <select
+                                    id="swal_currency"
+                                    class="form-select">
+
+                                    <option
+                                        value="PHP"
+                                        ${account?.currency == "PHP" ? "selected" : ""}>
+
+                                        🇵🇭 Philippine Peso (PHP)
+
+                                    </option>
+
+                                    <option
+                                        value="USD"
+                                        ${account?.currency == "USD" ? "selected" : ""}>
+
+                                        🇺🇸 US Dollar (USD)
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label fw-semibold">
+
+                                    Card Theme
+
+                                </label>
+
+                                <select
+                                    id="swal_card_theme"
+                                    class="form-select">
+
+                                    <option value="blue" ${account?.card_theme=="blue"?"selected":""}>
+                                        🔵 Blue
+                                    </option>
+
+                                    <option value="gold" ${account?.card_theme=="gold"?"selected":""}>
+                                        🥇 Gold
+                                    </option>
+
+                                    <option value="green" ${account?.card_theme=="green"?"selected":""}>
+                                        🟢 Green
+                                    </option>
+
+                                    <option value="lightgreen" ${account?.card_theme=="lightgreen"?"selected":""}>
+                                        🍃 Light Green
+                                    </option>
+
+                                    <option value="red" ${account?.card_theme=="red"?"selected":""}>
+                                        🔴 Red
+                                    </option>
+
+                                    <option value="purple" ${account?.card_theme=="purple"?"selected":""}>
+                                        🟣 Purple
+                                    </option>
+
+                                    <option value="black" ${account?.card_theme=="black"?"selected":""}>
+                                        ⚫ Black
+                                    </option>
+
+                                    <option value="silver" ${account?.card_theme=="silver"?"selected":""}>
+                                        ⚪ Silver
+                                    </option>
+
+                                    <option value="orange" ${account?.card_theme=="orange"?"selected":""}>
+                                        🟠 Orange
+                                    </option>
+
+                                    <option value="teal" ${account?.card_theme=="teal"?"selected":""}>
+                                        🩵 Teal
+                                    </option>
+
+                                    <option value="rose" ${account?.card_theme=="rose"?"selected":""}>
+                                        🌹 Rose
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    
+
+                    <!-- ACCOUNT INFORMATION -->
+
+                    <div class="bg-light rounded p-3 mb-3 border">
+
+                        <h6 class="fw-bold text-success mb-3">
+
+                            <i class="fas fa-credit-card me-2"></i>
+
+                            Account Information
+
+                        </h6>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label fw-semibold">
+
+                                    Account Name
+
+                                </label>
+
+                                <input
+                                    id="swal_account_name"
+                                    class="form-control"
+                                    value="${account?.account_name ?? ''}">
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label fw-semibold">
+
+                                    Account Number
+
+                                </label>
+
+                                <input
+                                    id="swal_account_number"
+                                    class="form-control"
+                                    value="${account?.account_number ?? ''}">
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    Account Type
+
+                                </label>
+
+                                <select
+                                    id="swal_account_type"
+                                    class="form-select">
+
+                                    <option
+                                        value="SAVINGS"
+                                        ${account?.account_type == "SAVINGS" ? "selected" : ""}>
+
+                                        Savings
+
+                                    </option>
+
+                                    <option
+                                        value="CHECKING"
+                                        ${account?.account_type == "CHECKING" ? "selected" : ""}>
+
+                                        Checking
+
+                                    </option>
+
+                                    <option
+                                        value="CURRENT"
+                                        ${account?.account_type == "CURRENT" ? "selected" : ""}>
+
+                                        Current
+
+                                    </option>
+
+                                    <option
+                                        value="PAYROLL"
+                                        ${account?.account_type == "PAYROLL" ? "selected" : ""}>
+
+                                        Payroll
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- FINANCIAL INFORMATION -->
+
+                    <div class="bg-light rounded p-3 mb-3 border">
+
+                        <h6 class="fw-bold text-warning mb-3">
+
+                            <i class="fas fa-wallet me-2"></i>
+
+                            Financial Information
+
+                        </h6>
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    Opening Balance
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+
+                                        ₱
+
+                                    </span>
+
+                                    <input
+                                        id="swal_opening_balance"
+                                        class="form-control"
+                                        type="number"
+                                        value="${account?.opening_balance ?? 0}">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="bg-light rounded p-3 border">
+
+                        <h6 class="fw-bold text-secondary mb-3">
+
+                            <i class="fas fa-file-alt me-2"></i>
+
+                            Description
+
+                        </h6>
+
+                        <textarea
+                            id="swal_description"
+                            class="form-control"
+                            rows="3">${account?.description ?? ""}</textarea>
+
+                    </div>
+
+                </div>
+
+                `,
+
+                didOpen: function () {
+
+                    let options =
+                        '<option value="">Select Bank</option>';
+
+                    bankView.banks.forEach(function (bank) {
+
+                        options += `
+                            <option value="${bank.bank_id}">
+                                ${bank.bank_name}
+                            </option>
+                        `;
+
+                    });
+
+                    $("#swal_bank_id").html(options);
+
+                    $("#swal_bank_id").select2({
+
+                        theme: "bootstrap-5",
+
+                        placeholder: "Search Bank",
+
+                        allowClear: true,
+
+                        width: "100%",
+
+                        dropdownParent: $(".swal2-container")
+
+                    });
+
+                    // Pre-select the bank when editing
+                    if (account) {
+
+                        $("#swal_bank_id")
+                            .val(account.bank_id)
+                            .trigger("change");
+
+                    }
+
+
+                    $("#swal_card_theme").on("change", function () {
+
+                        const theme = $(this).val();
+
+                        $("#swalCardPreview")
+                            .removeClass(function (i, cls) {
+
+                                return (
+                                    cls.match(/theme-\S+/g) || []
+                                ).join(" ");
+
+                            })
+                            .addClass("theme-" + theme);
+
+                    });
+
+                    $("#swal_account_name").on("keyup", function(){
+
+                            $("#previewAccountName").text(
+                                $(this).val() || "Account Holder"
+                            );
+
+                        });
+
+                        $("#swal_account_number").on("keyup", function(){
+
+                            $("#previewAccountNumber").text(
+                                $(this).val() || "0000 0000 0000 0000"
+                            );
+
+                        });
+
+                        $("#swal_bank_id").on("change", function(){
+
+                            const bank =
+                                bankView.banks.find(
+                                    x => x.bank_id == $(this).val()
+                                );
+
+                            if(bank){
+
+                                $("#previewBankName").text(
+                                    bank.bank_name
+                                );
+
+                            }
+
+                        });
+
+                },
+                willClose: function () {
+
+                    if ($("#swal_bank_id").hasClass("select2-hidden-accessible")) {
+
+                        $("#swal_bank_id").select2("destroy");
+
+                    }
+
+                },
+                preConfirm: () => {
+
+                    if ($("#swal_bank_id").val() == "") {
+
+                        Swal.showValidationMessage(
+                            "Please select a bank."
+                        );
+
+                        return false;
+
+                    }
+
+                    if ($("#swal_account_name").val().trim() == "") {
+
+                        Swal.showValidationMessage(
+                            "Account Name is required."
+                        );
+
+                        return false;
+
+                    }
+
+                    if ($("#swal_account_number").val().trim() == "") {
+
+                        Swal.showValidationMessage(
+                            "Account Number is required."
+                        );
+
+                        return false;
+
+                    }
+                    return {
+                        bank_account_id: account ? account.bank_account_id : null,
+                        bank_id:
+                            $("#swal_bank_id").val(),
+
+                        account_name:
+                            $("#swal_account_name").val(),
+
+                        account_number:
+                            $("#swal_account_number").val(),
+
+                        account_type:
+                            $("#swal_account_type").val(),
+
+                        currency:
+                            $("#swal_currency").val(),
+
+                        opening_balance:
+                            $("#swal_opening_balance").val(),
+
+                        description:
+                            $("#swal_description").val(),
+                        card_theme:
+                            $("#swal_card_theme").val(),
+
+                    };
+
+                }
+
+            }).then(function (result) {
+
+                if (!result.isConfirmed) {
+
+                    return;
+
+                }
+                if (result.value.bank_account_id) {
+
+                    bankView.funx.updateBankAccount(
+                        result.value
+                    );
+
+                }
+
+            });
+
+        },
+        updateBankAccount: function (data) {
+
+            jsAddon.display.ajaxRequest({
+
+                url: bankApi,
+
+                type: "PUT",
+
+                payload: JSON.stringify(data),
+
+                dataType: "json"
+
+            }).then(function (response) {
+
+                if (response.isError) {
+
+                    Swal.fire({
+
+                        icon: "error",
+
+                        title: "Error",
+
+                        text: response.message
+
+                    });
+
+                    return;
+
+                }
+
+                Swal.fire({
+
+                    icon: "success",
+
+                    title: "Success",
+
+                    text: response.message,
+
+                    timer: 1500,
+
+                    showConfirmButton: false
+
+                }).then(function () {
+
+                      bankView.funx.loadAccountDetails();;
+
+                });
+
+            }).catch(function (error) {
+
+                Swal.fire({
+
+                    icon: "error",
+
+                    title: "Error",
+
+                    text: "Unable to update bank account."
+
+                });
+
+                console.error(error);
+
+            });
+
+        },
+        voidTransaction: function (bankTransactionId) {
+
+            Swal.fire({
+
+                title: "Void Transaction?",
+
+                html: `
+
+                    <div class="text-start">
+
+                        <div class="alert alert-warning">
+
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+
+                            This transaction will be marked as VOID.
+
+                            <br><br>
+
+                            Account balances will be recalculated automatically.
+
+                        </div>
+
+                        <label class="form-label">
+
+                            Reason
+
+                        </label>
+
+                        <textarea
+                            id="swal_void_reason"
+                            class="form-control"
+                            rows="3"
+                            placeholder="Reason for voiding..."></textarea>
+
+                    </div>
+
+                `,
+
+                icon: "warning",
+
+                showCancelButton: true,
+
+                confirmButtonColor: "#dc3545",
+
+                confirmButtonText: "Void Transaction",
+
+                preConfirm: function () {
+
+                    const reason = $("#swal_void_reason").val().trim();
+
+                    if (!reason) {
+
+                        Swal.showValidationMessage(
+                            "Please provide a reason."
+                        );
+
+                        return false;
+
+                    }
+
+                    return {
+
+                        reason: reason
+
+                    };
+
+                }
+
+            }).then(function (result) {
+
+                if (!result.isConfirmed) {
+
+                    return;
+
+                }
+
+                jsAddon.display.ajaxRequest({
+
+                    url: `${voidBankAccountTransactionApi}/${bankTransactionId}`,
+
+                    type: "DELETE",
+
+                    dataType: "json",
+
+                    payload: result.value
+
+                })
+                .then(function (response) {
+
+                    Swal.fire(
+
+                        "Success",
+
+                        response.message,
+
+                        "success"
+
+                    ).then(function () {
+
+                        bankView.funx.loadDashboard();
+
+                        bankView.funx.loadAccountDetails();
+
+                        bankView.funx.loadTransactions();
+
+                    });
+
+                })
+                .catch(function (error) {
+
+                    Swal.fire(
+
+                        "Error",
+
+                        error.message,
+
+                        "error"
+
+                    );
+
+                });
+
+            });
+
+        },
 
     }
 
@@ -1269,7 +2099,6 @@ $(function () {
     );
 
     
-
-    
+   
 
 });

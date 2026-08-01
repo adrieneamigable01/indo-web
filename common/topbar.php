@@ -145,7 +145,7 @@
 
             <li>
 
-                <a class="dropdown-item text-danger" href="<?= url('logout') ?>">
+                <a class="dropdown-item text-danger logout" href="#">
 
                     <i class="bi bi-box-arrow-right me-2"></i>
 

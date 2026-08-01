@@ -7754,11 +7754,11 @@ $(document).ready(function(){
 
         $html.find(".coMakerSelect").select2({
 
-            width:'100%',
+            width: "100%",
 
-            placeholder:'Select Co-Maker',
+            placeholder: "Select Co-Maker",
 
-            dropdownParent:$('#loanModal')
+            dropdownParent: $html
 
         });
 

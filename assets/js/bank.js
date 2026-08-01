@@ -212,7 +212,7 @@ let bankPage = {
                     },
 
                     {
-                        data: "is_active",
+                        data: "account_status",
 
                         render: function (data) {
 
@@ -254,7 +254,7 @@ let bankPage = {
 
             if (
 
-                status == 1 ||
+                status == "ACTIVE" ||
 
                 String(status).toUpperCase() == "ACTIVE"
 
@@ -276,7 +276,7 @@ let bankPage = {
 
                 <span class="badge bg-danger">
 
-                    INACTIVE
+                    CLOSED
 
                 </span>
 
@@ -351,59 +351,72 @@ let bankPage = {
 
         actionButtons: function (row) {
 
-            return `
-
+            let html = `
                 <div class="dropdown">
 
                     <button
-                        class="btn btn-sm btn-outline-primary dropdown-toggle"
-                        type="button"
+                        class="btn btn-sm btn-light border"
                         data-bs-toggle="dropdown">
 
-                        <i class="fas fa-cog me-1"></i>
-                        Actions
+                        <i class="bi bi-three-dots"></i>
 
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end">
 
                         <li>
-
                             <a
                                 class="dropdown-item"
                                 href="javascript:void(0)"
                                 onclick="bankPage.funx.viewBankAccount(${row.bank_account_id})">
 
-                                <i class="fas fa-eye text-info me-2"></i>
-                                View More
+                                <i class="fas fa-eye text-primary me-2"></i>
+
+                                View
 
                             </a>
-
                         </li>
+            `;
 
-                        <li>
+            // Only show when account is ACTIVE
+            if (row.account_status === "ACTIVE") {
 
-                            <a
-                                class="dropdown-item"
-                                href="javascript:void(0)"
-                                onclick="bankPage.funx.editBankAccount(${row.bank_account_id})">
+                html += `
+                    <li>
+                        <a
+                            class="dropdown-item"
+                            href="javascript:void(0)"
+                            onclick="bankPage.funx.editBankAccount(${row.bank_account_id})">
 
-                                <i class="fas fa-edit text-primary me-2"></i>
-                                Edit
+                            <i class="fas fa-edit text-warning me-2"></i>
 
-                            </a>
+                            Edit
 
-                        </li>
+                        </a>
+                    </li>
 
-                        <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a
+                            class="dropdown-item text-danger"
+                            href="javascript:void(0)"
+                            onclick="bankPage.funx.closeBankAccount(${row.bank_account_id})">
 
-                       
+                            <i class="fas fa-lock me-2"></i>
 
+                            Close Account
+
+                        </a>
+                    </li>
+                `;
+            }
+
+            html += `
                     </ul>
 
                 </div>
-
             `;
+
+            return html;
 
         },
 
@@ -520,7 +533,7 @@ let bankPage = {
         */
 
         showBankModal: function (bankAccountId = null) {
-
+            
             $("#bankAccountForm")[0].reset();
 
             $("#bankAccountId").val("");
@@ -1620,7 +1633,104 @@ let bankPage = {
             });
 
         },
+        closeBankAccount: function (bankAccountId) {
 
+            Swal.fire({
+
+                title: "Close Bank Account?",
+
+                html: `
+
+                    <div class="text-start">
+
+                        <div class="alert alert-warning">
+
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+
+                            Closing this account will prevent any future
+                            deposits, withdrawals, or transfers.
+
+                            <br><br>
+
+                            This action cannot be undone.
+
+                        </div>
+
+                        <label class="form-label">
+
+                            Reason
+
+                        </label>
+
+                        <textarea
+                            id="swal_close_reason"
+                            class="form-control"
+                            rows="3"
+                            placeholder="Reason for closing account..."></textarea>
+
+                    </div>
+
+                `,
+
+                icon: "warning",
+
+                showCancelButton: true,
+
+                confirmButtonColor: "#dc3545",
+
+                confirmButtonText: "Close Account",
+
+                preConfirm: function () {
+
+                    return {
+
+                        reason: $("#swal_close_reason").val()
+
+                    };
+
+                }
+
+            }).then(function (result) {
+
+                if (!result.isConfirmed) {
+
+                    return;
+
+                }
+
+                jsAddon.display.ajaxRequest({
+
+                    url: `${closeBankAccountApi}/${bankAccountId}`,
+
+                    type: "DELETE",
+
+                    payload: result.value,
+
+                    dataType: "json"
+
+                })
+                .then(function(response){
+
+                    Swal.fire(
+                        "Success",
+                        response.message,
+                        "success"
+                    );
+
+                })
+                .catch(function(error){
+
+                    Swal.fire(
+                        "Error",
+                        error.message,
+                        "error"
+                    );
+
+                });
+
+            });
+
+        },
         saveBankAccount: function (data) {
             jsAddon.display.ajaxRequest({
 
