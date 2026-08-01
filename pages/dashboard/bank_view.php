@@ -276,7 +276,7 @@
 
         </div>
 
-        <div class="col-6">
+        <div class="col-12">
 
             <div class="info-box">
 
