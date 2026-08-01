@@ -234,25 +234,7 @@
 
     <div class="row g-3">
 
-        <div class="col-6">
-
-            <div class="info-box">
-
-                <small>
-
-                    Branch
-
-                </small>
-
-                <h6 id="viewBranchName">
-
-                    -
-
-                </h6>
-
-            </div>
-
-        </div>
+        
 
         <div class="col-6">
 

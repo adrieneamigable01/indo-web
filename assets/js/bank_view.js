@@ -231,9 +231,9 @@ const bankView = {
                 |--------------------------------------------------------------------------
                 */
 
-                $("#viewBranchName").text(
-                    account.branch_name
-                );
+                // $("#viewBranchName").text(
+                //     account.branch_name
+                // );
 
                 $("#viewAccountType").text(
                     account.account_type
