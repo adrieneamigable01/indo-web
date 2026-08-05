@@ -518,6 +518,10 @@ label{
                         DRIVERS LICENSE
                     </option>
 
+                    <option>
+                        Professional Regulation Commission ( PRC )
+                    </option>
+
                 </select>
 
             </div>
