@@ -1,4 +1,4 @@
-const borrowerId =
+let borrowerId =
     new URLSearchParams(
         window.location.search
     ).get('id');
@@ -19,6 +19,7 @@ borrowerView = {
     settlementDeficit :[],
     settlementLoanInfo :[],
     borowerDetails:null,
+    borrowers:null,
     init:()=>{
 
 
@@ -39,6 +40,7 @@ borrowerView = {
 
                 borrowerView.funx.fillBorrowerDropdown(borrowerList);
                 borrowerView.funx.fetchProducts();
+                borrowerView.funx.fetchBorowers();
                 borrowerView.funx.fillYears();
 
             } catch (e) {
@@ -122,6 +124,229 @@ borrowerView = {
 
             });
            
+        },
+        fetchBorowers: () => {
+
+            jsAddon.display.ajaxRequest({
+                type: 'GET',
+                url: `${borrowerAllApi}`,
+                dataType: 'json'
+            })
+            .then((response) => {
+
+                if (response.isError) {
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    });
+
+                    return;
+                }
+
+                // SAVE ALL BORROWERS
+                borrowerView.borrowers = response.data;
+
+                console.log(
+                    'Borrowers loaded:',
+                    borrowerView.borrowers
+                );
+
+            })
+            .catch((error) => {
+
+                console.error(
+                    'Failed to fetch borrowers:',
+                    error
+                );
+
+            });
+
+        },
+        changeBorrower: () => {
+
+            const borrowers = borrowerView.borrowers || [];
+
+            if (!borrowers.length) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Borrowers not loaded',
+                    text: 'Please wait for the borrower list to finish loading.'
+                });
+
+                return;
+            }
+
+
+            Swal.fire({
+
+                title: 'Change Borrower',
+
+                html: `
+                    <div class="text-start">
+
+                        <label
+                            for="changeBorrowerSelect"
+                            class="form-label fw-semibold">
+
+                            Search Borrower
+
+                        </label>
+
+                        <select
+                            id="changeBorrowerSelect"
+                            class="form-select"
+                            style="width:100%">
+
+                            <option value="">
+                                Search borrower...
+                            </option>
+
+                        </select>
+
+                    </div>
+                `,
+
+                width: '600px',
+
+                showCancelButton: true,
+
+                confirmButtonText: 'Open Borrower',
+
+                cancelButtonText: 'Cancel',
+
+                confirmButtonColor: '#0d6efd',
+
+                didOpen: () => {
+
+                    const select =
+                        $('#changeBorrowerSelect');
+
+
+                    // Add borrowers
+                    borrowers.forEach((borrower) => {
+
+                        const fullName = [
+                            borrower.last_name,
+                            borrower.first_name,
+                            borrower.middle_name
+                        ]
+                        .filter(value =>
+                            value &&
+                            value.trim() !== ''
+                        )
+                        .join(', ');
+
+
+                        const option = new Option(
+
+                            `${fullName} — ID: ${borrower.borrower_id}`,
+
+                            borrower.borrower_id,
+
+                            false,
+                            false
+
+                        );
+
+
+                        select.append(option);
+
+                    });
+
+
+                    // Initialize Select2
+                    select.select2({
+
+                        placeholder:
+                            'Search borrower by name or ID...',
+
+                        allowClear: true,
+
+                        width: '100%',
+
+                        dropdownParent:
+                            $('.swal2-container'),
+
+                        matcher: function(params, data) {
+
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+
+                            const term =
+                                params.term.toLowerCase();
+
+                            const text =
+                                data.text.toLowerCase();
+
+                            if (
+                                text.indexOf(term) > -1
+                            ) {
+                                return data;
+                            }
+
+                            return null;
+
+                        }
+
+                    });
+
+                },
+
+                preConfirm: () => {
+
+                    const borrowerId =
+                        $('#changeBorrowerSelect').val();
+
+
+                    if (!borrowerId) {
+
+                        Swal.showValidationMessage(
+                            'Please select a borrower.'
+                        );
+
+                        return false;
+                    }
+
+
+                    return borrowerId;
+
+                }
+
+            }).then(async (result) => {
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+
+                
+                borrowerId =
+                    result.value;
+
+
+                const newUrl =
+                    `borrower?id=${encodeURIComponent(borrowerId)}`;
+
+                // Change URL without reloading
+                window.history.pushState(
+                    { borrowerId: borrowerId },
+                    '', 
+                    newUrl
+                );
+
+
+                // Reload only the borrower-related data
+                await borrowerView.funx.getBorrower();
+                await borrowerView.funx.getLoans();
+                await borrowerView.funx.getPaymentReport();
+                await borrowerView.funx.generateSchedule();
+
+            });
+
         },
         fillBorrowerDropdown:(data) => {
 
@@ -390,6 +615,7 @@ borrowerView = {
             );
 
             $("#borrowerId").text(row.borrower_id);
+            $("#borrowerCreated").text(row.created_at);
             $("#borrowerMobile").text(row.mobile_no);
             $("#borrowerEmail").text(row.email_address);
             $("#borrowerAddress").text(row.home_address);
@@ -411,10 +637,7 @@ borrowerView = {
                 );
         },
         summary:(data,response)=>{
-
-            if(data.length === 0){
-                return;
-            }
+            
 
             let totalLoanAmount = 0;
             let totalBalance = 0;
@@ -901,7 +1124,7 @@ borrowerView = {
 
                     <td>
 
-                        ${row.next_due_date}
+                        ${row.created_at}
 
                     </td>
 

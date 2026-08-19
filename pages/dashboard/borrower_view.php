@@ -71,15 +71,7 @@
 
         }
 
-        /* CONTENT */
-
-        .main-content{
-
-            margin-left:270px;
-
-            padding:25px;
-
-        }
+ 
 
         .topbar{
 
@@ -341,36 +333,37 @@
             <div class="d-flex justify-content-between align-items-center">
 
                 <div>
-
                     <h3 id="borrowerName">
-
                         Loading...
-
                     </h3>
 
-                    <small
-                        class="text-muted">
-
+                    <h6 class="text-muted">
                         Borrower ID:
-                        <span id="borrowerId">
-
-                            -
-
-                        </span>
-
-                    </small>
-
+                        <span id="borrowerId">-</span>
+                    </h6>
+                    <h6 class="text-muted">
+                        Created At:
+                        <span id="borrowerCreated">-</span>
+                    </h6>
                 </div>
 
-                <div>
+                <div class="d-flex align-items-center gap-2">
 
                     <span
                         id="borrowerStatus"
                         class="badge bg-success">
-
                         ACTIVE
-
                     </span>
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary btn-sm"
+                        onclick="borrowerView.funx.changeBorrower()">
+
+                        <i class="bi bi-pencil-square"></i>
+                        Change
+
+                    </button>
 
                 </div>
 
@@ -381,99 +374,69 @@
             <div class="row">
 
                 <div class="col-md-4 mb-3">
-
                     <div class="info-label">
-
                         Mobile Number
-
                     </div>
 
                     <div
                         id="borrowerMobile"
                         class="info-value">
-
                     </div>
-
                 </div>
 
                 <div class="col-md-4 mb-3">
-
                     <div class="info-label">
-
                         Email Address
-
                     </div>
 
                     <div
                         id="borrowerEmail"
                         class="info-value">
-
                     </div>
-
                 </div>
 
                 <div class="col-md-4 mb-3">
-
                     <div class="info-label">
-
                         Civil Status
-
                     </div>
 
                     <div
                         id="borrowerCivilStatus"
                         class="info-value">
-
                     </div>
-
                 </div>
 
                 <div class="col-md-6 mb-3">
-
                     <div class="info-label">
-
                         Home Address
-
                     </div>
 
                     <div
                         id="borrowerAddress"
                         class="info-value">
-
                     </div>
-
                 </div>
 
                 <div class="col-md-3 mb-3">
-
                     <div class="info-label">
-
                         Gender
-
                     </div>
 
                     <div
                         id="borrowerGender"
                         class="info-value">
-
                     </div>
-
                 </div>
 
                 <div class="col-md-3 mb-3">
-
                     <div class="info-label">
-
                         Date of Birth
-
                     </div>
 
                     <div
                         id="borrowerDob"
                         class="info-value">
-
                     </div>
-
                 </div>
 
             </div>
@@ -711,7 +674,7 @@
 
                     <th>Balance</th>
 
-                    <th>Next Due</th>
+                    <th>Created At</th>
 
                     <th>Action</th>
 
