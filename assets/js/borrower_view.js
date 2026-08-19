@@ -32,11 +32,20 @@ borrowerView = {
         let cached = localStorage.getItem(cacheKey);
 
         if (cached) {
-
             try {
-                borrowerList = JSON.parse(
-                    LZString.decompressFromUTF16(cached)
-                );
+                const decompressed = LZString.decompressFromUTF16(cached);
+
+                if (!decompressed) {
+                    throw new Error("Unable to decompress cache");
+                }
+
+                const parsed = JSON.parse(decompressed);
+
+                if (!Array.isArray(parsed)) {
+                    throw new Error("Invalid borrower cache format");
+                }
+
+                borrowerList = parsed;
 
                 borrowerView.funx.fillBorrowerDropdown(borrowerList);
                 borrowerView.funx.fetchProducts();
@@ -44,8 +53,17 @@ borrowerView = {
                 borrowerView.funx.fillYears();
 
             } catch (e) {
-                console.log("Cache corrupted");
+                console.warn("Borrower cache corrupted. Removing cache.", e);
+
                 localStorage.removeItem(cacheKey);
+
+                // Reset
+                borrowerList = [];
+
+                // Fetch fresh data
+                borrowerView.funx.fetchBorowers();
+                borrowerView.funx.fetchProducts();
+                borrowerView.funx.fillYears();
             }
         }
 
