@@ -18,6 +18,7 @@ const logoutApi                            = `${url}logout`;
 const validateOTPApi                      = `${url}validateOTP`;
 // Borrowrs
 const borrowerApi                         = `${url}borrower`;
+const borrowerAllApi                         = `${url}borrower/all`;
 const borrowerSummaryApi                  = `${url}borrower/summary`;
 const borrowerLoanContractApi             = `${url}loan/contract`;
 const borrowerLoanAddendumApi             = `${url}loan/addendum`;
@@ -95,6 +96,53 @@ const bankTranactionDetailsApi          = `${url}bankaccounts/transactions`;
 const bankTranactionDetailsDashboardApi = `${url}bankaccounts/transactions/dashboard`;
 const closeBankAccountApi               = `${url}bankaccounts/close`;
 const voidBankAccountTransactionApi     = `${url}bankaccounts/transactions/void`;
+
+const employeeApi                       = `${url}employee`;
+const employeeAddApi                    = `${url}employee/add`;
+const employeeUpdateApi                 = `${url}employee/update`;
+
+
+/*
+|--------------------------------------------------------------------------
+| Employee Schedule API
+|--------------------------------------------------------------------------
+*/
+
+const employeeSchedulePage               = `${url}employee-schedule`;
+
+const employeeScheduleApi                = `${url}employee-schedule/get`;
+
+const employeeScheduleDeleteApi          = `${url}employee-schedule/delete`;
+
+const employeeScheduleDaysApi            = `${url}employee-schedule/days`;
+
+const employeeScheduleSaveDaysApi        = `${url}employee-schedule/save-days`;
+
+const employeeCurrentScheduleApi         = `${url}employee-schedule/current`;
+
+const employeeScheduleSaveApi           = `${url}employee-schedule/save`;
+
+const employeeScheduleDatesApi          =`${url}employee-schedule/dates`;
+
+
+
+
+const employeeSalaryApi              = `${url}employee-salary/get`;
+
+const employeeSalarySaveApi          = `${url}employee-salary/save`;
+
+const employeeSalaryDeleteApi        = `${url}employee-salary/delete`;
+
+const employeeSalaryDatesApi         = `${url}employee-salary/dates`;
+
+
+
+const employeeGovernmentApi             = `${url}employee-government/get`;
+
+const employeeGovernmentSaveApi         = `${url}employee-government/save`;
+
+const employeeGovernmentDeleteApi       = `${url}employee-government/delete`;
+
 $(".version-badge").text(version);
 
 $(".logout").click(function (e) {
