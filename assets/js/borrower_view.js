@@ -2073,7 +2073,7 @@ borrowerView = {
                         <td>
 
                             ${
-                                row.loan_product_id == 3
+                                row.loan_product_id == 3 ||  row.loan_product_id == 2
                                     ? row.status != 'PAID'
                                         ? `
                                             <button
