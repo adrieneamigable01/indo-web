@@ -4205,6 +4205,10 @@ let cashierVaultPage = {
 
                                             </option>
 
+                                            <option value="BANK CHECK">
+                                                🔵 BANK CHECK
+                                            </option>
+
                                         </select>
 
                                     </div>
