@@ -2397,7 +2397,7 @@ borrowerView = {
                     });
 
                     return;
-
+ 
                 }
 
                 Swal.fire({
@@ -3203,7 +3203,7 @@ borrowerView = {
                                     loan.loan_product_id
                                 ) === 1 ||  parseInt(
                                     loan.loan_product_id
-                                ) === 6
+                                ) === 6 
                             ) {
 
                                 let dueDate =
@@ -3366,10 +3366,7 @@ borrowerView = {
                             // All other products use schedule amounts
                             else {
 
-                                amount =
-                                    parseFloat(schedule.principal_due || 0) +
-                                    parseFloat(schedule.interest_due || 0) +
-                                    parseFloat(schedule.penalty_due || 0);
+                                amount = parseFloat(schedule.interest_due || 0) 
 
                             }
 
