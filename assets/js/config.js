@@ -22,6 +22,7 @@ const borrowerAllApi                         = `${url}borrower/all`;
 const borrowerSummaryApi                  = `${url}borrower/summary`;
 const borrowerLoanContractApi             = `${url}loan/contract`;
 const borrowerLoanAddendumApi             = `${url}loan/addendum`;
+const borrowerLoanPaymentAquisitionApi             = `${url}loan/claim/aquisition`;
 const borrowerGetSettlementDeficitApi     = `${url}borrower/settlement-deficit`;
 // Loan
 const loanApi                             = `${url}loan`;

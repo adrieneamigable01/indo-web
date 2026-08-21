@@ -2076,15 +2076,32 @@ borrowerView = {
                                 row.loan_product_id == 3 ||  row.loan_product_id == 2
                                     ? row.status != 'PAID'
                                         ? `
+                                            <div class="d-flex gap-1">
+
                                             <button
                                                 class="btn btn-success btn-sm"
                                                 onclick="borrowerView.funx.collectPayment(${loanId}, ${row.schedule_id})">
                                                 <i class="bi bi-cash"></i>
                                                 Collect
                                             </button>
+
+                                            // <button
+                                            //     class="btn btn-info btn-sm"
+                                            //     onclick="borrowerView.funx.viewPayments(${loanId}, ${row.schedule_id})">
+                                            //     <i class="bi bi-eye"></i>
+                                            //     View Payments
+                                            // </button>
+
+                                        </div>
                                         `
                                         : `
-                                            <span class="badge bg-success">Paid</span>
+                                            <div class="d-flex gap-1">
+
+                                            <span class="badge bg-success align-self-center">
+                                                Paid
+                                            </span>
+
+                                        </div>
                                         `
                                     : `
                                         <span class="badge bg-secondary">-</span>
@@ -2164,6 +2181,14 @@ borrowerView = {
                         <td>
                             ${row.remarks || '-'}
                         </td>
+                        <td>
+                            <button
+                                class="btn btn-info btn-sm"
+                                onclick="borrowerView.funx.generateStatement(${row.payment_id})">
+                                <i class="bi bi-file-earmark-text"></i>
+                                Generate
+                            </button>
+                        </td>
 
                     </tr>
 
@@ -2191,6 +2216,15 @@ borrowerView = {
                     '[data-bs-target="#paymentTab"]'
                 )
             ).show();
+
+        },
+
+        generateStatement: (paymentId) => {
+
+            window.open(
+                `${borrowerLoanPaymentAquisitionApi}?id=${paymentId}&type=payment`,
+                '_blank'
+            );
 
         },
 
