@@ -633,22 +633,39 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
 
             <h5 class="mb-0">
-
                 Borrower Loans
-
             </h5>
 
-            <button
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#loanModal"\
-                id="addLoanModal">
+            <div class="d-flex gap-2 align-items-center">
 
-                <i class="bi bi-plus-circle"></i>
+                <!-- Loan Status Filter -->
+                <select
+                    class="form-select"
+                    id="loanStatusFilter"
+                    style="width: 180px;">
 
-                Add Loan
+                    <option value="RELEASED">Released</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="FULLY PAID">Fully Paid</option>
+                    <option value="REJECTED">Rejected</option>
+                    <option value="VOID">Void</option>
 
-            </button>
+                </select>
+
+                <!-- Add Loan -->
+                <button
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#loanModal"
+                    id="addLoanModal">
+
+                    <i class="bi bi-plus-circle"></i>
+                    Add Loan
+
+                </button>
+
+            </div>
 
         </div>
 
@@ -661,21 +678,13 @@
                 <tr>
 
                     <th>Loan No.</th>
-
                     <th>Amount</th>
-
                     <th>Loan Type</th>
-
                     <th>Terms</th>
-
                     <th>Interest</th>
-
                     <th>Status</th>
-
                     <th>Balance</th>
-
                     <th>Created At</th>
-
                     <th>Action</th>
 
                 </tr>
@@ -686,11 +695,8 @@
 
                 <tr>
 
-                    <td colspan="9"
-                        class="text-center">
-
+                    <td colspan="9" class="text-center">
                         Loading loans...
-
                     </td>
 
                 </tr>

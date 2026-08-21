@@ -507,13 +507,13 @@ borrowerView = {
             });
 
         },
-        getLoans:()=>{
+        getLoans:(status = 'released')=>{
 
             return new Promise((resolve,reject)=>{
                 jsAddon.display.ajaxRequest({
 
                         type:'GET',
-                        url: `${loanApi}?borrower_id=${borrowerId}&status=released`,
+                        url: `${loanApi}?borrower_id=${borrowerId}&status=${status}`,
                         dataType:'json'
 
                     })
@@ -8594,6 +8594,14 @@ $(document).ready(function(){
             });
 
         }
+
+    });
+
+    $('#loanStatusFilter').on('change', function () {
+
+        const status = $(this).val();
+
+        borrowerView.funx.getLoans(status);
 
     });
 
