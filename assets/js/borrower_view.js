@@ -3366,7 +3366,7 @@ borrowerView = {
                             // All other products use schedule amounts
                             else {
 
-                                amount = parseFloat(schedule.interest_due || 0) 
+                                amount = 0
 
                             }
 
