@@ -2230,11 +2230,67 @@ borrowerView = {
 
         generateStatementSettlement: (
             settlementId,
-            loanId
+            loanId,
+            details
         ) => {
 
+            const json =
+                JSON.stringify(details);
+
+            // Encode JSON to Base64
+            const encodedDetails =
+                btoa(
+                    encodeURIComponent(json)
+                        .replace(
+                            /%([0-9A-F]{2})/g,
+                            function (match, p1) {
+                                return String.fromCharCode(
+                                    parseInt(p1, 16)
+                                );
+                            }
+                        )
+                );
+
+
+            const url =
+                `${borrowerLoanPaymentAquisitionSettlementApi}` +
+                `?settlement_id=${encodeURIComponent(settlementId)}` +
+                `&loan_id=${encodeURIComponent(loanId)}` +
+                `&details=${encodeURIComponent(encodedDetails)}`;
+
+
+            console.log('PDF URL:', url);
+
             window.open(
-                `${borrowerLoanPaymentAquisitionSettlementApi}?settlement_id=${encodeURIComponent(settlementId)}&loan_id=${encodeURIComponent(loanId)}`,
+                url,
+                '_blank'
+            );
+
+        },
+
+        generateMonthlyPaymentAcknowledgement: (payments) => {
+
+            if (!payments || !payments.length) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Payments',
+                    text: 'No monthly payment records were found.'
+                });
+
+                return;
+            }
+
+            const json = JSON.stringify(payments);
+
+            const encoded = btoa(
+                unescape(
+                    encodeURIComponent(json)
+                )
+            );
+
+            window.open(
+                `${borrowerMonthlyPaymentAcknowledgementApi}?data=${encodeURIComponent(encoded)}`,
                 '_blank'
             );
 
@@ -3970,6 +4026,16 @@ borrowerView = {
 
                                 </div>
 
+                                <button
+                                    class="btn btn-primary btn-sm btn-print-acknowledgement w-100 mt-3"
+
+                                    data-payments='${JSON.stringify(payments)}'>
+
+                                    <i class="bi bi-printer"></i>   
+                                    Print Acknowledgement
+
+                                </button>
+
                             `;
 
                         }
@@ -4085,23 +4151,27 @@ borrowerView = {
                                             </strong>
                                         </div>
 
-                                         <div class="mt-3">
+                                        <div class="mt-3 d-flex gap-2">
 
-                                                <button
-                                                    class="btn btn-outline-primary btn-sm w-100 btn-view-settlement"
+                                            <button
+                                                class="btn btn-outline-primary btn-sm flex-fill btn-view-settlement"
+                                                data-details='${JSON.stringify(settlement.details || [])}'>
 
-                                                    data-details='${JSON.stringify(
-                                                        settlement.details || []
-                                                    )}'
-                                                    '>
+                                                <i class="bi bi-eye"></i>
+                                                View Details
 
-                                                    <i class="bi bi-eye"></i>
+                                            </button>
 
-                                                    View Details
+                                            <button
+                                                class="btn btn-outline-success btn-sm flex-fill btn-print-settlement-acknowledgement"
+                                                data-details='${JSON.stringify(settlement.details || [])}'>
 
-                                                </button>
+                                                <i class="bi bi-printer"></i>
+                                                Print Acknowledgement Settlement
 
-                                            </div>
+                                            </button>
+
+                                        </div>
 
                                     </div>
 
@@ -4352,6 +4422,8 @@ borrowerView = {
                                     PAYMENT COMPLETED
 
                                 </div>
+                                
+
 
                             `;
 
@@ -8495,11 +8567,13 @@ $(document).ready(function(){
         '.btn-print-settlement-acknowledgement',
         function () {
 
-            let details = $(this).data('details') || [];
+            let details =
+                $(this).data('details') || [];
 
-            console.log(details);
+            console.log('DETAILS:', details);
 
-            if (!details.length) {
+            if (!details || !details.length) {
+
                 Swal.fire({
                     icon: 'warning',
                     title: 'No Settlement Details',
@@ -8509,13 +8583,65 @@ $(document).ready(function(){
                 return;
             }
 
-            const settlementId = details[0].settlement_id;
-            const loanId = details[0].loan_id;
+            const settlementId =
+                details[0].settlement_id;
+
+            const loanId =
+                details[0].loan_id;
+
 
             borrowerView.funx.generateStatementSettlement(
                 settlementId,
-                loanId
+                loanId,
+                details
             );
+
+        }
+    );
+
+    $(document).on(
+    'click',
+    '.btn-print-acknowledgement',
+        function () {
+
+            const payments =
+                $(this).attr('data-payments');
+
+            if (!payments) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Payments',
+                    text: 'No payment records found.'
+                });
+
+                return;
+            }
+
+            try {
+
+                const parsedPayments =
+                    JSON.parse(payments);
+
+                borrowerView.funx
+                    .generateMonthlyPaymentAcknowledgement(
+                        parsedPayments
+                    );
+
+            } catch (error) {
+
+                console.error(
+                    'Invalid payment data:',
+                    error
+                );
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Payment Data',
+                    text: 'Unable to read the payment records.'
+                });
+
+            }
 
         }
     );
