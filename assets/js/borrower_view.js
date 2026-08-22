@@ -2228,6 +2228,18 @@ borrowerView = {
 
         },
 
+        generateStatementSettlement: (
+            settlementId,
+            loanId
+        ) => {
+
+            window.open(
+                `${borrowerLoanPaymentAquisitionSettlementApi}?settlement_id=${encodeURIComponent(settlementId)}&loan_id=${encodeURIComponent(loanId)}`,
+                '_blank'
+            );
+
+        },
+
         contract:(loanId)=>{
 
             window.open(`${borrowerLoanContractApi}?id=${loanId}`,'_blank')
@@ -3672,15 +3684,23 @@ borrowerView = {
 
                                         </div>
 
-                                        <div class="mt-3">
+                                        <div class="mt-3 d-flex gap-2">
 
                                             <button
-                                                class="btn btn-outline-primary btn-sm w-100 btn-view-settlement"
+                                                class="btn btn-outline-primary btn-sm flex-fill btn-view-settlement"
                                                 data-details='${JSON.stringify(settlement.details || [])}'>
 
                                                 <i class="bi bi-eye"></i>
-
                                                 View Details
+
+                                            </button>
+
+                                            <button
+                                                class="btn btn-outline-success btn-sm flex-fill btn-print-settlement-acknowledgement"
+                                                data-details='${JSON.stringify(settlement.details || [])}'>
+
+                                                <i class="bi bi-printer"></i>
+                                                Print Acknowledgement Settlement
 
                                             </button>
 
@@ -8469,23 +8489,36 @@ $(document).ready(function(){
         }
     );
 
-    // $(document).on(
-    // 'click',
-    // '.btn-view-settlement',
-    // function(){
 
-    //         let settlementId =
-    //             $(this).data(
-    //                 'settlement-id'
-    //             );
+    $(document).on(
+        'click',
+        '.btn-print-settlement-acknowledgement',
+        function () {
 
-    //         borrowerView.funx
-    //             .viewSettlement(
-    //                 settlementId
-    //             );
+            let details = $(this).data('details') || [];
 
-    //     }
-    // );
+            console.log(details);
+
+            if (!details.length) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Settlement Details',
+                    text: 'Settlement details were not found.'
+                });
+
+                return;
+            }
+
+            const settlementId = details[0].settlement_id;
+            const loanId = details[0].loan_id;
+
+            borrowerView.funx.generateStatementSettlement(
+                settlementId,
+                loanId
+            );
+
+        }
+    );
 
     $("#btnAddBonusDeduction").click(function(){
 
