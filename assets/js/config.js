@@ -13,17 +13,19 @@ const baseurl = isLocal
 
 const version = 'Version 1.0.2';
 
-const loginApi                            = `${url}login`;
-const logoutApi                            = `${url}logout`;
-const validateOTPApi                      = `${url}validateOTP`;
+const loginApi                                      = `${url}login`;
+const logoutApi                                     = `${url}logout`;
+const validateOTPApi                                = `${url}validateOTP`;
 // Borrowrs
-const borrowerApi                         = `${url}borrower`;
-const borrowerAllApi                         = `${url}borrower/all`;
-const borrowerSummaryApi                  = `${url}borrower/summary`;
-const borrowerLoanContractApi             = `${url}loan/contract`;
-const borrowerLoanAddendumApi             = `${url}loan/addendum`;
-const borrowerLoanPaymentAquisitionApi             = `${url}loan/claim/aquisition`;
-const borrowerGetSettlementDeficitApi     = `${url}borrower/settlement-deficit`;
+const borrowerApi                                   = `${url}borrower`;
+const borrowerAllApi                                = `${url}borrower/all`;
+const borrowerSummaryApi                            = `${url}borrower/summary`;
+const borrowerLoanContractApi                       = `${url}loan/contract`;
+const borrowerLoanAddendumApi                       = `${url}loan/addendum`;
+const borrowerLoanPaymentAquisitionApi              = `${url}loan/claim/aquisition`;
+const borrowerLoanPaymentAquisitionSettlementApi    = `${url}loan/claim/aquisition-settlement`;
+const borrowerMonthlyPaymentAcknowledgementApi    = `${url}loan/claim/monthly-aquisition-settlement`;
+const borrowerGetSettlementDeficitApi               = `${url}borrower/settlement-deficit`;
 // Loan
 const loanApi                             = `${url}loan`;
 const paymentApi                          = `${url}loan/payment`;
@@ -42,9 +44,7 @@ const updateScheduleApi                   = `${url}loan/update-schedule`;
 const sendLoanOtpApi                      = `${url}loan/send-otp`;
 const validateLoanOtpApi                  = `${url}loan/validate-otp`;
 
-
 const managerVaultTransactionsApi       = `${url}loan/reject`;
-
 
 // LoanProducts
 const loanproductsApi                   = `${url}loanproducts`;
@@ -102,46 +102,28 @@ const employeeApi                       = `${url}employee`;
 const employeeAddApi                    = `${url}employee/add`;
 const employeeUpdateApi                 = `${url}employee/update`;
 
-
 /*
 |--------------------------------------------------------------------------
 | Employee Schedule API
 |--------------------------------------------------------------------------
 */
-
 const employeeSchedulePage               = `${url}employee-schedule`;
-
 const employeeScheduleApi                = `${url}employee-schedule/get`;
-
 const employeeScheduleDeleteApi          = `${url}employee-schedule/delete`;
-
 const employeeScheduleDaysApi            = `${url}employee-schedule/days`;
-
 const employeeScheduleSaveDaysApi        = `${url}employee-schedule/save-days`;
-
 const employeeCurrentScheduleApi         = `${url}employee-schedule/current`;
-
 const employeeScheduleSaveApi           = `${url}employee-schedule/save`;
-
 const employeeScheduleDatesApi          =`${url}employee-schedule/dates`;
 
 
-
-
 const employeeSalaryApi              = `${url}employee-salary/get`;
-
 const employeeSalarySaveApi          = `${url}employee-salary/save`;
-
 const employeeSalaryDeleteApi        = `${url}employee-salary/delete`;
-
 const employeeSalaryDatesApi         = `${url}employee-salary/dates`;
 
-
-
 const employeeGovernmentApi             = `${url}employee-government/get`;
-
 const employeeGovernmentSaveApi         = `${url}employee-government/save`;
-
 const employeeGovernmentDeleteApi       = `${url}employee-government/delete`;
 
 $(".version-badge").text(version);
