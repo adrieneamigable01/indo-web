@@ -89,6 +89,14 @@
             Borrower Salary
 
         </a>
+        <a href="<?= url('borrower/incentives') ?>"
+        class="menu-item ps-5 <?= isActive('borrower/incentives') ? 'active' : '' ?>">
+
+            <i class="bi bi-cash-stack"></i>
+
+            Borrower Incentives
+
+        </a>
 
     </div>
 
@@ -173,6 +181,70 @@
             <i class="bi bi-journal-check"></i>
 
             Daily Close
+
+        </a>
+
+    </div>
+    <a class="menu-item d-flex justify-content-between align-items-center
+        <?= (
+            isActive('employee') ||
+            isActive('timelog') ||
+            isActive('payroll')
+        ) ? 'active' : '' ?>"
+    data-bs-toggle="collapse"
+    href="#hrMenu"
+    role="button"
+    aria-expanded="<?= (
+            isActive('employee') ||
+            isActive('timelog') ||
+            isActive('payroll')
+    ) ? 'true' : 'false' ?>"
+    aria-controls="hrMenu">
+
+        <span>
+
+            <i class="bi bi-people-fill"></i>
+
+            HR Management
+
+        </span>
+
+        <i class="bi bi-chevron-down"></i>
+
+    </a>
+
+    <div
+        class="collapse <?= (
+            isActive('employee') ||
+            isActive('timelog') ||
+            isActive('payroll')
+        ) ? 'show' : '' ?>"
+        id="hrMenu">
+
+        <a href="<?= url('employee') ?>"
+        class="menu-item ps-5 <?= isActive('employee') ? 'active' : '' ?>">
+
+            <i class="bi bi-person-badge-fill"></i>
+
+            Employees
+
+        </a>
+
+        <a href="<?= url('timelog') ?>"
+        class="menu-item ps-5 <?= isActive('timelog') ? 'active' : '' ?>">
+
+            <i class="bi bi-clock-history"></i>
+
+            Time Logs
+
+        </a>
+
+        <a href="<?= url('payroll') ?>"
+        class="menu-item ps-5 <?= isActive('payroll') ? 'active' : '' ?>">
+
+            <i class="bi bi-cash-stack"></i>
+
+            Payroll
 
         </a>
 
