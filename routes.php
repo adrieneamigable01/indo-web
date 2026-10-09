@@ -12,12 +12,15 @@ return [
     'add/borrower' => 'pages/dashboard/borrower_form.php',
     'edit/borrower' => 'pages/dashboard/borrower_form.php',
     'borrower/salary' => 'pages/dashboard/borrower-salary.php',
+    'borrower/incentives' => 'pages/dashboard/borrower-incentives.php',
     'loan' => 'pages/dashboard/loan.php',
     'vault/managers' => 'pages/dashboard/managers-vault.php',
     'vault/cashier' => 'pages/dashboard/cashier-vault.php',
     'vault/cashier-return' => 'pages/dashboard/cashier_daily_return.php',
     'bank' => 'pages/dashboard/bank.php',
     'view/bank' => 'pages/dashboard/bank_view.php',
+    'employee' => 'pages/dashboard/employee.php',
+    'view/employee' => 'pages/dashboard/view_employee.php',
     'splash' => 'pages/splash.php',
 
 ];

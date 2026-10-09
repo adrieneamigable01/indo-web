@@ -126,6 +126,45 @@ const employeeGovernmentApi             = `${url}employee-government/get`;
 const employeeGovernmentSaveApi         = `${url}employee-government/save`;
 const employeeGovernmentDeleteApi       = `${url}employee-government/delete`;
 
+/*
+|--------------------------------------------------------------------------
+| BORROWER INCENTIVE API
+|--------------------------------------------------------------------------
+*/
+
+const incentiveApi =
+    url + "/borrower-incentive/get";
+
+const incentiveDetailsApi =
+    url + "/borrower-incentive/get";
+
+const saveBorrowerIncentiveApi =
+    url + "/borrower-incentive/save";
+
+const saveBulkIncentiveApi =
+    url + "/borrower-incentive/save/bulk";
+
+const deleteBorrowerIncentiveApi =
+    url + "/borrower-incentive/delete";
+
+const incentiveSummaryApi =
+    url + "/borrower-incentive/get/summary";
+
+
+/*
+|--------------------------------------------------------------------------
+| INCENTIVE TYPE API
+|--------------------------------------------------------------------------
+*/
+
+/* For Incentive Type DataTable Management Page */
+const incentiveTypeApi =
+    url + "/incentive-type/get";
+
+/* For select dropdown in Borrower Incentive page */
+const incentiveTypeDropdownApi =
+    url + "/incentive/type/dropdown";
+
 $(".version-badge").text(version);
 
 $(".logout").click(function (e) {
