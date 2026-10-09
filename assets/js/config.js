@@ -163,7 +163,7 @@ const incentiveTypeApi =
 
 /* For select dropdown in Borrower Incentive page */
 const incentiveTypeDropdownApi =
-    url + "/incentive/type/dropdown";
+    url + "/incentive/type/dropdown"; 
 
 $(".version-badge").text(version);
 
