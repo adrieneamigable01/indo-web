@@ -594,6 +594,20 @@
         <button
             class="nav-link"
             data-bs-toggle="pill"
+            data-bs-target="#incentivesTab">
+
+            <i class="bi bi-receipt"></i>
+
+            Incentives 
+
+        </button>
+
+    </li>
+    <li class="nav-item">
+
+        <button
+            class="nav-link"
+            data-bs-toggle="pill"
             data-bs-target="#paymentReportTab">
 
             <i class="bi bi-receipt"></i>
@@ -838,6 +852,125 @@
 
 </div>
 
+<div class="tab-pane fade" id="incentivesTab">
+
+    <div class="table-card p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="mb-0">
+                <i class="bi bi-receipt me-2"></i>Borrower Incentives Report
+            </h5>
+        </div>
+
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Year</label>
+                <select id="reportYear" class="form-select">
+                    <!-- Populated by JS -->
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Incentive Type</label>
+                <select id="reportIncentiveType" class="form-select">
+                    <option value="">All Types</option>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary w-100" id="btnGenerateIncentiveReport">
+                    <i class="bi bi-search me-2"></i>Generate Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row g-3 mb-4" id="incentiveReportSummary" style="display: none;">
+            <div class="col-md-3">
+                <div class="stat-card p-3 bg-light rounded">
+                    <small class="text-muted">Total Records</small>
+                    <h4 class="mb-0 text-primary" id="summaryTotalRecords">0</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card p-3 bg-light rounded">
+                    <small class="text-muted">Total Amount</small>
+                    <h4 class="mb-0 text-success" id="summaryTotalAmount">₱0.00</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card p-3 bg-light rounded">
+                    <small class="text-muted">Paid Amount</small>
+                    <h4 class="mb-0 text-info" id="summaryPaidAmount">₱0.00</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card p-3 bg-light rounded">
+                    <small class="text-muted">Pending Amount</small>
+                    <h4 class="mb-0 text-warning" id="summaryPendingAmount">₱0.00</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="incentiveReportLoading" class="text-center py-5" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Generating report...</p>
+        </div>
+
+        <!-- Results Table -->
+        <div id="incentiveReportContainer" style="display: none;">
+            <div class="table-responsive">
+                <table id="incentiveReportTable" class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Borrower</th>
+                            <th>Incentive Type</th>
+                            <th>Month</th>
+                            <th class="text-end">Amount</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                            <th>-</th>
+                        </tr>
+                    </thead>
+                    <tbody id="incentiveReportTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                    <tfoot class="table-light fw-bold">
+                        <tr>
+                            <td colspan="4" class="text-end">TOTAL:</td>
+                            <td class="text-end" id="reportFooterTotal">₱0.00</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Export Buttons -->
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <button class="btn btn-success" id="btnExportIncentiveExcel">
+                    <i class="bi bi-file-earmark-excel me-2"></i>Export Excel
+                </button>
+                <button class="btn btn-danger" id="btnExportIncentivePDF">
+                    <i class="bi bi-file-earmark-pdf me-2"></i>Export PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="incentiveReportEmpty" class="text-center py-5" style="display: none;">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <h5 class="mt-3 text-muted">No incentives found</h5>
+            <p class="text-muted">Try adjusting your filters or generate for a different period.</p>
+        </div>
+
+    </div>
+
+</div>
 
 <!-- PAYMENT REPORT TAB -->
 <div class="tab-pane fade"

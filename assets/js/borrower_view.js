@@ -64,6 +64,7 @@ borrowerView = {
                 borrowerView.funx.fetchBorowers();
                 borrowerView.funx.fetchProducts();
                 borrowerView.funx.fillYears();
+               
             }
         }
 
@@ -72,12 +73,337 @@ borrowerView = {
 
         borrowerView.funx.getLoans();
         borrowerView.funx.getPaymentReport();
+        borrowerView.funx.loadYears();
+        borrowerView.funx.generateIncentiveReport();
         borrowerView.funx.fetchBorrower();
+         borrowerView.funx.bindEvents();
 
         
     },
 
     funx:{
+        loadYears: function () {
+            const currentYear = new Date().getFullYear();
+            let html = '';
+            for (let year = currentYear; year >= currentYear - 5; year--) {
+                html += `<option value="${year}">${year}</option>`;
+            }
+            $("#reportYear").html(html);
+            $("#reportYear").val(currentYear);
+        },
+        generateIncentiveReport: function () {
+            const year = $("#reportYear").val();
+            const incentiveTypeId = $("#reportIncentiveType").val();
+
+            if (!year) {
+                Swal.fire("Warning", "Please select a year.", "warning");
+                return;
+            }
+
+            // Show loading
+            $("#incentiveReportContainer").hide();
+            $("#incentiveReportEmpty").hide();
+            $("#incentiveReportSummary").hide();
+            $("#incentiveReportLoading").show();
+
+            jsAddon.display.ajaxRequest({
+                url: borrowerIncentiveReportApi,
+                type: "GET",
+                payload: {
+                    borrower_id: borrowerId,
+                    year: year,
+                    incentive_type_id: incentiveTypeId
+                },
+                dataType: "json"
+            }).then(function (response) {
+                $("#incentiveReportLoading").hide();
+
+                if (response.isError) {
+                    Swal.fire("Error", response.message, "error");
+                    $("#incentiveReportEmpty").show();
+                    return;
+                }
+
+                borrowerView.funx.renderIncentiveReport(response.data);
+
+            }).catch(function (error) {
+                console.error("Report Error:", error);
+                $("#incentiveReportLoading").hide();
+                Swal.fire("Error", "Failed to generate report.", "error");
+                $("#incentiveReportEmpty").show();
+            });
+        },
+
+        renderIncentiveReport: function (data) {
+            const records = data.records || [];
+            const summary = data.summary || {};
+
+            if (records.length === 0) {
+                $("#incentiveReportEmpty").show();
+                return;
+            }
+
+            // Show summary
+            $("#incentiveReportSummary").show();
+            $("#summaryTotalRecords").text(records.length);
+            $("#summaryTotalAmount").text(jsAddon.display.money(summary.totalAmount || 0));
+            $("#summaryPaidAmount").text(jsAddon.display.money(summary.totalPaid || 0));
+            $("#summaryPendingAmount").text(jsAddon.display.money(summary.totalPending || 0));
+
+            // Render table
+            let html = '';
+            let totalAmount = 0;
+
+            $.each(records, function (index, row) {
+                const statusBadge = borrowerView.funx.getStatusBadge(row.status);
+                const actionButtons = borrowerView.funx.getActionButtons(row);
+                const amount = parseFloat(row.incentive_amount) || 0;
+                totalAmount += amount;
+
+                html += `
+                    <tr data-incentive-id="${row.incentive_id}">
+                        <td>${index + 1}</td>
+                        <td>${row.borrower_name || '-'}</td>
+                        <td>${row.incentive_type_name || row.incentive_type || '-'}</td>
+                        <td>${row.incentive_month ? moment(row.incentive_month).format('MMM YYYY') : '-'}</td>
+                        <td class="text-end">${jsAddon.display.money(amount)}</td>
+                        <td>${statusBadge}</td>
+                        <td>${row.remarks || '-'}</td>
+                        <td class="text-center">${actionButtons}</td>
+                    </tr>
+                `;
+            });
+
+            $("#incentiveReportTableBody").html(html);
+            $("#reportFooterTotal").text(jsAddon.display.money(totalAmount));
+
+            // Show container
+            $("#incentiveReportContainer").show();
+
+            // Store data for export
+            borrowerView.currentData = {
+                records: records,
+                summary: summary
+            };
+        },
+        bindEvents: function () {
+            $("#btnGenerateIncentiveReport").click(function () {
+                borrowerView.funx.generateReport();
+            });
+
+            $("#btnExportIncentiveExcel").click(function () {
+                borrowerView.funx.exportToExcel();
+            });
+
+            $("#btnExportIncentivePDF").click(function () {
+                borrowerView.funx.exportToPDF();
+            });
+
+            // ✅ NEW: Delegate events for dynamic buttons
+            $(document).off('click', '.btn-taken-incentive')
+                .on('click', '.btn-taken-incentive', function () {
+                   
+                    const incentiveId = $(this).data('incentive-id');
+                    const borrowerName = $(this).data('borrower');
+                    const amount = $(this).data('amount');
+                    borrowerView.funx.markAsTaken(incentiveId, borrowerName, amount);
+                });
+
+            $(document).off('click', '.btn-generate-incentive')
+                .on('click', '.btn-generate-incentive', function () {
+                    const incentiveId = $(this).data('incentive-id');
+                    const borrowerName = $(this).data('borrower');
+                    const amount = $(this).data('amount');
+                    const month = $(this).data('month');
+                    const type = $(this).data('type');
+                    borrowerView.funx.generateVoucher(incentiveId, borrowerName, amount, month, type);
+                });
+        },
+        getActionButtons: function (row) {
+            const status = String(row.status || '').toUpperCase();
+            const incentiveId = row.incentive_id || '';
+
+            if (status === 'PENDING') {
+                return `
+                    <button class="btn btn-success btn-sm btn-taken-incentive" 
+                        data-incentive-id="${incentiveId}"
+                        data-borrower="${row.borrower_name || ''}"
+                        data-amount="${row.incentive_amount || 0}"
+                        title="Mark as Taken/Paid">
+                        <i class="bi bi-check-lg me-1"></i>Taken
+                    </button>
+                `;
+            } else if (status === 'PAID') {
+                return `
+                    <button class="btn btn-primary btn-sm btn-generate-incentive" 
+                        data-incentive-id="${incentiveId}"
+                        data-borrower="${row.borrower_name || ''}"
+                        data-amount="${row.incentive_amount || 0}"
+                        data-month="${row.incentive_month || ''}"
+                        data-type="${row.incentive_type_name || row.incentive_type || ''}"
+                        title="Generate Voucher">
+                        <i class="bi bi-file-earmark-text me-1"></i>Generate
+                    </button>
+                `;
+            }
+
+            return `<span class="text-muted">-</span>`;
+        },
+
+        markAsTaken: function (incentiveId, borrowerName, amount) {
+            Swal.fire({
+                title: 'Mark as Taken?',
+                html: `
+                    <p>Borrower: <strong>${borrowerName}</strong></p>
+                    <p>Amount: <strong>${jsAddon.display.money(amount)}</strong></p>
+                    <p class="text-muted">This will change the status to <strong>PAID</strong>.</p>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Mark as Taken',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                // Show loading
+                Swal.fire({
+                    title: 'Processing...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                jsAddon.display.ajaxRequest({
+                    url: updateIncentiveStatusApi,
+                    type: 'POST',
+                    payload: {
+                        incentive_id: incentiveId,
+                        status: 'PAID'
+                    },
+                    dataType: 'json'
+                }).then(function (response) {
+                    console.log('Response:', response);
+
+                    if (response.isError) {
+                        Swal.fire('Error', response.message, 'error');
+                        return;
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Incentive marked as taken/paid.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Simple reload if report refresh fails
+                        try {
+                            borrowerIncentiveReport.funx.generateReport();
+                        } catch (e) {
+                            console.warn('Report refresh failed, reloading page:', e);
+                            location.reload();
+                        }
+                    });
+
+                }, function (error) {
+                    // ✅ Handle rejection in second .then() argument instead of .catch()
+                    console.error('Request failed:', error);
+                    
+                    let errorMsg = 'Failed to update status.';
+                    if (error.responseJSON?.message) {
+                        errorMsg = error.responseJSON.message;
+                    }
+                    
+                    Swal.fire('Error', errorMsg, 'error');
+                });
+                
+            });
+        },
+
+        generateVoucher: function (incentiveId, borrowerName, amount, month, type) {
+            // Prepare data object
+            const voucherData = {
+                incentive_id: incentiveId
+            };
+
+            // Encode to base64
+            const jsonString = JSON.stringify(voucherData);
+            const encodedData = encodeURIComponent(btoa(jsonString));
+
+            // Open PDF in new window
+            const pdfUrl = incentiveVoucherPdfApi + '?data=' + encodedData;
+            window.open(pdfUrl, '_blank');
+
+            // Optional: Log for debugging
+            console.log('Opening voucher PDF:', pdfUrl);
+        },
+
+        getStatusBadge: function (status) {
+            switch (String(status).toUpperCase()) {
+                case "PAID":
+                    return '<span class="badge bg-success">PAID</span>';
+                case "PENDING":
+                    return '<span class="badge bg-warning text-dark">PENDING</span>';
+                case "CANCELLED":
+                    return '<span class="badge bg-secondary">CANCELLED</span>';
+                default:
+                    return '<span class="badge bg-light text-dark">' + (status || '-') + '</span>';
+            }
+        },
+
+        exportToExcel: function () {
+            if (!borrowerView.currentData) return;
+
+            const data = borrowerView.currentData.records;
+            if (data.length === 0) {
+                Swal.fire("Info", "No data to export.", "info");
+                return;
+            }
+
+            // Create worksheet data
+            const wsData = [
+                ["Borrower Incentives Report"],
+                ["Generated: " + new Date().toLocaleString()],
+                [],
+                ["#", "Borrower", "Incentive Type", "Month", "Amount", "Status", "Remarks"]
+            ];
+
+            $.each(data, function (index, row) {
+                wsData.push([
+                    index + 1,
+                    row.borrower_name || '-',
+                    row.incentive_type_name || row.incentive_type || '-',
+                    row.incentive_month || '-',
+                    row.incentive_amount || 0,
+                    row.status || '-',
+                    row.remarks || ''
+                ]);
+            });
+
+            // Add total row
+            const total = data.reduce((sum, row) => sum + (parseFloat(row.incentive_amount) || 0), 0);
+            wsData.push([]);
+            wsData.push(["", "", "", "TOTAL:", total, "", ""]);
+
+            // Create workbook and download
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, "Incentives");
+            XLSX.writeFile(wb, "Incentives_Report_" + $("#reportYear").val() + ".xlsx");
+
+            Swal.fire({
+                icon: "success",
+                title: "Exported",
+                text: "Report exported to Excel.",
+                timer: 1500,
+                showConfirmButton: false
+            });
+        },
+
+        exportToPDF: function () {
+            Swal.fire("Info", "PDF export coming soon.", "info");
+        },
         fetchBorrower:() => {
       
             if (isFetching == true) return;
@@ -978,8 +1304,13 @@ borrowerView = {
                             ₱${parseFloat(loan.interest_amount || 0).toLocaleString()}
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        div class="col-md-6 mb-3">
                             <strong>Processing Fee</strong><br>
+                            ₱${parseFloat(loan.approved_processing_fee || 0).toLocaleString()}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Processing Amount</strong><br>
                             ₱${parseFloat(loan.processingfee_amount || 0).toLocaleString()}
                         </div>
 

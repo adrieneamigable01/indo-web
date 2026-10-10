@@ -165,6 +165,13 @@ const incentiveTypeApi =
 const incentiveTypeDropdownApi =
     url + "/incentive/type/dropdown"; 
 
+
+const borrowerIncentiveReportApi = url + '/borrower-incentive/report';
+
+const updateIncentiveStatusApi = url + '/borrower-incentive/update-status';
+
+const incentiveVoucherPdfApi = url + '/borrower-incentive/voucher';
+
 $(".version-badge").text(version);
 
 $(".logout").click(function (e) {
