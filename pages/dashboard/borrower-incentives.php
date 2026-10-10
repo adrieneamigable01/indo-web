@@ -163,29 +163,6 @@
 
         <div class="row mb-4 g-3">
 
-            <!-- Borrower Filter -->
-
-            <div class="col-md-3">
-
-                <label class="form-label">
-
-                    Borrower
-
-                </label>
-
-                <select
-                    class="form-select"
-                    id="filterIncentiveBorrower">
-
-                    <option value="">
-
-                        All Borrowers
-
-                    </option>
-
-                </select>
-
-            </div>
 
             <!-- Incentive Type Filter -->
 
