@@ -438,13 +438,17 @@ let borrowerIncentivePage = {
                         orderable: false,
                         defaultContent: "",
                         render: function (data, type, row) {
-
+                            let remarks = row.remarks;
+                            if(row.status === 'PAID' && row.remarks == ""){
+                                let date = row.taken_at??row.updated_at;
+                                remarks = `Incentive already taken for the date of ${date}.`
+                            }
                             return `
                                 <input type="text"
                                     data-borrower="${row.borrower_id}"
                                     data-incentive="${row.incentive_id ?? ''}"
                                     class="form-control form-control-sm txtRemarks"
-                                    value="${row.remarks || ""}">
+                                    value="${remarks || ""}">
                             `;
 
                         }
