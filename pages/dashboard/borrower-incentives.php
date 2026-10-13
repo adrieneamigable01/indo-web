@@ -78,7 +78,7 @@
 
         </div>
 
-        <div>
+        <!-- <div>
 
             <button
                 type="button"
@@ -91,7 +91,7 @@
 
             </button>
 
-        </div>
+        </div> -->
 
     </div>
 
@@ -208,15 +208,20 @@
 
                     </option>
 
-                    <option value="ACTIVE">
+                    <option value="Paid">
 
-                        Active
+                        Paid
 
                     </option>
 
-                    <option value="INACTIVE">
+                    <option value="Pending">
 
-                        Inactive
+                        Pending
+
+                    </option>
+                    <option value="Cancelled">
+
+                        Cancelled
 
                     </option>
 
@@ -346,7 +351,7 @@
 
                         <th>Status</th>
 
-                        <th>Action</th>
+                        <!-- <th>-</th> -->
 
                     </tr>
 

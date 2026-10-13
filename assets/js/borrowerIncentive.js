@@ -243,6 +243,7 @@ let borrowerIncentivePage = {
 
                     // ✅ Add incentive_type_id filter to payload
                     const filterIncentiveTypeId = $("#filterIncentiveType").val();
+                    const filterIncentiveStatus = $("#filterIncentiveStatus").val();
 
                     jsAddon.display.ajaxRequest({
 
@@ -266,7 +267,11 @@ let borrowerIncentivePage = {
 
                             incentive_type_id: filterIncentiveTypeId,  // ✅ Filter by type
 
-                            search: $("#txtSearch").val()
+                            filterIncentiveStatus: filterIncentiveStatus,  // ✅ Filter by type
+
+                            status: filterIncentiveStatus,  // ✅ Filter by type
+
+                            search: $("#txtIncentiveSearch").val()
 
                         },
 
@@ -370,13 +375,26 @@ let borrowerIncentivePage = {
                         defaultContent: "",
                         render: function (data, type, row) {
 
-                            // ✅ Make sure incentive_id is not undefined
                             const incentiveId = row.incentive_id !== undefined ? row.incentive_id : '';
                             const borrowerId = row.borrower_id !== undefined ? row.borrower_id : '';
+                            const status = String(row.status || '').toUpperCase();
+
+                            // ✅ Disable input if status is PAID
+                            const isDisabled = status === 'PAID' ? 'disabled' : '';
+                            const bgStyle = status === 'PAID' 
+                                ? 'background-color:#e9ecef; color:#6c757d; cursor:not-allowed;' 
+                                : 'text-align:right; font-weight:600;';
+
+
+                            const style = status === 'PAID'
+                            ? 'background-color:#e9ecef !important; color:#6c757d; cursor:not-allowed; text-align:right; font-weight:600;'
+                            : 'text-align:right; font-weight:600;';
 
                             console.log("Rendering row:", {
                                 incentive_id: incentiveId,
-                                borrower_id: borrowerId
+                                borrower_id: borrowerId,
+                                status: status,
+                                isDisabled: isDisabled
                             });
 
                             return `
@@ -387,7 +405,8 @@ let borrowerIncentivePage = {
                                     value="${row.incentive_amount || 0}"
                                     data-borrower="${borrowerId}"
                                     data-incentive="${incentiveId}"
-                                    style="text-align:right; font-weight:600;">
+                                    ${isDisabled}
+                                    style="${style}">
                             `;
                         }
                     },
@@ -432,24 +451,24 @@ let borrowerIncentivePage = {
                     },
 
                     // Action Buttons
-                    {
-                        data: null,
-                        orderable: false,
-                        searchable: false,
-                        defaultContent: "",
-                        render: function (data, type, row) {
-                            return `
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <button type="button" class="btn btn-outline-success btn-save-incentive" 
-                                        data-borrower="${row.borrower_id}" 
-                                        data-incentive="${row.incentive_id || ''}" 
-                                        title="Save">
-                                        <i class="bi bi-check-lg"></i>
-                                    </button>
-                                </div>
-                            `;
-                        }
-                    }
+                    // {
+                    //     data: null,
+                    //     orderable: false,
+                    //     searchable: false,
+                    //     defaultContent: "",
+                    //     render: function (data, type, row) {
+                    //         return `
+                    //             <div class="btn-group btn-group-sm" role="group">
+                    //                 <button type="button" class="btn btn-outline-success btn-save-incentive" 
+                    //                     data-borrower="${row.borrower_id}" 
+                    //                     data-incentive="${row.incentive_id || ''}" 
+                    //                     title="Save">
+                    //                     <i class="bi bi-check-lg"></i>
+                    //                 </button>
+                    //             </div>
+                    //         `;
+                    //     }
+                    // }
 
                 ]
 
@@ -1047,6 +1066,20 @@ $(function () {
     */
 
     $("#filterIncentiveType")
+        .off("change")
+        .on("change", function () {
+            borrowerIncentivePage.funx.loadIncentives();
+            borrowerIncentivePage.funx.loadSummary();
+        });
+
+    $("#filterIncentiveStatus")
+        .off("change")
+        .on("change", function () {
+            borrowerIncentivePage.funx.loadIncentives();
+            borrowerIncentivePage.funx.loadSummary();
+        });
+
+    $("#txtIncentiveSearch")
         .off("change")
         .on("change", function () {
             borrowerIncentivePage.funx.loadIncentives();

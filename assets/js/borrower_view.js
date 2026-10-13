@@ -159,7 +159,6 @@ borrowerView = {
                 const actionButtons = borrowerView.funx.getActionButtons(row);
                 const amount = parseFloat(row.incentive_amount) || 0;
                 totalAmount += amount;
-
                 html += `
                     <tr data-incentive-id="${row.incentive_id}">
                         <td>${index + 1}</td>
@@ -188,7 +187,7 @@ borrowerView = {
         },
         bindEvents: function () {
             $("#btnGenerateIncentiveReport").click(function () {
-                borrowerView.funx.generateReport();
+                borrowerView.funx.generateIncentiveReport();
             });
 
             $("#btnExportIncentiveExcel").click(function () {
@@ -206,7 +205,18 @@ borrowerView = {
                     const incentiveId = $(this).data('incentive-id');
                     const borrowerName = $(this).data('borrower');
                     const amount = $(this).data('amount');
-                    borrowerView.funx.markAsTaken(incentiveId, borrowerName, amount);
+                    const month = $(this).data('month');
+                    const type = $(this).data('type');
+                    borrowerView.funx.markAsTaken(incentiveId, borrowerName, amount,month, type);
+                });
+
+                  // ✅ NEW: Cancel button
+            $(document).off('click', '.btn-cancel-incentive')
+                .on('click', '.btn-cancel-incentive', function () {
+                    const incentiveId = $(this).data('incentive-id');
+                    const borrowerName = $(this).data('borrower');
+                    const amount = $(this).data('amount');
+                    borrowerView.funx.cancelIncentive(incentiveId, borrowerName, amount);
                 });
 
             $(document).off('click', '.btn-generate-incentive')
@@ -225,13 +235,22 @@ borrowerView = {
 
             if (status === 'PENDING') {
                 return `
-                    <button class="btn btn-success btn-sm btn-taken-incentive" 
-                        data-incentive-id="${incentiveId}"
-                        data-borrower="${row.borrower_name || ''}"
-                        data-amount="${row.incentive_amount || 0}"
-                        title="Mark as Taken/Paid">
-                        <i class="bi bi-check-lg me-1"></i>Taken
-                    </button>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button class="btn btn-success btn-taken-incentive" 
+                            data-incentive-id="${incentiveId}"
+                            data-borrower="${row.borrower_name || ''}"
+                            data-amount="${row.incentive_amount || 0}"
+                            title="Mark as Taken/Paid">
+                            <i class="bi bi-check-lg me-1"></i>Taken
+                        </button>
+                        <button class="btn btn-danger btn-cancel-incentive" 
+                            data-incentive-id="${incentiveId}"
+                            data-borrower="${row.borrower_name || ''}"
+                            data-amount="${row.incentive_amount || 0}"
+                            title="Cancel Incentive">
+                            <i class="bi bi-x-lg me-1"></i>Cancel
+                        </button>
+                    </div>
                 `;
             } else if (status === 'PAID') {
                 return `
@@ -245,12 +264,106 @@ borrowerView = {
                         <i class="bi bi-file-earmark-text me-1"></i>Generate
                     </button>
                 `;
+            } else if (status === 'CANCELLED') {
+                return `
+                    <span class="badge bg-secondary">
+                        <i class="bi bi-x-circle me-1"></i>CANCELLED
+                    </span>
+                `;
             }
 
             return `<span class="text-muted">-</span>`;
         },
 
-        markAsTaken: function (incentiveId, borrowerName, amount) {
+        cancelIncentive: function (incentiveId, borrowerName, amount) {
+            Swal.fire({
+                title: 'Cancel Incentive?',
+                html: `
+                    <p>Borrower: <strong>${borrowerName}</strong></p>
+                    <p>Amount: <strong>${jsAddon.display.money(amount)}</strong></p>
+                    <div class="mt-3 text-start">
+                        <label for="cancelRemarks" class="form-label fw-bold">
+                            <span class="text-danger">*</span> Reason for Cancellation:
+                        </label>
+                        <textarea id="cancelRemarks" class="form-control" rows="3" 
+                            placeholder="Enter reason for cancellation (required)..."></textarea>
+                        <small class="text-muted">This reason will be saved in the remarks field.</small>
+                    </div>
+                    <p class="text-danger mt-3">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        This will change the status to <strong>CANCELLED</strong> and cannot be undone easily.
+                    </p>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Cancel Incentive',
+                cancelButtonText: 'No, Keep It',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                inputAttributes: {
+                    'required': 'required'
+                },
+                preConfirm: () => {
+                    const remarks = document.getElementById('cancelRemarks').value;
+                    if (!remarks || remarks.trim() === '') {
+                        Swal.showValidationMessage('Please enter a reason for cancellation.');
+                        return false;
+                    }
+                    return remarks.trim();
+                }
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                const remarks = result.value;
+
+                // Show loading
+                Swal.fire({
+                    title: 'Processing...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                jsAddon.display.ajaxRequest({
+                    url: updateIncentiveStatusApi,
+                    type: 'POST',
+                    payload: {
+                        incentive_id: incentiveId,
+                        status: 'CANCELLED',
+                        remarks: remarks
+                    },
+                    dataType: 'json'
+                }).then(function (response) {
+                    if (response.isError) {
+                        Swal.fire('Error', response.message, 'error');
+                        return;
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cancelled',
+                        text: 'Incentive has been cancelled.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+
+                    // Refresh the report
+                    try {
+                        borrowerView.funx.generateIncentiveReport();
+                    } catch (e) {
+                        
+                        console.error('Refresh error:', e);
+                        location.reload();
+                    }
+
+                }).catch(function (error) {
+                    
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Failed to cancel incentive.', 'error');
+                });
+            });
+        },
+
+        markAsTaken: function (incentiveId, borrowerName, amount,month, type) {
             Swal.fire({
                 title: 'Mark as Taken?',
                 html: `
@@ -299,7 +412,9 @@ borrowerView = {
                     }).then(() => {
                         // Simple reload if report refresh fails
                         try {
-                            borrowerIncentiveReport.funx.generateReport();
+                            borrowerView.funx.generateIncentiveReport();
+                            borrowerView.funx.generateVoucher(incentiveId, borrowerName, amount, month, type);
+
                         } catch (e) {
                             console.warn('Report refresh failed, reloading page:', e);
                             location.reload();
