@@ -98,6 +98,17 @@
 
         </a>
 
+         <!-- ✅ UPDATED: Borrower Incentives with Swal2 popup -->
+        <a href="javascript:void(0)"
+        id="btnGenerateNames"
+        class="menu-item ps-5">
+
+            <i class="bi bi-cash-stack"></i>
+            Generate Names
+        </a>
+
+
+
     </div>
 
     <a href="<?= url('loan') ?>" class="menu-item <?= isActive('loan') ? 'active' : '' ?>">
