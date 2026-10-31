@@ -2531,12 +2531,7 @@ borrowerView = {
                                                 Collect
                                             </button>
 
-                                            // <button
-                                            //     class="btn btn-info btn-sm"
-                                            //     onclick="borrowerView.funx.viewPayments(${loanId}, ${row.schedule_id})">
-                                            //     <i class="bi bi-eye"></i>
-                                            //     View Payments
-                                            // </button>
+                                           
 
                                         </div>
                                         `
@@ -5253,7 +5248,7 @@ borrowerView = {
 
                     let statusBadge = '';
                     let actionButton = '';
-
+                  
                     if (bonus.status === 'NO_CREDIT' || !bonus.status) {
 
                         if (bonus.settlement_id) {
@@ -5303,7 +5298,7 @@ borrowerView = {
 
                         }
 
-                    } else if (bonus.status === 'CREDITED') {
+                    }  if (bonus.status === 'CREDITED') {
 
                         statusBadge = `
                             <span class="badge bg-warning text-dark">
