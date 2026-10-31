@@ -2519,8 +2519,8 @@ borrowerView = {
                         <td>
 
                             ${
-                                row.loan_product_id == 3 ||  row.loan_product_id == 2
-                                    ? row.status != 'PAID'
+                                // row.loan_product_id == 3 ||  row.loan_product_id == 2 ?
+                                     row.status != 'PAID'
                                         ? `
                                             <div class="d-flex gap-1">
 
@@ -2544,9 +2544,9 @@ borrowerView = {
 
                                         </div>
                                         `
-                                    : `
-                                        <span class="badge bg-secondary">-</span>
-                                    `
+                                    // : `
+                                    //     <span class="badge bg-secondary">-</span>
+                                    // `
                             }
 
                         </td>
