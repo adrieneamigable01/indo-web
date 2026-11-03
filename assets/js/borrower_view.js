@@ -2415,7 +2415,7 @@ borrowerView = {
 
                             if (interestPaid == 0) {
                                 status = "UNPAID";
-                                badge = "warning";
+                                badge = "danger";
                             } else if (interestPaid < interestDue) {
                                 status = "PARTIAL";
                                 badge = "warning";
@@ -2428,7 +2428,7 @@ borrowerView = {
 
                             if (principalPaid == 0) {
                                 status = "UNPAID";
-                                badge = "warning";
+                                badge = "danger";
                             } else if (principalPaid < principalDue) {
                                 status = "PARTIAL";
                                 badge = "warning";
