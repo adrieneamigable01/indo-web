@@ -2367,6 +2367,8 @@ borrowerView = {
                     let badge =
                         'secondary';
 
+                    let status = row.status;
+
                     if(
                         row.status ==
                         'PAID'
@@ -2383,13 +2385,32 @@ borrowerView = {
                             'warning';
                     }
 
-                    if(
-                        row.status ==
-                        'UNPAID'
-                    ){
-                        badge =
-                            'danger';
+                    
+                    if( row.loan_product_id == 3){
+                        if(
+                            row.interest_paid == 0
+                        ){
+                           status = "UNPAID"
+                            badge = 'warning';
+                        }else if(
+                            row.interest_due > row.interest_paid
+                        ){
+                            status = "PARTIAL";
+                            badge = 'warning';
+                        }else{
+                            status = "PAID"
+                            badge = 'success';
+                        }
+                    } else { 
+                        if(
+                            row.status ==
+                            'UNPAID'
+                        ){
+                            badge =
+                                'danger';
+                        }
                     }
+                    
 
                     html += `
 
@@ -2508,7 +2529,7 @@ borrowerView = {
                         <td>
 
                             <span
-                                class="badge bg-${row.principal_due > 0 ? badge : '-'} }">
+                                class="badge bg-${badge}">
 
                                 ${ row.principal_due > 0 ? row.status : '-'}
 
