@@ -2546,20 +2546,29 @@ borrowerView = {
                         </td>
 
                         <td>
-
                             <strong>
-
-                                ₱${parseFloat(
-                                    row.balance || 0
-                                ).toLocaleString(
-                                    undefined,
-                                    {
-                                        minimumFractionDigits:2
-                                    }
-                                )}
-
+                                ₱${Math.max(
+                                    0,
+                                    (parseFloat(row.interestDue) || 0) -
+                                    (parseFloat(row.interestAmount) || 0)
+                                ).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                })}
                             </strong>
+                        </td>
 
+                        <td>
+                            <strong>
+                                ₱${Math.max(
+                                    0,
+                                    (parseFloat(row.principalDue) || 0) -
+                                    (parseFloat(row.principalPaid) || 0)
+                                ).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                })}
+                            </strong>
                         </td>
 
                         <td>

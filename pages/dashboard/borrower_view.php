@@ -757,7 +757,9 @@
 
                     <th>Penalty Due</th>
 
-                    <th>Balance</th>
+                    <th>Interest Balance</th>
+                    
+                    <th>Principal Balance</th>
 
                     <th>Status</th>
                     
