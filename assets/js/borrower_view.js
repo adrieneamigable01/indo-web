@@ -2397,7 +2397,7 @@ borrowerView = {
 
                             if (principalPaid == 0 && interestPaid == 0) {
                                 status = "UNPAID";
-                                badge = "warning";
+                                badge = "danger";
 
                             } else if (
                                 principalPaid < principalDue ||
