@@ -2510,7 +2510,7 @@ borrowerView = {
                             <span
                                 class="badge bg-${badge}">
 
-                                ${row.status}
+                                ${ row.principal_due > 0 ? row.status : '-'}
 
                             </span>
 
