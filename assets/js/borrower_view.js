@@ -2508,7 +2508,7 @@ borrowerView = {
                         <td>
 
                             <span
-                                class="badge bg-${badge}">
+                                class="badge bg-${row.principal_due > 0 ? badge : '-'} }">
 
                                 ${ row.principal_due > 0 ? row.status : '-'}
 
