@@ -2386,20 +2386,56 @@ borrowerView = {
                     }
 
                     
-                    if( row.loan_product_id == 3){
-                        if(
-                            row.interest_paid == 0
-                        ){
-                           status = "UNPAID"
-                            badge = 'warning';
-                        }else if(
-                            row.interest_due > row.interest_paid
-                        ){
-                            status = "PARTIAL";
-                            badge = 'warning';
-                        }else{
-                            status = "PAID"
-                            badge = 'success';
+                    if (row.loan_product_id == 3) {
+                        const principalDue = parseFloat(row.principal_due) || 0;
+                        const interestDue = parseFloat(row.interest_due) || 0;
+
+                        const principalPaid = parseFloat(row.principal_paid) || 0;
+                        const interestPaid = parseFloat(row.interest_paid) || 0;
+
+                        if (principalDue > 0 && interestDue > 0) {
+
+                            if (principalPaid == 0 && interestPaid == 0) {
+                                status = "UNPAID";
+                                badge = "warning";
+
+                            } else if (
+                                principalPaid < principalDue ||
+                                interestPaid < interestDue
+                            ) {
+                                status = "PARTIAL";
+                                badge = "warning";
+
+                            } else {
+                                status = "PAID";
+                                badge = "success";
+                            }
+
+                        } else if (interestDue > 0) {
+
+                            if (interestPaid == 0) {
+                                status = "UNPAID";
+                                badge = "warning";
+                            } else if (interestPaid < interestDue) {
+                                status = "PARTIAL";
+                                badge = "warning";
+                            } else {
+                                status = "PAID";
+                                badge = "success";
+                            }
+
+                        } else if (principalDue > 0) {
+
+                            if (principalPaid == 0) {
+                                status = "UNPAID";
+                                badge = "warning";
+                            } else if (principalPaid < principalDue) {
+                                status = "PARTIAL";
+                                badge = "warning";
+                            } else {
+                                status = "PAID";
+                                badge = "success";
+                            }
                         }
                     } else { 
                         if(
