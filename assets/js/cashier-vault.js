@@ -24,6 +24,8 @@ let cashierVaultPage = {
 
     borrowerId:null,
 
+    requestById:null,
+
     table:null,
 
     transactions:{},
@@ -37,6 +39,8 @@ let cashierVaultPage = {
     coinsModal:null,
 
     borrowerList:[],
+
+    userList:[],
 
     init:function(){
 
@@ -100,6 +104,7 @@ let cashierVaultPage = {
         }
 
         cashierVaultPage.funx.getBorrowers();
+        cashierVaultPage.funx.getUsers();
 
         // cashierVaultPage.funx.loadSummary();
 
@@ -145,6 +150,40 @@ let cashierVaultPage = {
             });
 
         },
+        getUsers:function(){
+
+            if(cashierVaultPage.userList.length > 0){
+                return;
+            }
+
+            jsAddon.display.ajaxRequest({
+
+                type:"GET",
+
+                url:usersApi,
+
+                dataType:"json"
+
+            }).then(function(response){
+
+                if(response.isError){
+
+                    Swal.fire(
+                        "Error",
+                        response.message,
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+                cashierVaultPage.userList =
+                    response.data;
+
+            });
+
+        },
         buildBorrowerOptions:function(){
 
             let html = `
@@ -180,6 +219,57 @@ let cashierVaultPage = {
                             data-phone="${row.mobile_no}"
 
                             data-address="${row.home_address}">
+
+                            ${fullName}
+
+                        </option>
+
+                    `;
+
+                }
+
+            );
+
+            return html;
+
+        },
+        buildUsersOptions:function(){
+
+            let html = `
+                <option value="">
+                    Select User
+                </option>
+            `;
+
+            $.each(
+
+                cashierVaultPage.userList,
+
+                function(index,row){
+
+                    let fullName =
+
+                        row.lastname + ", " +
+
+                        row.firstname +
+
+                        (row.middlename
+                            ? " " + row.middlename
+                            : "");
+
+                    html += `
+
+                        <option
+
+                            value="${row.userid}"
+
+                            data-name="${fullName}"
+
+                            data-phone="${row.mobile_number}"
+
+                            data-email="${row.email}"
+
+                            data-address="${row.address}">
 
                             ${fullName}
 
@@ -779,6 +869,34 @@ let cashierVaultPage = {
                     },
                    
 
+                    {
+
+                        data:"request_by_name",
+                        render:function(data){
+
+                            if(!data){
+
+                                return "";
+
+                            }
+
+                            return `
+
+                                <div
+
+                                    class="text-wrap"
+
+                                    style="max-width:280px">
+
+                                    ${data}
+
+                                </div>
+
+                            `;
+
+                        }
+
+                    },
                     {
 
                         data:"remarks_display",
@@ -2124,22 +2242,23 @@ let cashierVaultPage = {
                                             </td>
 
                                         </tr>
-
                                         <tr>
 
                                             <th>
 
-                                                Date
+                                                Request By
 
                                             </th>
 
                                             <td>
 
-                                                ${row.created_at}
+                                                ${row.request_by_name}
 
                                             </td>
 
                                         </tr>
+
+                                        
 
                                     </table>
 
@@ -2205,6 +2324,21 @@ let cashierVaultPage = {
                                             <td class="text-end">
 
                                                 ${cashierVaultPage.funx.money(row.balance_after)}
+
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+
+                                            <th>
+
+                                                Date
+
+                                            </th>
+
+                                            <td>
+
+                                                ${row.created_at}
 
                                             </td>
 
@@ -4289,6 +4423,27 @@ let cashierVaultPage = {
 
                                     </div>
 
+                                    <div
+                                        class="mb-3">
+
+                                        <label class="form-label fw-bold d-block text-start">
+
+                                            <i class="bi bi-people me-1"></i>
+
+                                            Request By
+
+                                        </label>
+
+                                        <select
+                                            id="requestById"
+                                            class="form-select">
+
+                                            ${cashierVaultPage.funx.buildUsersOptions()}
+
+                                        </select>
+
+                                    </div>
+
                                     <div>
 
                                         <label class="form-label fw-bold d-block text-start">
@@ -4542,6 +4697,18 @@ let cashierVaultPage = {
 
                     });
 
+                    $("#requestById").select2({
+
+                        width:"100%",
+
+                        placeholder:"Search User...",
+
+                        allowClear:true,
+
+                        dropdownParent:$(".swal2-popup")
+
+                    });
+
                     /*
                     |--------------------------------------------------------------------------
                     | FIRST DETAIL ROW
@@ -4665,6 +4832,13 @@ let cashierVaultPage = {
                             cashierVaultPage.borrowerId = $(this).val();
 
                         }
+                    });
+                    
+                    $("#requestById")
+
+                    .on("select2:select",function(){
+                       cashierVaultPage.requestById = $(this).val();
+                       alert(cashierVaultPage.requestById)
                     });
 
                     /*
@@ -5928,6 +6102,8 @@ let cashierVaultPage = {
 
                     .val(),
                 created_by : userData.userid,
+
+                requestById : cashierVaultPage.requestById,
 
                 amount :
 

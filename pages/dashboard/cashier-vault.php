@@ -468,7 +468,13 @@ href="../assets/css/loan.css">
                                 </th>
 
 
-                                 <th>
+                                <th>
+
+                                    Request By
+
+                                </th>
+
+                                <th>
 
                                     Remarks
 

@@ -52,6 +52,7 @@ const loanproductsApi                   = `${url}loanproducts`;
 
 const managerVaultApi                   = `${url}managervault`;
 const userApi                           = `${url}user/get/cashier`;
+const usersApi                           = `${url}user/get/all`;
 const userSendOTPApi                    = `${url}user/otp/change-password`;
 const userChangePasswordApi             = `${url}user/change-password`;
 const userGetProfileApi                 = `${url}user/get/profile`;
