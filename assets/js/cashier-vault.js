@@ -4838,7 +4838,6 @@ let cashierVaultPage = {
 
                     .on("select2:select",function(){
                        cashierVaultPage.requestById = $(this).val();
-                       alert(cashierVaultPage.requestById)
                     });
 
                     /*
