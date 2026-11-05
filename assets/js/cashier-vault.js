@@ -42,6 +42,8 @@ let cashierVaultPage = {
 
     userList:[],
 
+    requestImages: [],
+
     init:function(){
 
         cashierVaultPage.dailyCloseModal =
@@ -1912,6 +1914,7 @@ let cashierVaultPage = {
         */
 
         viewTransaction:function(id){
+            
 
             jsAddon.display.ajaxRequest({
 
@@ -2157,6 +2160,74 @@ let cashierVaultPage = {
                 }
 
 
+                /*
+                |--------------------------------------------------------------------------
+                | TRANSACTION IMAGES
+                |--------------------------------------------------------------------------
+                */
+
+                let imagesHtml = "";
+
+                if (row.images && row.images.length > 0) {
+
+                    imagesHtml = `
+                        <div class="mt-4 mb-3">
+
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+
+                                <strong>
+                                    <i class="fas fa-images me-2"></i>
+                                    Transaction Images
+                                </strong>
+
+                                <span class="badge bg-secondary">
+                                    ${row.images.length} Images
+                                </span>
+
+                            </div>
+
+                            <div class="row g-3">
+
+                                ${row.images.map((image, index) => {
+
+                                    const imageUrl = `${url}/${image.image_path}`;
+
+                                    return `
+                                        <div class="col-6 col-md-4">
+
+                                            <div class="border rounded-3 p-2 shadow-sm h-100">
+
+                                                <img
+                                                    src="${imageUrl}"
+                                                    alt="Transaction Image ${index + 1}"
+                                                    class="img-fluid rounded"
+                                                    style="
+                                                        width:100%;
+                                                        height:160px;
+                                                        object-fit:cover;
+                                                        cursor:pointer;
+                                                    "
+                                                    onclick="window.open('${imageUrl}', '_blank')"
+                                                >
+
+                                                <div class="small text-muted text-center mt-2">
+                                                    Image ${index + 1}
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    `;
+
+                                }).join("")}
+
+                            </div>
+
+                        </div>
+                    `;
+
+                }
+
 
 
                 Swal.fire({
@@ -2365,7 +2436,10 @@ let cashierVaultPage = {
                             </div>
 
                             ${detailsHtml} 
+                            ${imagesHtml}
                             ${denominationHtml} 
+
+
 
                         </div>
 
@@ -4263,7 +4337,8 @@ let cashierVaultPage = {
 
         },
         showCashTransaction:function(){
-
+            let cameraStream = null;
+             cashierVaultPage.requestImages = [];
             Swal.fire({
 
                 title:false,
@@ -4441,6 +4516,74 @@ let cashierVaultPage = {
                                             ${cashierVaultPage.funx.buildUsersOptions()}
 
                                         </select>
+
+                                    </div>
+
+                                    <!-- IMAGE UPLOAD -->
+                                    <div class="mb-3">
+
+                                        <label class="form-label fw-bold d-block text-start">
+                                            <i class="bi bi-images me-1"></i>
+                                            Attach Images
+                                        </label>
+
+                                        <div class="d-flex gap-2">
+
+                                            <button type="button" id="btnUploadImages"
+                                                class="btn btn-outline-primary">
+                                                <i class="bi bi-folder2-open me-1"></i>
+                                                Upload Images
+                                            </button>
+
+                                            <button type="button" id="btnTakePhoto"
+                                                class="btn btn-outline-success">
+                                                <i class="bi bi-camera me-1"></i>
+                                                Open Camera
+                                            </button>
+
+                                        </div>
+
+                                        <input
+                                            type="file"
+                                            id="requestImages"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            multiple
+                                            hidden
+                                        >
+
+                                       <div id="cameraContainer" class="mt-3" style="display:none;">
+
+                                            <video id="cameraPreview"
+                                                autoplay
+                                                playsinline
+                                                style="width:100%;max-height:350px;background:#000;border-radius:8px;">
+                                            </video>
+
+                                            <div class="d-flex gap-2 mt-2">
+
+                                                <button type="button" id="btnCapturePhoto"
+                                                    class="btn btn-primary">
+                                                    <i class="bi bi-camera-fill"></i>
+                                                    Capture Photo
+                                                </button>
+
+                                                <button type="button" id="btnCloseCamera"
+                                                    class="btn btn-secondary">
+                                                    Close Camera
+                                                </button>
+
+                                            </div>
+
+                                            <canvas id="cameraCanvas" style="display:none;"></canvas>
+
+                                        </div>
+
+                                        <small class="text-muted d-block mt-2">
+                                            Maximum of 10 images.
+                                        </small>
+
+                                        <div id="requestImageList" class="row g-2 mt-2 text-start">
+                                        </div>
 
                                     </div>
 
@@ -4709,6 +4852,8 @@ let cashierVaultPage = {
 
                     });
 
+                    
+
                     /*
                     |--------------------------------------------------------------------------
                     | FIRST DETAIL ROW
@@ -4834,10 +4979,194 @@ let cashierVaultPage = {
                         }
                     });
                     
+                    // REQUEST BY
                     $("#requestById")
 
-                    .on("select2:select",function(){
-                       cashierVaultPage.requestById = $(this).val();
+                        .off("change.requestBy")
+
+                        .on("change.requestBy",function(){
+
+                            cashierVaultPage.requestById = $(this).val();
+                                
+                        });
+
+
+                    // IMAGE UPLOAD
+                    
+                    // =====================================================
+                    // MANUAL IMAGE UPLOAD
+                    // =====================================================
+
+                    $("#btnUploadImages")
+                    .off("click")
+                    .on("click", function () {
+
+                        $("#requestImages").trigger("click");
+
+                    });
+
+                    $("#requestImages")
+                    .off("change")
+                    .on("change", function () {
+
+                        const files = Array.from(this.files || []);
+
+                        cashierVaultPage.funx.addRequestImages(files);
+
+                        this.value = "";
+
+                    });
+
+
+                    // =====================================================
+                    // OPEN WEBCAM
+                    // =====================================================
+
+                    $("#btnTakePhoto")
+                    .off("click")
+                    .on("click", async function () {
+
+                        try {
+
+                            if (!navigator.mediaDevices ||
+                                !navigator.mediaDevices.getUserMedia) {
+
+                                throw new Error(
+                                    "Webcam is unavailable. Please use HTTPS or localhost."
+                                );
+
+                            }
+
+                            cameraStream = await navigator.mediaDevices.getUserMedia({
+
+                                video: {
+                                    facingMode: "user"
+                                },
+
+                                audio: false
+
+                            });
+
+                            let video = document.getElementById("cameraPreview");
+
+                            video.srcObject = cameraStream;
+
+                            $("#cameraContainer").show();
+
+                            await video.play();
+
+                        } catch (error) {
+
+                            console.error("WEBCAM ERROR:", error);
+
+                            Swal.fire(
+                                "Camera Error",
+                                error.name + ": " + error.message,
+                                "error"
+                            );
+
+                        }
+
+                    });
+
+
+                    // =====================================================
+                    // CAPTURE PHOTO
+                    // =====================================================
+
+                    $("#btnCapturePhoto")
+                    .off("click")
+                    .on("click", function () {
+
+                        let video = document.getElementById("cameraPreview");
+
+                        let canvas = document.getElementById("cameraCanvas");
+
+                        if (!video.videoWidth || !video.videoHeight) {
+
+                            Swal.fire(
+                                "Camera Not Ready",
+                                "Please wait for the webcam preview.",
+                                "warning"
+                            );
+
+                            return;
+
+                        }
+
+                        canvas.width = video.videoWidth;
+
+                        canvas.height = video.videoHeight;
+
+                        let context = canvas.getContext("2d");
+
+                        context.drawImage(
+                            video,
+                            0,
+                            0,
+                            canvas.width,
+                            canvas.height
+                        );
+
+                        canvas.toBlob(function(blob){
+
+                            if (!blob) {
+
+                                Swal.fire(
+                                    "Capture Failed",
+                                    "Unable to capture image.",
+                                    "error"
+                                );
+
+                                return;
+
+                            }
+
+                            let photoFile = new File(
+
+                                [blob],
+
+                                "webcam_" + Date.now() + ".jpg",
+
+                                {
+                                    type: "image/jpeg"
+                                }
+
+                            );
+
+                            cashierVaultPage.funx.addRequestImages([
+                                photoFile
+                            ]);
+
+                        }, "image/jpeg", 0.90);
+
+                    });
+
+
+                    // =====================================================
+                    // CLOSE WEBCAM
+                    // =====================================================
+
+                    $("#btnCloseCamera")
+                    .off("click")
+                    .on("click", function () {
+
+                        if (cameraStream) {
+
+                            cameraStream.getTracks().forEach(function(track){
+
+                                track.stop();
+
+                            });
+
+                            cameraStream = null;
+
+                        }
+
+                        document.getElementById("cameraPreview").srcObject = null;
+
+                        $("#cameraContainer").hide();
+
                     });
 
                     /*
@@ -4848,7 +5177,23 @@ let cashierVaultPage = {
 
                     cashierVaultPage.funx.computeTransaction();
 
+                },
+
+                willClose:function(){
+
+                    if (cameraStream) {
+
+                        cameraStream.getTracks().forEach(function(track){
+
+                            track.stop();
+
+                        });
+
+                        cameraStream = null;
+
                     }
+
+                }
                 }).then(function(result){
 
                 if(result.isConfirmed){
@@ -4858,6 +5203,135 @@ let cashierVaultPage = {
                 }
 
             });
+
+        },
+        addRequestImages:function(files){
+
+            if(!Array.isArray(cashierVaultPage.requestImages)){
+                cashierVaultPage.requestImages = [];
+            }
+
+            files.forEach(function(file){
+
+                if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+                    Swal.fire("Invalid File","Only JPG, PNG and WEBP allowed.","warning");
+                    return;
+                }
+
+                if(cashierVaultPage.requestImages.length >= 10){
+                    Swal.fire("Maximum Images","Maximum of 10 images allowed.","warning");
+                    return;
+                }
+
+                cashierVaultPage.requestImages.push({
+                    file:file,
+                    url:URL.createObjectURL(file)
+                });
+
+            });
+
+            cashierVaultPage.funx.renderRequestImages();
+
+        },
+
+        renderRequestImages:function(){
+
+            let html = "";
+
+            cashierVaultPage.requestImages.forEach(function(item,index){
+
+                html += `
+                    <div class="col-6 col-md-4 col-lg-3">
+
+                        <div class="card shadow-sm h-100">
+
+                            <div style="position:relative;height:130px;">
+
+                                <img
+                                    src="${item.url}"
+                                    class="w-100 h-100 rounded"
+                                    style="object-fit:cover;cursor:pointer;"
+                                    onclick="cashierVaultPage.funx.previewRequestImage(${index})"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="btn btn-danger btn-sm"
+                                    style="position:absolute;top:5px;right:5px;"
+                                    onclick="cashierVaultPage.funx.removeRequestImage(${index})">
+
+                                    <i class="bi bi-trash"></i>
+
+                                </button>
+
+                            </div>
+
+                            <div class="card-body p-2">
+
+                                <small class="text-muted text-truncate d-block">
+                                    ${$("<div>").text(item.file.name).html()}
+                                </small>
+
+                                <small class="text-muted">
+                                    ${(item.file.size / 1024).toFixed(1)} KB
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+
+            });
+
+            $("#requestImageList").html(html);
+
+        },
+        previewRequestImage:function(index){
+
+    let item = cashierVaultPage.requestImages[index];
+
+    if(!item) return;
+
+    Swal.fire({
+        title:"Image Preview",
+        imageUrl:item.url,
+        imageAlt:item.file.name,
+        imageWidth:"100%",
+        width:800,
+        showCloseButton:true,
+        showConfirmButton:false
+    });
+
+        },
+
+        removeRequestImage:function(index){
+
+            let item = cashierVaultPage.requestImages[index];
+
+            if(item){
+                URL.revokeObjectURL(item.url);
+            }
+
+            cashierVaultPage.requestImages.splice(index,1);
+
+            cashierVaultPage.funx.renderRequestImages();
+
+        },
+
+      
+       clearRequestImages:function(){
+
+            cashierVaultPage.requestImages.forEach(function(item){
+                URL.revokeObjectURL(item.url);
+            });
+
+            cashierVaultPage.requestImages = [];
+
+            $("#requestImages").val("");
+            $("#requestImagesCamera").val("");
+            $("#requestImageList").empty();
 
         },
 
@@ -5935,75 +6409,62 @@ let cashierVaultPage = {
 
             /*
             |--------------------------------------------------------------------------
+            | REQUEST IMAGES
+            |--------------------------------------------------------------------------
+            */
+
+            let requestImages = Array.isArray(cashierVaultPage.requestImages)
+                ? cashierVaultPage.requestImages
+                : [];
+
+            if(requestImages.length > 10){
+
+                Swal.fire(
+                    "Warning",
+                    "Maximum of 10 images allowed.",
+                    "warning"
+                );
+
+                return;
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
             | DETAILS
             |--------------------------------------------------------------------------
             */
 
             $("#tblCashOutDetails tbody tr").each(function(){
 
-                let type =
-
-                    $(this)
-
+                let type = $(this)
                     .find(".transactionType")
-
                     .val();
 
-                let amount =
-
-                    parseFloat(
-
-                        $(this)
-
-                        .find(".amount")
-
-                        .val()
-
-                    ) || 0;
+                let amount = parseFloat(
+                    $(this).find(".amount").val()
+                ) || 0;
 
                 if(type == "CASH OUT"){
-
                     cashOut += amount;
-
                 }else{
-
                     cashIn += amount;
-
                 }
 
                 details.push({
 
-                    transaction_type:
-
-                        type,
+                    transaction_type:type,
 
                     reference_type:
-
-                        $(this)
-
-                        .find(".referenceType")
-
-                        .val(),
+                        $(this).find(".referenceType").val(),
 
                     reference_id:
-
-                        $(this)
-
-                        .find(".referenceId")
-
-                        .val(),
+                        $(this).find(".referenceId").val(),
 
                     description:
+                        $(this).find(".description").val(),
 
-                        $(this)
-
-                        .find(".description")
-
-                        .val(),
-
-                    amount:
-
-                        amount
+                    amount:amount
 
                 });
 
@@ -6018,98 +6479,77 @@ let cashierVaultPage = {
             if(details.length == 0){
 
                 Swal.fire(
-
                     "Warning",
-
                     "Please add at least one transaction.",
-
                     "warning"
-
                 );
 
                 return;
 
             }
 
-            let netAmount =
+            let netAmount = Math.abs(cashOut - cashIn);
 
-                Math.abs(
-
-                    cashOut - cashIn
-
-                );
-
-            if(netAmount < 0){
+            if(netAmount <= 0){
 
                 Swal.fire(
-
                     "Warning",
-
                     "Net transaction amount must be greater than zero.",
-
                     "warning"
-
                 );
 
                 return;
 
             }
-
-            let headerType =
-
-                $("#cashTransactionType")
-
-                .val();
 
             /*
             |--------------------------------------------------------------------------
-            | PAYLOAD
+            | USER DATA
             |--------------------------------------------------------------------------
-            */  
+            */
+
             let userData = JSON.parse(
-
                 localStorage.getItem("userdata") || "{}"
-
             );
+
+            /*
+            |--------------------------------------------------------------------------
+            | REQUEST DATA
+            |--------------------------------------------------------------------------
+            */
 
             let payload = {
 
                 cashier_id:
-                cashierVaultPage.funx.getSelectedCashier(),
-                borrower_id:cashierVaultPage.borrowerId,
-                transaction_time :
+                    cashierVaultPage.funx.getSelectedCashier(),
 
-                    $("#transactionTime")
+                borrower_id:
+                    cashierVaultPage.borrowerId,
 
-                    .val(),
-                business_date :
+                transaction_time:
+                    $("#transactionTime").val(),
 
-                    $("#cashOutBusinessDate")
+                business_date:
+                    $("#filterBusinessDate").val(),
 
-                    .val(),
+                transaction_type:
+                    $("#cashTransactionType").val(),
 
-                transaction_type :
+                reference_no:"",
 
-                    headerType,
-                business_date :$("#filterBusinessDate").val(),
+                remarks:
+                    $("#cashOutRemarks").val(),
 
-                reference_no : "",
+                created_by:
+                    userData.userid,
 
-                remarks :
+                requestById:
+                    $("#requestById").val(),
 
-                    $("#cashOutRemarks")
-
-                    .val(),
-                created_by : userData.userid,
-
-                requestById : cashierVaultPage.requestById,
-
-                amount :
-
+                amount:
                     netAmount,
 
-                details :
-
+                details:
                     details
 
             };
@@ -6122,25 +6562,24 @@ let cashierVaultPage = {
 
             Swal.fire({
 
-                title:
+                title:"Confirm Transaction",
 
-                    "Confirm Transaction",
+                html:`
 
-                html:
+                    <b>Transaction Type:</b>
+                    ${payload.transaction_type}
 
-                    "<b>Transaction Type:</b> " +
+                    <br><br>
 
-                    headerType +
+                    <b>Net Amount:</b>
+                    ${cashierVaultPage.funx.money(netAmount)}
 
-                    "<br><br>" +
+                    <br><br>
 
-                    "<b>Net Amount:</b> " +
+                    <b>Attached Images:</b>
+                    ${requestImages.length}
 
-                    cashierVaultPage.funx.money(
-
-                        netAmount
-
-                    ),
+                `,
 
                 icon:"question",
 
@@ -6153,10 +6592,55 @@ let cashierVaultPage = {
             }).then(function(result){
 
                 if(!result.isConfirmed){
-
                     return;
-
                 }
+
+                /*
+                |--------------------------------------------------------------------------
+                | FORM DATA
+                |--------------------------------------------------------------------------
+                */
+
+                let formData = new FormData();
+
+                Object.keys(payload).forEach(function(key){
+
+                    if(key === "details"){
+
+                        formData.append(
+                            "details",
+                            JSON.stringify(payload.details)
+                        );
+
+                    }else{
+
+                        formData.append(
+                            key,
+                            payload[key] ?? ""
+                        );
+
+                    }
+
+                });
+
+                /*
+                |--------------------------------------------------------------------------
+                | APPEND MULTIPLE IMAGES
+                |--------------------------------------------------------------------------
+                */
+
+                requestImages.forEach(function(item){
+
+                    if(item && item.file){
+
+                        formData.append(
+                            "request_images[]",
+                            item.file
+                        );
+
+                    }
+
+                });
 
                 /*
                 |--------------------------------------------------------------------------
@@ -6164,17 +6648,16 @@ let cashierVaultPage = {
                 |--------------------------------------------------------------------------
                 */
 
-                jsAddon.display.ajaxRequest({
+                jsAddon.display.ajaxUpload({
 
-                    url:
-
-                        cashierVaultApi,
+                    url:cashierVaultApi,
 
                     type:"POST",
 
-                    payload:payload,
+                    payload:formData,
 
-                    dataType:"json"
+                    dataType:"json",
+
 
                 }).then(function(response){
 
