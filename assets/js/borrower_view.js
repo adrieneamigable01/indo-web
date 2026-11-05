@@ -1662,6 +1662,14 @@ borrowerView = {
                                         Update Schedule
                                     </a>
                                 </li>
+                                 <li>
+                                    <a class="dropdown-item text-success"
+                                    href="#"
+                                    onclick='borrowerView.funx.openUpdateDetails(${JSON.stringify(row)})'>
+                                        <i class="bi bi-pencil-square me-2"></i>
+                                        Update Details
+                                    </a>
+                                </li>
                                 <li>
                                     <a class="dropdown-item text-danger"
                                     href="#"
@@ -1880,6 +1888,216 @@ borrowerView = {
                     url:
 
                         updateScheduleApi,
+
+                    type:
+
+                        "POST",
+
+                    payload:
+
+                        result.value,
+
+                    dataType:
+
+                        "json"
+
+                }).then(function(response){
+
+                    if(response.isError){
+
+                        Swal.fire(
+                            "Error",
+                            response.message,
+                            "error"
+                        );
+
+                        return;
+                    }
+
+                    Swal.fire({
+
+                        icon:"success",
+
+                        title:"Success",
+
+                        text:response.message,
+
+                        timer:1500,
+
+                        showConfirmButton:false
+
+                    });
+
+                    borrowerView.funx.loadSchedules(
+                        loan.loan_id
+                    );
+
+                    loanPage.funx.loadLoans();
+
+                });
+
+            });
+
+        },
+        openUpdateDetails:function(loan){
+            let userdata = JSON.parse(
+
+                localStorage.getItem("userdata") || "{}"
+
+            );
+            Swal.fire({
+
+                title: "Update Loan Details",
+
+                width: 700,
+
+                html: `
+
+                    <div class="row g-3 text-start">
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Loan Amount
+                            </label>
+
+                            <input
+                                id="swalLoanAmount"
+                                class="form-control"
+                                type="number"
+                                value="${loan.loan_amount}">
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Loan Terms
+                            </label>
+
+                            <input
+                                id="swalLoanTerms"
+                                class="form-control"
+                                type="number"
+                                value="${loan.loan_terms}">
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Interest Rate
+                            </label>
+
+                            <input
+                                id="swalInterest"
+                                class="form-control"
+                                type="number"
+                                step="0.01"
+                                value="${loan.approved_interest_rate}">
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Processing Fee
+                            </label>
+
+                            <input
+                                id="swalProcessingFee"
+                                class="form-control"
+                                type="number"
+                                step="0.01"
+                                value="${loan.approved_processing_fee}">
+
+                        </div>
+
+                      
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Monthly Deduction
+                            </label>
+
+                            <input
+                                id="swalInterestDeductionAmount"
+                                class="form-control"
+                                type="number"
+                                value="${loan.monthly_interest_deduction}">
+
+                        </div>
+
+                        <div class="col-md-12">
+
+                            <label class="form-label">
+                                Reason
+                            </label>
+
+                            <textarea
+                                id="swalVoidReason"
+                                class="form-control"></textarea>
+
+                        </div>
+
+                    </div>
+
+                `,
+
+                showCancelButton:true,
+
+                confirmButtonText:"Update",
+
+                confirmButtonColor:"#0d6efd",
+
+                preConfirm: function(){
+
+                    return {
+
+                        loan_id:
+
+                            loan.loan_id,
+
+                        loan_product_id:
+
+                            loan.loan_product_id,
+
+                        loan_amount:
+
+                            $("#swalLoanAmount").val(),
+
+                        loan_terms:
+
+                            $("#swalLoanTerms").val(),
+
+                        approved_interest_rate:
+
+                            $("#swalInterest").val(),
+
+                        approved_processing_fee:
+
+                            $("#swalProcessingFee").val(),
+                        monthly_interest_deduction:
+
+                            $("#swalInterestDeductionAmount").val(),
+                        delete_by :userdata.userid,
+                        void_reason:$("#swalVoidReason").val()
+
+                    };
+
+                }
+
+            }).then(function(result){
+
+                if(!result.isConfirmed)
+                    return;
+
+                jsAddon.display.ajaxRequest({
+
+                    url:
+
+                        updateDetailsApi,
 
                     type:
 

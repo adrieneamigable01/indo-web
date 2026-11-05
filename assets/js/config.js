@@ -41,6 +41,7 @@ const releaseLoanApi                      = `${url}loan/release`;
 const approveLoanApi                      = `${url}loan/approve`;
 const rejectLoanApi                       = `${url}loan/reject`;
 const updateScheduleApi                   = `${url}loan/update-schedule`;
+const updateDetailsApi                   = `${url}loan/update-details`;
 const sendLoanOtpApi                      = `${url}loan/send-otp`;
 const validateLoanOtpApi                  = `${url}loan/validate-otp`;
 
