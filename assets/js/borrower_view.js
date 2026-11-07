@@ -77,6 +77,7 @@ borrowerView = {
         borrowerView.funx.generateIncentiveReport();
         borrowerView.funx.fetchBorrower();
          borrowerView.funx.bindEvents();
+         borrowerView.funx.loadBorrowerNotes();
 
         
     },
@@ -133,6 +134,325 @@ borrowerView = {
                 $("#incentiveReportEmpty").show();
             });
         },
+                
+        
+        
+        showAddBorrowerNote: (defaultStatus = "normal") => {
+
+            let existingNote = null;
+            let reviewNoteLoaded = false;
+            let reviewNoteLoading = false;
+
+            const loadExistingReviewNote = () => {
+
+                if (reviewNoteLoaded || reviewNoteLoading) {
+                    return;
+                }
+
+                reviewNoteLoading = true;
+
+                const confirmButton = Swal.getConfirmButton();
+
+                if (confirmButton) {
+                    confirmButton.disabled = true;
+                }
+
+                jsAddon.display.ajaxRequest({
+
+                    url: borrowerNotesApi,
+                    type: "GET",
+
+                    payload: {
+                        borrower_id: borrowerId,
+                        search: ""
+                    },
+
+                    dataType: "json"
+
+                }).then((response) => {
+
+                    if (response.isError) {
+                        throw new Error(response.message || "Unable to load review notes.");
+                    }
+
+                    const reviewNotes = response.review_notes || [];
+
+                    // Get the latest existing review note
+                    existingNote = reviewNotes.length > 0
+                        ? reviewNotes[0]
+                        : null;
+
+                    reviewNoteLoaded = true;
+
+                    // Populate textarea if an existing review note is found
+                    if (existingNote) {
+
+                        $("#borrowerNote").val(existingNote.note || "");
+
+                        Swal.getTitle().textContent = "Update Borrower Review Note";
+
+                        Swal.getConfirmButton().innerHTML =
+                            '<i class="bi bi-pencil-square me-1"></i> Update Note';
+
+                    } else {
+
+                        Swal.getTitle().textContent = "Add Borrower Review Note";
+
+                        Swal.getConfirmButton().innerHTML =
+                            '<i class="bi bi-save me-1"></i> Save Note';
+
+                    }
+
+                }).catch((error) => {
+
+                    console.error("Load Review Note Error:", error);
+
+                    Swal.showValidationMessage(
+                        error.message || "Unable to retrieve existing review note."
+                    );
+
+                    reviewNoteLoaded = false;
+
+                }).finally(() => {
+
+                    reviewNoteLoading = false;
+
+                    if (confirmButton) {
+                        confirmButton.disabled = false;
+                    }
+
+                });
+
+            };
+
+
+            Swal.fire({
+
+                title: "Add Borrower Note",
+
+                html: `
+                    <div class="text-start">
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Note Type
+                            </label>
+
+                            <select id="borrowerNoteStatus" class="form-select">
+
+                                <option value="normal">
+                                    Normal Note
+                                </option>
+
+                                <option value="borrower_review">
+                                    For Review
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Note Details
+                            </label>
+
+                            <textarea
+                                id="borrowerNote"
+                                class="form-control"
+                                rows="7"
+                                maxlength="5000"
+                                placeholder="Enter borrower note..."
+                                style="resize:vertical;"></textarea>
+
+                            <small class="text-muted">
+                                Maximum 5,000 characters.
+                            </small>
+
+                        </div>
+
+                    </div>
+                `,
+
+                showCancelButton: true,
+
+                confirmButtonText: "Save Note",
+
+                cancelButtonText: "Cancel",
+
+                confirmButtonColor: "#198754",
+
+                width: "550px",
+
+                didOpen: () => {
+
+                    $("#borrowerNoteStatus").val(defaultStatus);
+
+                    // Check existing review note whenever dropdown changes
+                    $("#borrowerNoteStatus")
+                        .off("change.reviewNote")
+                        .on("change.reviewNote", function () {
+
+                            const status = $(this).val();
+
+                            if (status === "borrower_review") {
+
+                                loadExistingReviewNote();
+
+                            } else {
+
+                                existingNote = null;
+
+                                reviewNoteLoaded = false;
+
+                                Swal.getTitle().textContent = "Add Borrower Note";
+
+                                Swal.getConfirmButton().innerHTML =
+                                    '<i class="bi bi-save me-1"></i> Save Note';
+
+                            }
+
+                        });
+
+                    // Automatically load if form opens directly as For Review
+                    if (defaultStatus === "borrower_review") {
+                        loadExistingReviewNote();
+                    }
+
+                    $("#borrowerNote").trigger("focus");
+
+                },
+
+                preConfirm: () => {
+
+                    const note = $("#borrowerNote").val().trim();
+
+                    const status = $("#borrowerNoteStatus").val();
+
+                    if (reviewNoteLoading) {
+
+                        Swal.showValidationMessage(
+                            "Please wait while checking existing review notes."
+                        );
+
+                        return false;
+
+                    }
+
+                    if (status === "borrower_review" && !reviewNoteLoaded) {
+
+                        Swal.showValidationMessage(
+                            "Unable to verify existing review note. Please try again."
+                        );
+
+                        return false;
+
+                    }
+
+                    if (!note) {
+
+                        Swal.showValidationMessage(
+                            "Please enter the note details."
+                        );
+
+                        return false;
+
+                    }
+
+                    if (!["normal", "borrower_review"].includes(status)) {
+
+                        Swal.showValidationMessage(
+                            "Invalid note status."
+                        );
+
+                        return false;
+
+                    }
+
+                    return {
+
+                        borrower_id: borrowerId,
+
+                        note_id: status === "borrower_review"
+                            ? (existingNote?.note_id || "")
+                            : "",
+
+                        note: note,
+
+                        status: status
+
+                    };
+
+                }
+
+            }).then((result) => {
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                jsAddon.display.ajaxRequest({
+
+                    url: addBorrowerNoteApi,
+
+                    type: "POST",
+
+                    payload: result.value,
+
+                    dataType: "json"
+
+                }).then((response) => {
+
+                    if (response.isError) {
+
+                        Swal.fire(
+                            "Error",
+                            response.message || "Unable to save borrower note.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+                    Swal.fire({
+
+                        icon: "success",
+
+                        title: result.value.note_id
+                            ? "Note Updated!"
+                            : "Note Saved!",
+
+                        text: response.message,
+
+                        timer: 1500,
+
+                        showConfirmButton: false
+
+                    });
+
+                    borrowerView.funx.loadBorrowerNotes();
+
+                }).catch((error) => {
+
+                    console.error("Borrower Note Error:", error);
+
+                    Swal.fire(
+                        "Error",
+                        "Something went wrong while saving the note.",
+                        "error"
+                    );
+
+                });
+
+            });
+
+        },
+
+
+
 
         renderIncentiveReport: function (data) {
             const records = data.records || [];
@@ -7552,6 +7872,7 @@ borrowerView = {
         },
 
 
+        
         loadBorrowerNotes: () => {
 
             if ($.fn.DataTable.isDataTable("#borrowerNotesTable")) {
@@ -7584,9 +7905,64 @@ borrowerView = {
                     return;
                 }
 
+                const notes = response.data || [];
+
+                // =========================================
+                // HTML ESCAPE
+                // =========================================
+
                 const escapeHtml = function(value) {
                     return $("<div>").text(value ?? "").html();
                 };
+
+                // =========================================
+                // BORROWER REVIEW NOTES
+                // =========================================
+
+                const reviewNotes = notes.filter(function(row) {
+
+                    return String(row.status || "").toLowerCase().trim()
+                        === "borrower_review";
+
+                });
+
+                if (reviewNotes.length > 0) {
+
+                    let reviewHtml = "";
+
+                    reviewNotes.forEach(function(row) {
+
+                        reviewHtml += `
+                            <div class="bg-white rounded p-3 mb-2 border">
+
+                                <div class="d-flex justify-content-between align-items-start gap-2">
+
+                                    <div class="flex-grow-1 review-note-content">
+                                        ${row.note || ""}
+                                    </div>
+                                </div>
+
+                            </div>
+                        `;
+
+                    });
+
+
+                    $("#borrowerReviewNotesList").html(reviewHtml);
+
+                    $("#borrowerReviewNotes").show();
+
+                } else {
+
+                    $("#borrowerReviewNotesList").empty();
+
+                    $("#borrowerReviewNotes").hide();
+
+                }
+
+                // =========================================
+                // BORROWER NOTES DATATABLE
+                // =========================================
 
                 $("#borrowerNotesTable").DataTable({
 
@@ -7597,7 +7973,7 @@ borrowerView = {
                     responsive: true,
                     destroy: true,
 
-                    data: response.data || [],
+                    data: notes,
 
                     columns: [
 
@@ -7654,87 +8030,24 @@ borrowerView = {
 
                 });
 
+            }).catch((error) => {
+
+                console.error("BORROWER NOTES ERROR:", error);
+
+                Swal.fire(
+                    "Error",
+                    "Unable to load borrower notes.",
+                    "error"
+                );
+
             });
 
         },
 
+
         addBorrowerNote: () => {
 
-            Swal.fire({
-
-                title: "Add Borrower Note",
-
-                input: "textarea",
-
-                inputLabel: "Note Details",
-
-                inputPlaceholder: "Enter borrower note here...",
-
-                inputAttributes: {
-                    rows: 6,
-                    maxlength: 5000
-                },
-
-                showCancelButton: true,
-
-                confirmButtonText: "Save Note",
-
-                confirmButtonColor: "#0d6efd",
-
-                inputValidator: (value) => {
-
-                    if (!value || !value.trim()) {
-                        return "Please enter a note.";
-                    }
-
-                }
-
-            }).then((result) => {
-
-                if (!result.isConfirmed) {
-                    return;
-                }
-
-                jsAddon.display.ajaxRequest({
-
-                    url: addBorrowerNoteApi,
-
-                    type: "POST",
-
-                    payload: {
-
-                        borrower_id: borrowerId,
-
-                        note: result.value.trim()
-
-                    },
-
-                    dataType: "json"
-
-                }).then((response) => {
-
-                    if (response.isError) {
-
-                        Swal.fire(
-                            "Error",
-                            response.message,
-                            "error"
-                        );
-
-                        return;
-                    }
-
-                    Swal.fire(
-                        "Saved!",
-                        response.message,
-                        "success"
-                    );
-
-                    borrowerView.funx.loadBorrowerNotes();
-
-                });
-
-            });
+            borrowerView.funx.showAddBorrowerNote("normal");
 
         },
 
@@ -7959,6 +8272,7 @@ borrowerView = {
 
         },
     },
+    
 
 };
 
@@ -7967,6 +8281,13 @@ $(document).ready(function(){
     borrowerView.init();
 
     let today = new Date();
+
+    $(document)
+    .off("click", "#btnAddReviewNote")
+    .on("click", "#btnAddReviewNote", function () {
+        borrowerView.funx.showAddBorrowerNote("borrower_review");
+
+    });
 
     // ADD NOTE - TOP BUTTON
     $("#btnAddBorrowerNote")

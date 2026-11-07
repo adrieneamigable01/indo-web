@@ -255,6 +255,26 @@
         .settlement-product-card.selected-card .selected-icon{
             display:block;
         }
+        .review-note-content {
+            font-size: 13px;
+            color: #343a40;
+            overflow-wrap: anywhere;
+        }
+
+        .review-note-content p {
+            margin-bottom: 8px;
+        }
+
+        .review-note-content ul,
+        .review-note-content ol {
+            padding-left: 20px;
+            margin-bottom: 8px;
+        }
+
+        .review-note-content img {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 
 </head>
@@ -314,138 +334,140 @@
     </div>
     <!-- PROFILE CARD -->
 
+    
+
+
+
 <div class="profile-card">
 
-    <div class="row align-items-center">
+    <div class="row align-items-start">
 
-        <div class="col-md-2 text-center">
+        <!-- LEFT: BORROWER INFORMATION -->
+        <div id="borrowerProfileInfo" class="col-md-9">
 
-            <div class="avatar mx-auto">
+            <div class="row align-items-center">
 
-                <i class="bi bi-person"></i>
+                <div class="col-md-2 text-center">
+                    <div class="avatar mx-auto">
+                        <i class="bi bi-person"></i>
+                    </div>
+                </div>
 
+                <div class="col-md-10">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <h3 id="borrowerName">Loading...</h3>
+
+                            <h6 class="text-muted">
+                                Borrower ID: <span id="borrowerId">-</span>
+                            </h6>
+
+                            <h6 class="text-muted">
+                                Created At: <span id="borrowerCreated">-</span>
+                            </h6>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <span id="borrowerStatus" class="badge bg-success">
+                                ACTIVE
+                            </span>
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary btn-sm"
+                                onclick="borrowerView.funx.changeBorrower()">
+                                <i class="bi bi-pencil-square"></i>
+                                Change
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <div class="info-label">Mobile Number</div>
+                            <div id="borrowerMobile" class="info-value"></div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="info-label">Email Address</div>
+                            <div id="borrowerEmail" class="info-value"></div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="info-label">Civil Status</div>
+                            <div id="borrowerCivilStatus" class="info-value"></div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="info-label">Gender</div>
+                            <div id="borrowerGender" class="info-value"></div>
+                        </div>
+
+                        <div class="col-md-8 mb-3">
+                            <div class="info-label">Home Address</div>
+                            <div id="borrowerAddress" class="info-value"></div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <div class="info-label">Date of Birth</div>
+                            <div id="borrowerDob" class="info-value"></div>
+                        </div>
+
+                    </div>
+
+                </div>
             </div>
 
         </div>
 
-        <div class="col-md-10">
+        <!-- RIGHT: REVIEW NOTES -->
+        
+        <div id="borrowerReviewNotes"
+            class="col-md-3"
+            style="display:none;">
 
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="alert alert-warning border-0 shadow-sm mb-0 h-100"
+                style="border-left:5px solid #f0ad4e !important; background-color:#fffaf0;">
 
-                <div>
-                    <h3 id="borrowerName">
-                        Loading...
-                    </h3>
+                <div class="d-flex align-items-center justify-content-between mb-3">
 
-                    <h6 class="text-muted">
-                        Borrower ID:
-                        <span id="borrowerId">-</span>
-                    </h6>
-                    <h6 class="text-muted">
-                        Created At:
-                        <span id="borrowerCreated">-</span>
-                    </h6>
-                </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-journal-text text-warning fs-4"></i>
 
-                <div class="d-flex align-items-center gap-2">
-
-                    <span
-                        id="borrowerStatus"
-                        class="badge bg-success">
-                        ACTIVE
-                    </span>
+                        <h6 class="mb-0 fw-bold text-dark">
+                            Borrower Notes
+                        </h6>
+                    </div>
 
                     <button
                         type="button"
-                        class="btn btn-outline-primary btn-sm"
-                        onclick="borrowerView.funx.changeBorrower()">
+                        class="btn btn-sm btn-warning"
+                        id="btnAddReviewNote"
+                        title="Add Review Note">
 
-                        <i class="bi bi-pencil-square"></i>
-                        Change
-
+                        <i class="bi bi-plus-lg"></i>
                     </button>
 
                 </div>
 
-            </div>
-
-            <hr>
-
-            <div class="row">
-
-                <div class="col-md-4 mb-3">
-                    <div class="info-label">
-                        Mobile Number
-                    </div>
-
-                    <div
-                        id="borrowerMobile"
-                        class="info-value">
-                    </div>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <div class="info-label">
-                        Email Address
-                    </div>
-
-                    <div
-                        id="borrowerEmail"
-                        class="info-value">
-                    </div>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <div class="info-label">
-                        Civil Status
-                    </div>
-
-                    <div
-                        id="borrowerCivilStatus"
-                        class="info-value">
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <div class="info-label">
-                        Home Address
-                    </div>
-
-                    <div
-                        id="borrowerAddress"
-                        class="info-value">
-                    </div>
-                </div>
-
-                <div class="col-md-3 mb-3">
-                    <div class="info-label">
-                        Gender
-                    </div>
-
-                    <div
-                        id="borrowerGender"
-                        class="info-value">
-                    </div>
-                </div>
-
-                <div class="col-md-3 mb-3">
-                    <div class="info-label">
-                        Date of Birth
-                    </div>
-
-                    <div
-                        id="borrowerDob"
-                        class="info-value">
-                    </div>
+                <div id="borrowerReviewNotesList"
+                    class="review-note-content">
                 </div>
 
             </div>
-
         </div>
+
 
     </div>
 
 </div>
+
 
 
 <div class="row mb-4">
