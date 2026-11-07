@@ -4773,6 +4773,8 @@ borrowerView = {
 
                                     data-month="${monthKey}"
 
+                                    data-salaryid="${salaryRecord.salary_id}"
+
                                     data-loans='${JSON.stringify(
                                         monthData.loans
                                     )}'>
@@ -5161,6 +5163,8 @@ borrowerView = {
                                     class="btn btn-success btn-sm btn-pay mt-3 w-100"
 
                                     data-month="${monthKey}"
+
+                                    data-salaryid="${salaryRecord.salary_id}"
 
                                     data-loans='${JSON.stringify(
                                         monthData.loans
@@ -7547,6 +7551,258 @@ borrowerView = {
 
         },
 
+
+        loadBorrowerNotes: () => {
+
+            if ($.fn.DataTable.isDataTable("#borrowerNotesTable")) {
+                $("#borrowerNotesTable").DataTable().destroy();
+            }
+
+            jsAddon.display.ajaxRequest({
+
+                url: borrowerNotesApi,
+
+                type: "GET",
+
+                payload: {
+                    borrower_id: borrowerId,
+                    search: $("#borrower_note_search").val()
+                },
+
+                dataType: "json"
+
+            }).then((response) => {
+
+                if (response.isError) {
+
+                    Swal.fire(
+                        "Error",
+                        response.message,
+                        "error"
+                    );
+
+                    return;
+                }
+
+                const escapeHtml = function(value) {
+                    return $("<div>").text(value ?? "").html();
+                };
+
+                $("#borrowerNotesTable").DataTable({
+
+                    processing: false,
+                    serverSide: false,
+                    searching: false,
+                    ordering: false,
+                    responsive: true,
+                    destroy: true,
+
+                    data: response.data || [],
+
+                    columns: [
+
+                        {
+                            data: "note_id",
+                            render: function(data, type, row, meta) {
+                                return meta.row + 1;
+                            }
+                        },
+
+                        {
+                            data: "note",
+                            render: function(data) {
+                                return `
+                                    <div style="white-space:pre-wrap;">
+                                        ${escapeHtml(data)}
+                                    </div>
+                                `;
+                            }
+                        },
+
+                        {
+                            data: "created_at",
+                            defaultContent: "-"
+                        },
+
+                        {
+                            data: "created_by_name",
+                            defaultContent: "Unknown User"
+                        },
+
+                        {
+                            data: null,
+                            orderable: false,
+                            searchable: false,
+                            className: "text-center",
+
+                            render: function(data, type, row) {
+
+                                return `
+                                    <button
+                                        class="btn btn-sm btn-outline-danger btnDeleteBorrowerNote"
+                                        data-id="${row.note_id}"
+                                        title="Delete Note">
+
+                                        <i class="bi bi-trash"></i>
+
+                                    </button>
+                                `;
+                            }
+                        }
+
+                    ]
+
+                });
+
+            });
+
+        },
+
+        addBorrowerNote: () => {
+
+            Swal.fire({
+
+                title: "Add Borrower Note",
+
+                input: "textarea",
+
+                inputLabel: "Note Details",
+
+                inputPlaceholder: "Enter borrower note here...",
+
+                inputAttributes: {
+                    rows: 6,
+                    maxlength: 5000
+                },
+
+                showCancelButton: true,
+
+                confirmButtonText: "Save Note",
+
+                confirmButtonColor: "#0d6efd",
+
+                inputValidator: (value) => {
+
+                    if (!value || !value.trim()) {
+                        return "Please enter a note.";
+                    }
+
+                }
+
+            }).then((result) => {
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                jsAddon.display.ajaxRequest({
+
+                    url: addBorrowerNoteApi,
+
+                    type: "POST",
+
+                    payload: {
+
+                        borrower_id: borrowerId,
+
+                        note: result.value.trim()
+
+                    },
+
+                    dataType: "json"
+
+                }).then((response) => {
+
+                    if (response.isError) {
+
+                        Swal.fire(
+                            "Error",
+                            response.message,
+                            "error"
+                        );
+
+                        return;
+                    }
+
+                    Swal.fire(
+                        "Saved!",
+                        response.message,
+                        "success"
+                    );
+
+                    borrowerView.funx.loadBorrowerNotes();
+
+                });
+
+            });
+
+        },
+
+        deleteBorrowerNote: (noteId) => {
+
+            Swal.fire({
+
+                title: "Delete Note?",
+
+                text: "Are you sure you want to delete this borrower note?",
+
+                icon: "warning",
+
+                showCancelButton: true,
+
+                confirmButtonText: "Yes, Delete",
+
+                confirmButtonColor: "#dc3545"
+
+            }).then((result) => {
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                jsAddon.display.ajaxRequest({
+
+                    url: deleteBorrowerNoteApi,
+
+                    type: "POST",
+
+                    payload: {
+
+                        note_id: noteId,
+
+                        borrower_id: borrowerId
+
+                    },
+
+                    dataType: "json"
+
+                }).then((response) => {
+
+                    if (response.isError) {
+
+                        Swal.fire(
+                            "Error",
+                            response.message,
+                            "error"
+                        );
+
+                        return;
+                    }
+
+                    Swal.fire(
+                        "Deleted!",
+                        response.message,
+                        "success"
+                    );
+
+                    borrowerView.funx.loadBorrowerNotes();
+
+                });
+
+            });
+
+        },
+
         /*
         |--------------------------------------------------------------------------
         | TRANSACTION BADGE
@@ -7711,6 +7967,57 @@ $(document).ready(function(){
     borrowerView.init();
 
     let today = new Date();
+
+    // ADD NOTE - TOP BUTTON
+    $("#btnAddBorrowerNote")
+        .off("click")
+        .on("click", function() {
+
+            borrowerView.funx.addBorrowerNote();
+
+        });
+
+
+    // ADD NOTE - TAB BUTTON
+    $("#btnAddBorrowerNoteTab")
+        .off("click")
+        .on("click", function() {
+
+            borrowerView.funx.addBorrowerNote();
+
+        });
+
+
+    // REFRESH NOTES
+    $("#btnRefreshBorrowerNotes")
+        .off("click")
+        .on("click", function() {
+
+            borrowerView.funx.loadBorrowerNotes();
+
+        });
+
+
+    // SEARCH NOTES
+    $("#btnSearchBorrowerNotes")
+        .off("click")
+        .on("click", function() {
+
+            borrowerView.funx.loadBorrowerNotes();
+
+        });
+
+
+    // DELETE NOTE
+    $(document)
+        .off("click", ".btnDeleteBorrowerNote")
+        .on("click", ".btnDeleteBorrowerNote", function() {
+
+            let noteId = $(this).data("id");
+
+            borrowerView.funx.deleteBorrowerNote(noteId);
+
+        });
 
 
     
@@ -8332,6 +8639,12 @@ $(document).ready(function(){
                     'month'
                 );
 
+            let salary_id =
+                $(this).data(
+                    'salaryid'
+                );
+
+
             let loans =
                 $(this).data(
                     'loans'
@@ -8447,6 +8760,9 @@ $(document).ready(function(){
 
                             borrower_id:
                                 borrowerId,
+
+                            salary_id:
+                                salary_id,
 
                             payment_month:
                                 month,
@@ -8946,8 +9262,16 @@ $(document).ready(function(){
             borrowerView.funx.loadCashierTransactions();
 
         }
+        if (target == '#borrowerNotesTab') {
+          borrowerView.funx.loadBorrowerNotes();
+
+        }
 
     });
+
+
+    
+
 
     $(document).off('keyup.loanAmount change.loanAmount', '#loan_amount');
 
