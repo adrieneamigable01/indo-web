@@ -7919,46 +7919,39 @@ borrowerView = {
                 // BORROWER REVIEW NOTES
                 // =========================================
 
-                const reviewNotes = notes.filter(function(row) {
-
-                    return String(row.status || "").toLowerCase().trim()
-                        === "borrower_review";
-
-                });
+                const reviewNotes = response.review_notes || [];
 
                 if (reviewNotes.length > 0) {
 
-                    let reviewHtml = "";
+                let reviewHtml = "";
 
-                    reviewNotes.forEach(function(row) {
+                reviewNotes.forEach(function(row) {
 
-                        reviewHtml += `
-                            <div class="bg-white rounded p-3 mb-2 border">
-
-                                <div class="d-flex justify-content-between align-items-start gap-2">
-
-                                    <div class="flex-grow-1 review-note-content">
-                                        ${row.note || ""}
-                                    </div>
-                                </div>
-
+                    reviewHtml += `
+                        <div class="bg-white rounded p-3 mb-2 border">
+                            <div class="text-dark review-note-content">
+                                ${row.note || ""}
                             </div>
-                        `;
+                        </div>
+                    `;
 
-                    });
+                });
 
+                $("#borrowerReviewNotesList").html(reviewHtml);
 
-                    $("#borrowerReviewNotesList").html(reviewHtml);
+                $("#borrowerReviewNotes").show();
 
-                    $("#borrowerReviewNotes").show();
+                $(".profile-card").addClass("has-review-notes");
 
-                } else {
+            } else {
 
-                    $("#borrowerReviewNotesList").empty();
+                $("#borrowerReviewNotesList").empty();
 
-                    $("#borrowerReviewNotes").hide();
+                $("#borrowerReviewNotes").hide();
 
-                }
+                $(".profile-card").removeClass("has-review-notes");
+
+            }
 
                 // =========================================
                 // BORROWER NOTES DATATABLE

@@ -275,6 +275,37 @@
             max-width: 100%;
             height: auto;
         }
+
+
+        /* Default: Borrower information takes full width */
+        #borrowerProfileInfo {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        /* When review notes exist */
+        .profile-card.has-review-notes #borrowerProfileInfo {
+            flex: 0 0 75%;
+            max-width: 75%;
+        }
+
+        .profile-card.has-review-notes #borrowerReviewNotes {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 767px) {
+            .profile-card.has-review-notes #borrowerProfileInfo,
+            .profile-card.has-review-notes #borrowerReviewNotes {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            #borrowerReviewNotes {
+                margin-top: 15px;
+            }
+        }
     </style>
 
 </head>
