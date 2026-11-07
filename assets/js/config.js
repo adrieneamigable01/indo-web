@@ -174,6 +174,16 @@ const updateIncentiveStatusApi = url + '/borrower-incentive/update-status';
 
 const incentiveVoucherPdfApi = url + '/borrower-incentive/voucher';
 
+
+const borrowerNotesApi =
+    url + "borrower/getBorrowerNotes";
+
+const addBorrowerNoteApi =
+    url + "borrower/addBorrowerNote";
+
+const deleteBorrowerNoteApi =
+    url + "borrower/deleteBorrowerNote";
+
 $(".version-badge").text(version);
 
 $(".logout").click(function (e) {

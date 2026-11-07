@@ -4338,7 +4338,8 @@ let cashierVaultPage = {
         },
         showCashTransaction:function(){
             let cameraStream = null;
-             cashierVaultPage.requestImages = [];
+            cashierVaultPage.requestImages = [];
+            cashierVaultPage.borrowerId = [];
             Swal.fire({
 
                 title:false,

@@ -632,6 +632,20 @@
         </button>
 
     </li>
+     <li class="nav-item">
+
+        <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#borrowerNotesTab">
+
+            <i class="bi bi-receipt"></i>
+
+            Notes
+
+        </button>
+
+    </li>
 
 </ul>
 
@@ -666,6 +680,16 @@
                     <option value="VOID">Void</option>
 
                 </select>
+
+                <!-- Add Note -->
+                <button
+                    class="btn btn-outline-primary"
+                    id="btnAddBorrowerNote">
+
+                    <i class="bi bi-journal-plus"></i>
+                    Add Note
+
+                </button>
 
                 <!-- Add Loan -->
                 <button
@@ -1172,6 +1196,106 @@
     </div>
 
 </div>
+<div class="tab-pane fade"
+     id="borrowerNotesTab">
+
+    <div class="table-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h5 class="mb-0">
+                    <i class="bi bi-journal-text me-2"></i>
+                    Borrower Notes
+                </h5>
+
+                <small class="text-muted">
+                    Complete notes and follow-up history related to this borrower.
+                </small>
+            </div>
+
+            <div class="d-flex gap-2">
+
+                <button
+                    class="btn btn-primary"
+                    id="btnAddBorrowerNoteTab">
+
+                    <i class="bi bi-plus-circle"></i>
+                    Add Note
+
+                </button>
+
+                <button
+                    class="btn btn-outline-primary"
+                    id="btnRefreshBorrowerNotes">
+
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Refresh
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-md-8">
+
+                <label class="form-label">
+                    Search Notes
+                </label>
+
+                <input
+                    type="text"
+                    id="borrower_note_search"
+                    class="form-control"
+                    placeholder="Search notes...">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label>&nbsp;</label>
+
+                <button
+                    class="btn btn-primary w-100"
+                    id="btnSearchBorrowerNotes">
+
+                    <i class="bi bi-search"></i>
+                    Search
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <table
+            id="borrowerNotesTable"
+            class="table table-bordered table-hover align-middle">
+
+            <thead class="table-light">
+
+                <tr>
+                    <th width="70">#</th>
+                    <th>Note</th>
+                    <th width="160">Date Created</th>
+                    <th width="140">Created By</th>
+                    <th width="90">Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
 <div
     class="modal fade"
     id="loanModal"
