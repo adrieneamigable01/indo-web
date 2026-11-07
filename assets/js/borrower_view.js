@@ -7925,17 +7925,27 @@ borrowerView = {
 
                 let reviewHtml = "";
 
+                
                 reviewNotes.forEach(function(row) {
+
+                    let noteHtml = $("<div>").text(row.note || "").html();
+
+                    // Replace "- ok" and "- done" with green check icons
+                    noteHtml = noteHtml.replace(
+                        /-\s*(ok|done)\b/gi,
+                        '<i class="bi bi-check-circle-fill text-success me-1"></i>'
+                    );
 
                     reviewHtml += `
                         <div class="bg-white rounded p-3 mb-2 border">
                             <div class="text-dark review-note-content">
-                                ${row.note || ""}
+                                ${noteHtml}
                             </div>
                         </div>
                     `;
 
                 });
+
 
                 $("#borrowerReviewNotesList").html(reviewHtml);
 
