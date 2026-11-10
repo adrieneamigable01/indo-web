@@ -1940,6 +1940,15 @@ borrowerView = {
                                 <li>
                                     <a class="dropdown-item"
                                     href="#"
+                                    onclick='borrowerView.funx.showLoanComakers(${row.loan_id})'>
+                                        <i class="bi bi-eye me-2"></i>
+                                        View Comakers
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item"
+                                    href="#"
                                     onclick="borrowerView.funx.loadSchedules(${row.loan_id})">
                                         <i class="bi bi-calendar3 me-2"></i>
                                         View Schedules
@@ -1963,6 +1972,7 @@ borrowerView = {
                                         Loan Contract
                                     </a>
                                 </li>
+                                
                                 <li>
                                     <a class="dropdown-item"
                                     href="#"
@@ -8117,6 +8127,353 @@ borrowerView = {
 
             });
 
+        },
+
+
+
+        showLoanComakers: (loanId) => {
+
+            let comakers = [];
+
+            const escapeHtml = (value) => {
+                return $("<div>").text(value ?? "").html();
+            };
+
+            const renderComakers = () => {
+
+                if (!comakers.length) {
+                    return `
+                        <div class="text-center py-4">
+                            <i class="bi bi-people text-muted"
+                            style="font-size:40px;"></i>
+
+                            <h6 class="mt-2 text-muted">
+                                No Co-Makers Found
+                            </h6>
+
+                            <small class="text-muted">
+                                This loan has no registered co-makers.
+                            </small>
+                        </div>
+                    `;
+                }
+
+                let html = `
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-hover align-middle">
+
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:50px;">#</th>
+                                    <th>Co-Maker Details</th>
+                                    <th style="width:150px;" class="text-center">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                `;
+
+                comakers.forEach((row, index) => {
+
+                    const name =
+                        row.comaker_name ||
+                        row.fullname ||
+                        row.full_name ||
+                        row.name ||
+                        "Unknown Co-Maker";
+
+                    const contact =
+                        row.contact_number ||
+                        row.mobile_number ||
+                        row.contact ||
+                        "";
+
+                    const address =
+                        row.address ||
+                        row.comaker_address ||
+                        "";
+
+                    html += `
+                        <tr>
+
+                            <td>${index + 1}</td>
+
+                            <td class="text-start">
+
+                                <div class="fw-bold text-dark">
+                                    ${escapeHtml(name)}
+                                </div>
+
+                                ${contact ? `
+                                    <small class="text-muted">
+                                        <i class="bi bi-telephone me-1"></i>
+                                        ${escapeHtml(contact)}
+                                    </small>
+                                ` : ""}
+
+                                ${address ? `
+                                    <div class="small text-muted mt-1">
+                                        <i class="bi bi-geo-alt me-1"></i>
+                                        ${escapeHtml(address)}
+                                    </div>
+                                ` : ""}
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <div class="d-flex justify-content-center gap-1">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-danger btnDeleteLoanComaker"
+                                        data-index="${index}"
+                                        title="Delete Co-Maker">
+
+                                        <i class="bi bi-trash"></i>
+
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary btnPrintComakerAddendum"
+                                        data-index="${index}"
+                                        title="Print Addendum">
+
+                                        <i class="bi bi-printer"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    `;
+
+                });
+
+                html += `
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                `;
+
+                return html;
+            };
+
+
+            // =====================================
+            // LOAD CO-MAKERS
+            // =====================================
+
+            Swal.fire({
+
+                title: `
+                    <i class="bi bi-people me-2"></i>
+                    Loan Co-Makers
+                `,
+
+                html: `
+                    <div id="loanComakersContainer">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary"></div>
+                            <div class="mt-2 text-muted">
+                                Loading co-makers...
+                            </div>
+                        </div>
+                    </div>
+                `,
+
+                width: "850px",
+
+                showConfirmButton: false,
+
+                showCloseButton: true,
+
+                didOpen: () => {
+
+                    const loadComakers = () => {
+
+                        jsAddon.display.ajaxRequest({
+
+                            url: loanComakersApi,
+
+                            type: "GET",
+
+                            payload: {
+                                loan_id: loanId
+                            },
+
+                            dataType: "json"
+
+                        }).then((response) => {
+
+                            if (response.isError) {
+
+                                $("#loanComakersContainer").html(`
+                                    <div class="alert alert-danger">
+                                        ${escapeHtml(response.message)}
+                                    </div>
+                                `);
+
+                                return;
+                            }
+
+                            comakers = response.data || [];
+
+                            $("#loanComakersContainer").html(
+                                renderComakers()
+                            );
+
+                        }).catch((error) => {
+
+                            console.error("Load Co-Makers Error:", error);
+
+                            $("#loanComakersContainer").html(`
+                                <div class="alert alert-danger">
+                                    Unable to load co-makers.
+                                </div>
+                            `);
+
+                        });
+
+                    };
+
+
+                    // DELETE CO-MAKER
+                    $(document)
+                        .off("click.loanComaker", ".btnDeleteLoanComaker")
+                        .on("click.loanComaker", ".btnDeleteLoanComaker", function () {
+
+                            const index = Number($(this).data("index"));
+                            const row = comakers[index];
+
+                            if (!row) return;
+
+                            Swal.fire({
+
+                                title: "Delete Co-Maker?",
+
+                                text: "Are you sure you want to remove this co-maker from the loan?",
+
+                                icon: "warning",
+
+                                showCancelButton: true,
+
+                                confirmButtonColor: "#dc3545",
+
+                                confirmButtonText: "Yes, Delete",
+
+                                cancelButtonText: "Cancel"
+
+                            }).then((result) => {
+
+                                if (!result.isConfirmed) return;
+
+                                jsAddon.display.ajaxRequest({
+
+                                    url: deleteLoanComakerApi,
+
+                                    type: "POST",
+
+                                    payload: {
+                                        comaker_id: row.comaker_id
+                                    },
+
+                                    dataType: "json"
+
+                                }).then((response) => {
+
+                                    if (response.isError) {
+
+                                        Swal.fire(
+                                            "Error",
+                                            response.message,
+                                            "error"
+                                        );
+
+                                        return;
+                                    }
+
+                                    Swal.fire({
+
+                                        icon: "success",
+
+                                        title: "Deleted!",
+
+                                        text: response.message,
+
+                                        timer: 1200,
+
+                                        showConfirmButton: false
+
+                                    });
+
+                                    loadComakers();
+
+                                }).catch((error) => {
+
+                                    console.error("Delete Co-Maker Error:", error);
+
+                                    Swal.fire(
+                                        "Error",
+                                        "Unable to delete co-maker.",
+                                        "error"
+                                    );
+
+                                });
+
+                            });
+
+                        });
+
+
+                    // PRINT ADDENDUM
+                    $(document)
+                        .off("click.loanComaker", ".btnPrintComakerAddendum")
+                        .on("click.loanComaker", ".btnPrintComakerAddendum", function () {
+
+                            const index = Number($(this).data("index"));
+                            const row = comakers[index];
+
+                            if (!row) return;
+
+                            borrowerView.funx.printComakerAddendum(
+                                loanId,
+                                row.comaker_id
+                            );
+
+                        });
+
+
+                    loadComakers();
+
+                },
+
+                willClose: () => {
+
+                    $(document).off(".loanComaker");
+
+                }
+
+            });
+
+        },
+
+        printComakerAddendum: (loanId, comakerId) => {
+
+            const xurl = url +
+                "loan/printComakerAddendum/" +
+                encodeURIComponent(loanId) + "/" +
+                encodeURIComponent(comakerId);
+
+            window.open(xurl, "_blank");
         },
 
         /*

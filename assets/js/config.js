@@ -184,6 +184,13 @@ const addBorrowerNoteApi =
 const deleteBorrowerNoteApi =
     url + "borrower/deleteBorrowerNote";
 
+
+const loanComakersApi = url + "loan/getLoanComakers";
+const deleteLoanComakerApi = url + "loan/deleteLoanComaker";
+const printComakerAddendum = url + "loan/printComakerAddendum/" +
+        encodeURIComponent(loanId) + "/" +
+        encodeURIComponent(comakerId);
+
 $(".version-badge").text(version);
 
 $(".logout").click(function (e) {
