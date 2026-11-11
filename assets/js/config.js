@@ -185,12 +185,27 @@ const deleteBorrowerNoteApi =
     url + "borrower/deleteBorrowerNote";
 
 
-const loanComakersApi = url + "loan/getLoanComakers";
-const deleteLoanComakerApi = url + "loan/deleteLoanComaker";
-const printComakerAddendum = url + "loan/printComakerAddendum/" +
-        encodeURIComponent(loanId) + "/" +
-        encodeURIComponent(comakerId);
+// =====================================
+// LOAN CO-MAKER APIs
+// =====================================
 
+const loanComakersApi = `${url}loan/getLoanComakers`;
+
+const deleteLoanComakerApi = `${url}loan/deleteLoanComaker`;
+
+const addLoanComakerApi = `${url}loan/addLoanComaker`;
+
+const printComakerAddendum = (loanId, comakerId) => {
+    return `${url}loan/printComakerAddendum/${encodeURIComponent(loanId)}/${encodeURIComponent(comakerId)}`;
+};
+
+// Expose globally
+window.loanComakersApi = loanComakersApi;
+window.deleteLoanComakerApi = deleteLoanComakerApi;
+window.addLoanComakerApi = addLoanComakerApi;
+window.printComakerAddendum = printComakerAddendum;
+
+console.log("CO-MAKER CONFIG LOADED", window.addLoanComakerApi);
 $(".version-badge").text(version);
 
 $(".logout").click(function (e) {

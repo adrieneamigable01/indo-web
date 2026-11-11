@@ -8131,6 +8131,93 @@ borrowerView = {
 
 
 
+        showAddLoanComaker: (loanId, onSaved = null) => {
+
+            Swal.fire({
+
+                title: '<i class="bi bi-person-plus me-2"></i> Add Co-Maker',
+
+                html: `
+                    <div class="text-start">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="comakerName"
+                                class="form-control"
+                                placeholder="Enter full name">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Complete Address
+                            </label>
+
+                            <textarea
+                                id="comakerAddress"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Enter complete address"></textarea>
+                        </div>
+
+                    </div>
+                `,
+
+                width: "500px",
+
+                showCancelButton: true,
+
+                confirmButtonText:
+                    '<i class="bi bi-save me-1"></i> Save Co-Maker',
+
+                cancelButtonText: "Cancel",
+
+                confirmButtonColor: "#198754",
+
+                focusConfirm: false,
+
+                preConfirm: () => {
+                    alert("im here");return false;
+                    const name = $("#comakerName").val().trim();
+                    const address = $("#comakerAddress").val().trim();
+
+                    if (!name) {
+                        Swal.showValidationMessage(
+                            "Please enter the co-maker's full name."
+                        );
+                        return false;
+                    }
+
+                    if (!address) {
+                        Swal.showValidationMessage(
+                            "Please enter the co-maker's address."
+                        );
+                        return false;
+                    }
+
+                    return {
+                        loan_id: loanId,
+                        name: name,
+                        address: address
+                    };
+
+                }
+
+            }).then((result) => {
+                alert("im here");return false;
+                if (!result.isConfirmed) return;
+
+                borrowerView.funx.addComaker(result.value);
+
+            });
+
+        },
+
+
         showLoanComakers: (loanId) => {
 
             let comakers = [];
@@ -8196,8 +8283,11 @@ borrowerView = {
                         row.comaker_address ||
                         "";
 
+                    const isActive = Number(row.isActive) === 1;
+                    const status = row.status || (isActive ? "default" : "disabled");
+
                     html += `
-                        <tr>
+                        <tr class="${!isActive ? 'table-light' : ''}">
 
                             <td>${index + 1}</td>
 
@@ -8225,29 +8315,40 @@ borrowerView = {
 
                             <td class="text-center">
 
-                                <div class="d-flex justify-content-center gap-1">
+                                ${isActive ? `
 
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-danger btnDeleteLoanComaker"
-                                        data-index="${index}"
-                                        title="Delete Co-Maker">
+                                    <div class="d-flex justify-content-center gap-1">
 
-                                        <i class="bi bi-trash"></i>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-danger btnDeleteLoanComaker"
+                                            data-index="${index}"
+                                            title="Disable Co-Maker">
 
-                                    </button>
+                                            <i class="bi bi-trash"></i>
 
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-primary btnPrintComakerAddendum"
-                                        data-index="${index}"
-                                        title="Print Addendum">
+                                        </button>
 
-                                        <i class="bi bi-printer"></i>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary btnPrintComakerAddendum"
+                                            data-index="${index}"
+                                            title="Print Addendum">
 
-                                    </button>
+                                            <i class="bi bi-printer"></i>
 
-                                </div>
+                                        </button>
+
+                                    </div>
+
+                                ` : `
+
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-slash-circle me-1"></i>
+                                        ${escapeHtml(status.toUpperCase())}
+                                    </span>
+
+                                `}
 
                             </td>
 
@@ -8280,6 +8381,18 @@ borrowerView = {
                 `,
 
                 html: `
+                    <div class="text-end mb-3">
+                        <button
+                            type="button"
+                            class="btn btn-success btn-sm"
+                            id="btnAddLoanComaker">
+
+                            <i class="bi bi-person-plus me-1"></i>
+                            Add Co-Maker
+
+                        </button>
+                    </div>
+
                     <div id="loanComakersContainer">
                         <div class="text-center py-4">
                             <div class="spinner-border text-primary"></div>
@@ -8346,7 +8459,115 @@ borrowerView = {
                     };
 
 
+                    $("#btnAddLoanComaker")
+                        .off("click")
+                        .on("click", function () {
+
+                            Swal.fire({
+
+                                title: `
+                                    <i class="bi bi-person-plus me-2"></i>
+                                    Add Co-Maker
+                                `,
+
+                                html: `
+                                    <div class="text-start">
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">
+                                                Full Name
+                                            </label>
+
+                                            <input
+                                                type="text"
+                                                id="comakerName"
+                                                class="form-control"
+                                                placeholder="Enter full name">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">
+                                                Contact Number
+                                            </label>
+
+                                            <input
+                                                type="text"
+                                                id="comakerContact"
+                                                class="form-control"
+                                                placeholder="Enter contact number">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">
+                                                Complete Address
+                                            </label>
+
+                                            <textarea
+                                                id="comakerAddress"
+                                                class="form-control"
+                                                rows="3"
+                                                placeholder="Enter complete address"></textarea>
+                                        </div>
+
+                                    </div>
+                                `,
+
+                                width: "500px",
+
+                                showCancelButton: true,
+
+                                confirmButtonText: `
+                                    <i class="bi bi-save me-1"></i>
+                                    Save Co-Maker
+                                `,
+
+                                cancelButtonText: "Cancel",
+
+                                confirmButtonColor: "#198754",
+
+                                preConfirm: () => {
+
+                                    const name = $("#comakerName").val().trim();
+                                    const contact = $("#comakerContact").val().trim();
+                                    const address = $("#comakerAddress").val().trim();
+
+                                    if (!name) {
+                                        Swal.showValidationMessage(
+                                            "Please enter the co-maker's name."
+                                        );
+                                        return false;
+                                    }
+
+                                    if (!address) {
+                                        Swal.showValidationMessage(
+                                            "Please enter the co-maker's address."
+                                        );
+                                        return false;
+                                    }
+
+                                    return {
+                                        loan_id: loanId,
+                                        comaker_name: name,
+                                        contact_number: contact,
+                                        address: address
+                                    };
+
+                                }
+
+                            }).then((result) => {
+                     
+                                if (!result.isConfirmed) return;
+
+                                 borrowerView.funx.addComaker(result.value);
+
+                            });
+
+                        });
+
+
                     // DELETE CO-MAKER
+                    
+                    // DISABLE CO-MAKER
                     $(document)
                         .off("click.loanComaker", ".btnDeleteLoanComaker")
                         .on("click.loanComaker", ".btnDeleteLoanComaker", function () {
@@ -8358,9 +8579,28 @@ borrowerView = {
 
                             Swal.fire({
 
-                                title: "Delete Co-Maker?",
+                                title: "Disable Co-Maker?",
 
-                                text: "Are you sure you want to remove this co-maker from the loan?",
+                                html: `
+                                    <div class="text-start">
+
+                                        <div class="alert alert-warning py-2">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>
+                                            This co-maker will be disabled but the record will be retained.
+                                        </div>
+
+                                        <label class="form-label fw-semibold">
+                                            Reason for Disabling
+                                        </label>
+
+                                        <textarea
+                                            id="comakerDisableReason"
+                                            class="form-control"
+                                            rows="3"
+                                            placeholder="Enter reason why this co-maker is being disabled..."></textarea>
+
+                                    </div>
+                                `,
 
                                 icon: "warning",
 
@@ -8368,9 +8608,28 @@ borrowerView = {
 
                                 confirmButtonColor: "#dc3545",
 
-                                confirmButtonText: "Yes, Delete",
+                                confirmButtonText: "Yes, Disable",
 
-                                cancelButtonText: "Cancel"
+                                cancelButtonText: "Cancel",
+
+                                preConfirm: () => {
+
+                                    const reason = $("#comakerDisableReason").val().trim();
+
+                                    if (!reason) {
+
+                                        Swal.showValidationMessage(
+                                            "Please provide a reason for disabling this co-maker."
+                                        );
+
+                                        return false;
+                                    }
+
+                                    return {
+                                        disabled_reason: reason
+                                    };
+
+                                }
 
                             }).then((result) => {
 
@@ -8383,7 +8642,8 @@ borrowerView = {
                                     type: "POST",
 
                                     payload: {
-                                        comaker_id: row.comaker_id
+                                        comaker_id: row.comaker_id,
+                                        disabled_reason: result.value.disabled_reason
                                     },
 
                                     dataType: "json"
@@ -8405,7 +8665,7 @@ borrowerView = {
 
                                         icon: "success",
 
-                                        title: "Deleted!",
+                                        title: "Co-Maker Disabled!",
 
                                         text: response.message,
 
@@ -8413,17 +8673,19 @@ borrowerView = {
 
                                         showConfirmButton: false
 
-                                    });
+                                    }).then(() => {
 
-                                    loadComakers();
+                                        loadComakers();
+
+                                    });
 
                                 }).catch((error) => {
 
-                                    console.error("Delete Co-Maker Error:", error);
+                                    console.error("Disable Co-Maker Error:", error);
 
                                     Swal.fire(
                                         "Error",
-                                        "Unable to delete co-maker.",
+                                        "Unable to disable co-maker.",
                                         "error"
                                     );
 
@@ -8432,6 +8694,7 @@ borrowerView = {
                             });
 
                         });
+
 
 
                     // PRINT ADDENDUM
@@ -8464,6 +8727,56 @@ borrowerView = {
 
             });
 
+        },
+        addComaker:(value)  => {
+            jsAddon.display.ajaxRequest({
+
+            url: addLoanComakerApi,
+
+            type: "POST",
+
+            payload: value,
+
+            dataType: "json"
+
+        }).then((response) => {
+
+            if (response.isError) {
+
+                Swal.fire(
+                    "Error",
+                    response.message,
+                    "error"
+                );
+
+                return;
+            }
+
+            Swal.fire({
+
+                icon: "success",
+                title: "Co-Maker Added!",
+                text: response.message,
+                timer: 1200,
+                showConfirmButton: false
+
+            }).then(() => {
+
+                loadComakers();
+
+            });
+
+        }).catch((error) => {
+
+            console.error("Add Co-Maker Error:", error);
+
+            Swal.fire(
+                "Error",
+                "Unable to save co-maker.",
+                "error"
+            );
+
+        });
         },
 
         printComakerAddendum: (loanId, comakerId) => {
