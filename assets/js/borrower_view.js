@@ -8283,6 +8283,7 @@ borrowerView = {
                         row.comaker_address ||
                         "";
 
+             
                     const isActive = Number(row.isActive) === 1;
                     const status = row.status || (isActive ? "default" : "disabled");
 
@@ -8291,27 +8292,67 @@ borrowerView = {
 
                             <td>${index + 1}</td>
 
+                            
                             <td class="text-start">
 
-                                <div class="fw-bold text-dark">
-                                    ${escapeHtml(name)}
+                                <div class="d-flex flex-column gap-2">
+
+                                    <!-- NAME -->
+                                    <div class="fw-bold text-dark" style="font-size: 14px;">
+                                        <i class="bi bi-person-circle text-primary me-1"></i>
+                                        ${escapeHtml(name)}
+                                    </div>
+
+                                    <!-- CONTACT -->
+                                    ${contact ? `
+                                        <div class="small text-muted">
+                                            <i class="bi bi-telephone-fill me-2 text-secondary"></i>
+                                            ${escapeHtml(contact)}
+                                        </div>
+                                    ` : ""}
+
+                                    <!-- ADDRESS -->
+                                    ${address ? `
+                                        <div class="small text-muted">
+                                            <i class="bi bi-geo-alt-fill me-2 text-secondary"></i>
+                                            ${escapeHtml(address)}
+                                        </div>
+                                    ` : ""}
+
+                                    <!-- STATUS -->
+                                    <div>
+                                        <span class="badge rounded-pill px-3 py-2 ${
+                                            status === "disabled"
+                                                ? "bg-secondary-subtle text-secondary"
+                                                : status === "additional"
+                                                    ? "bg-info-subtle text-info-emphasis"
+                                                    : "bg-success-subtle text-success-emphasis"
+                                        }">
+
+                                            <i class="bi ${
+                                                status === "disabled"
+                                                    ? "bi-slash-circle"
+                                                    : status === "additional"
+                                                        ? "bi-person-plus"
+                                                        : "bi-check-circle-fill"
+                                            } me-1"></i>
+
+                                            ${escapeHtml(status.toUpperCase())}
+
+                                        </span>
+                                    </div>
+
+                                    ${!Number(row.isActive) ? `
+                                        <div class="small text-danger">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            ${escapeHtml(row.disabled_reason || "No reason provided")}
+                                        </div>
+                                    ` : ""}
+
                                 </div>
 
-                                ${contact ? `
-                                    <small class="text-muted">
-                                        <i class="bi bi-telephone me-1"></i>
-                                        ${escapeHtml(contact)}
-                                    </small>
-                                ` : ""}
-
-                                ${address ? `
-                                    <div class="small text-muted mt-1">
-                                        <i class="bi bi-geo-alt me-1"></i>
-                                        ${escapeHtml(address)}
-                                    </div>
-                                ` : ""}
-
                             </td>
+
 
                             <td class="text-center">
 
