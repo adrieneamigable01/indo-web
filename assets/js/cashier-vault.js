@@ -6491,7 +6491,7 @@ let cashierVaultPage = {
 
             let netAmount = Math.abs(cashOut - cashIn);
 
-            if(netAmount <= 0){
+            if(netAmount < 0){
 
                 Swal.fire(
                     "Warning",
